@@ -1,2 +1,2 @@
-# cs201-project
-# 
+# Connect 4 
+
