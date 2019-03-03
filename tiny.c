@@ -11,29 +11,46 @@ struct peice
         int colour;
 } board[nrows][ncols];
 
-void printBoard() {
-        for(int x = 0; x < nrows; x++) {
-                for(int y = 0; y < ncols; y++)
-                        printf("%d ", board[x][y].colour);
+void printBoard()
+{
+	int x, y;
+        for(x = 0; x < nrows; x++) 
+	{
+                for(y = 0; y < ncols; y++)
+		{
+                       if(board[x][y].colour == 0)
+			       printf("_ ");
+		       else if(board[x][y].colour == 1)
+			       printf("O ");
+		       else if(board[x][y].colour == 2)
+			       printf("X ");
+		       else
+			       printf("E");
+		}
                 printf("\n");
         }
 }
 
-void clearBoard() {
-	for(int x = 0; x < nrows; x++)
-		for(int y = 0; y < ncols; y++)
+void clearBoard()
+{
+	int x, y;
+	for(x = 0; x < nrows; x++)
+		for(y = 0; y < ncols; y++)
 			board[x][y].colour = 0;
 }
 
-int addPeice(int j, int colour) {
-        if (j >= ncols) return 0;
+int addPiece(int j, int colour) {
 	int y;
-        for(y = nrows - 1; y > 0; y--) {
+        
+	if (j >= ncols) return 0;
+        
+	for(y = nrows - 1; y > 0; y--)
                 if(board[y][j].colour == 0) break;
-        }
-        if(y == 0 && board[y][j].colour != 0) {
-                return 0;
-        } else {
+        
+	if(y == 0 && board[y][j].colour != 0)
+                return 0; 
+	else 
+	{
                 board[y][j].colour = colour;
 		return 1;
         }
@@ -42,94 +59,160 @@ int addPeice(int j, int colour) {
 
 int checkWin()
 {
-        for(int x = 0; x < nrows; x++)
+	int x, y, i, count;        
+	for(x = 0; x < nrows; x++)
         {
-                for(int y = 0; y < ncols; y++)
+                for(y = 0; y < ncols; y++)
                 {
                         if (board[x][y].colour == 0) continue;
-                        int count = 0;
-                        if(y + 3 < ncols)
-                        {
-                                if (board[x][y + 1].colour == board[x][y].colour) count++;
-                                if (board[x][y + 2].colour == board[x][y].colour) count++;
-                                if (board[x][y + 3].colour == board[x][y].colour) count++;
-                                if (count >= 4) return board[x][y].colour;
-                        }
+                        count = 0;
+			if(y + 3 < ncols)
+			{
+				for(i = 1; i < 4; i++)
+					if(board[x][y+i].colour == board[x][y].colour) count++;
+				if(count >= 3) return board[x][y].colour;
+			}
 			count = 0;
                         if(x + 3 < nrows)
-                        {
-                                if (board[x + 1][y].colour == board[x][y].colour) count++;
-                                if (board[x + 2][y].colour == board[x][y].colour) count++;
-                                if (board[x + 3][y].colour == board[x][y].colour) count++;
-                                if (count >= 4) return board[x][y].colour;
-                        }
-                        /*
-                        if(x + 3 < nrows && y + 3 < ncols)
-                        {
-                                if (board[x + 1][y + 1].colour == colour) count += 1;
-                                if (board[x + 2][y + 2].colour == colour) count += 1;
-                                if (board[x + 3][y + 3].colour == colour) count += 1;
-                                if (count == 3) printf("WIND1\n");
-                        }
-                        if(x - 3 > -1 && y - 3 > -1)
-                        {
-                                if (board[x - 1][y - 1].colour == colour) count += 1;
-                                if (board[x - 2][y - 2].colour == colour) count += 1;
-                                if (board[x - 3][y - 3].colour == colour) count += 1;
-                                if (count == 3) printf("WIND2\n");
-                        }*/
+			{
+				for(i = 1; i < 4; i++)
+					if(board[x+i][y].colour == board[x][y].colour) count++;
+				if(count >= 3) return board[x][y].colour;
+			}
+			count = 0;
+			if(x - 3 > -1 && y + 3 < ncols)
+			{
+				for(i = 1; i < 4; i++)
+					if(board[x-i][y+i].colour == board[x][y].colour) count++;
+				if(count >= 3) return board[x][y].colour;
+			}
+			count = 0;
+			if(x + 3 < nrows && y + 3 < ncols)
+			{
+				for(i = 1; i < 4; i++)
+					if(board[x+i][y+i].colour == board[x][y].colour) count++;
+				if(count >= 3) return board[x][y].colour;
+			}
                 }
         }
+	return 0;
 }
 
-void clear()
+void clearScreen()
 {
-	printf("\e[1;1H\e[2J");
+	system("clear");
 }
 
+int player()
+{
+	int playCounter = 0, playerwin = 0, add = 0;
+	while(playCounter < (nrows * ncols))
+	{
+		clearScreen();
+		for(int i = 1; i < 3; i++)
+		{
+			do
+			{
+				printBoard();
+				printf("Player %d move > ", i);
+				scanf("%d", &add);
+				clearScreen();
+				playCounter++;
+			} while(addPiece(add, i) == 0);
+			playerwin = checkWin();
+			if(playerwin != 0)
+				return playerwin;
+		}
+	}
+	return 0;
+}
+
+int computer()
+{
+	int playCounter = 0, playerwin = 0, add = 0;
+	while(playCounter < (nrows * ncols))
+	{
+		clearScreen();
+		printBoard();
+		do
+		{
+			printf("Player move > ");
+			scanf("%d", &add);
+		} while(addPiece(add, 1) == 0);
+		clearScreen();
+		playCounter++;
+		printf("Computer Moving..\n");
+		addPiece(rand() % ncols, 2);
+		playerwin = checkWin();
+		if(playerwin != 0)
+			return playerwin;
+	}
+	return 0;
+}
+
+void printMenu()
+{
+	printf("game will let you select either player or computer to play against\n");
+	printf("size will let you set custom sizes\n");
+	printf("quit will exit the game\n");
+	printf("> ");
+}
 
 int main(void)
 {
-	clearBoard();
+	char mode[25];
+	int winner;
 
-        char mode[25];
-	char input[25];
-	printf("Player or Computer: \n> ");
-        scanf("%s", mode);
+	clearBoard();
+	clearScreen();	
+
         while (strcmp(mode, "quit") != 0)
         {
-		if(strcmp(mode, "player") == 0)
+		printMenu();
+		scanf("%s", mode);
+		if(strcmp(mode, "game") == 0)
 		{
-			int playerwin = 0;
-			int winflag = 0;
-			while(winflag == 0)
+			printf("Player or Computer > ");
+			scanf("%s", mode);
+			if(strcmp(mode, "player") == 0 || mode[0] == 'p')
 			{
-				clear();
-				int add;
-				for(int i = 1; i < 3; i++)
+				winner = player();	
+				clearBoard();
+				if(winner == 0)
+					printf("Ran out of space to win\n");
+				else
+					printf("Player %d WON!!\n", winner);
+			}
+			else if(strcmp(mode, "computer") == 0 || mode[0] == 'c')
+			{
+				winner = computer();
+				clearBoard();
+				if(winner == 0)
+					printf("Ran out of space to win\n");
+				else
 				{
-					do
-					{
-						printBoard();
-						printf("Player %d Move > ", i);
-						scanf("%d", &add);
-					} while(addPeice(add, i) == 0);
-					if((playerwin = checkWin()) != 0) break;
-					clear();
+					if(winner == 1)
+						printf("You have beat the computer. Congrats\n");
+					else
+						printf("The Computer has beaten you.\n");
 				}
 			}
-			printBoard();
-			clearBoard();
-			printf("%d wins", playerwin);
+			else
+			{
+				printf("Answer must be Player or Computer\n> ");
+			}
 		}
-		else if(strcmp(input, "computer") == 0)
+		else if (strcmp(mode, "size") == 0)
 		{
+			printf("coloumns -> %d\n", ncols);
+			printf("height   -> %d\n", nrows);
+			printf("new height > ");
+			scanf("%d", &winner);
+			//nrows = winner;
+			printf("new width > ");
+			scanf("%d", &winner);
+			//ncols = winner;
 		}
-		else
-		{
-			printf("Answer must be Player or Computer\n> ");
-		}
-                scanf("%s", mode);
         }
 
         return 0;
