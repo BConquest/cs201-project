@@ -3,71 +3,94 @@
 #include <string.h>
 #include <time.h>
 
-#define nrows 6
-#define ncols 7
+#define nrows 7
+#define ncols 6
 
-int board[nrows * ncols];
+int board[nrows][ncols];
 
 void printBoard()
 {
-	int index = 0;
-        for(; index < nrows*ncols; index++) 
+	int x, y;
+        for(x = 0; x < nrows; x++) 
 	{
-                if(index % ncols == 0)
-			printf("\n");
-		if(board[index] == 0)
-			printf("_ ");
-		else if(board[index] == 1)
-			printf("O ");
-		else if(board[index] == 2)
-			printf("X ");
-		else
-			printf("E");
+                for(y = 0; y < ncols; y++)
+		{
+                       if(board[x][y] == 0)
+			       printf("_ ");
+		       else if(board[x][y] == 1)
+			       printf("O ");
+		       else if(board[x][y] == 2)
+			       printf("X ");
+		       else
+			       printf("E");
+		}
+                printf("\n");
         }
-	printf("\n");
 }
 
 void clearBoard()
 {
-	int index = 0;
-	for(; index < nrows*ncols; index++)
-		board[index] = 0;
+	int x, y;
+	for(x = 0; x < nrows; x++)
+		for(y = 0; y < ncols; y++)
+			board[x][y] = 0;
 }
 
 int addPiece(int j, int colour) {
-	
-	int index = (nrows-1)*ncols + j;
-
-	if (j > ncols || j <= -1 ) return 0;
-	
-	for(;index > ncols;index-=ncols)
-		if(board[index] == 0) break;
-	
-	if(index < ncols && board[index] != 0)
-		return 0;
-	else
+	int y;
+        
+	if (j >= ncols) return 0;
+        
+	for(y = nrows - 1; y > 0; y--)
+                if(board[y][j] == 0) break;
+        
+	if(y == 0 && board[y][j] != 0)
+                return 0; 
+	else 
 	{
-		board[index] = colour;
+                board[y][j] = colour;
 		return 1;
-	}
+        }
 }
 
-int checkHorizontalWin(int winamount, int index)
+int checkHorizontalWin(int winamount, int x, int y)
 {
-	int i = 1, count = 0;
-	for(; i < winamount; i++)
-		if(board[index+i] == board[index])
+	int i, count = 0;
+	for(i = 1; i < winamount; i++)
+		if(board[x][y+i] == board[x][y])
 			count++;
                 else
 			return 0;
 	return count;
 }
 
-int checkVerticalWin(int winamount, int index)
+int checkVerticalWin(int winamount, int x, int y)
 {
-	int i = 1, count = 0;
-	for(; i < winamount; i-=ncols)
-		if(board[index-i] == board[index])
+	int i, count = 0;
+	for(i = 1; i < winamount; i++)
+		if(board[x+i][y] == board[x][y])
+			count++;
+		else
+			return 0;
+	return count;
+}
+
+int checkUpDiagonalWin(int winamount, int x, int y)
+{
+	int i, count = 0;
+	for(i = 1; i < winamount; i++)
+		if(board[x-i][y+i] == board[x][y])
+			count++;
+		else
+			return 0;
+	return count;
+}
+
+int checkDownDiagonalWin(int winamount, int x, int y)
+{
+	int i, count = 0;
+	for(i = 1; i < winamount; i++)
+		if(board[x+i][y+i] == board[x][y])
 			count++;
 		else
 			return 0;
@@ -76,19 +99,31 @@ int checkVerticalWin(int winamount, int index)
 
 int checkWin(int winamount)
 {
-	int index = (ncols * nrows) - 1;
-	for(; index >= 0; index--)
-	{
-		if(board[index] == 0)
-			continue;
-		if(((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount)
-			if(checkHorizontalWin(winamount, index) >= (winamount-1))
-				return board[index];
-		if((index - ((winamount - 1) * ncols)) > 0)
-			if(checkVerticalWin(winamount, index) >= (winamount-1))
-				return board[index];
-	}
-
+	int x, y; 
+	for(x = nrows-1; x > -1; x--)
+        {
+                for(y = 0; y < ncols; y++)
+                {
+                        if (board[x][y] == 0)
+				continue;
+                        
+			if(y + (winamount-1) < ncols)
+				if(checkHorizontalWin(winamount, x, y) >= (winamount-1))
+					return board[x][y];
+			
+                        if(x + (winamount-1) < nrows)
+				if(checkVerticalWin(winamount, x, y) >= (winamount-1))
+					return board[x][y];
+			
+			if(x - (winamount-1) > -1 && y + (winamount-1) < ncols)
+				if(checkUpDiagonalWin(winamount, x, y) >= (winamount-1))
+					return board[x][y];
+			
+			if(x + (winamount-1) < nrows && y + (winamount-1) < ncols)
+				if(checkDownDiagonalWin(winamount, x, y) >= (winamount-1))
+					return board[x][y];
+                }
+        }
 	return 0;
 }
 
@@ -102,23 +137,20 @@ int player(int winamount)
 	int playCounter = 0, playerwin = 0, add = 0;
 	while(playCounter < (nrows * ncols))
 	{
+		clearScreen();
 		for(int i = 1; i < 3; i++)
 		{
-			clearScreen();
-			printBoard();
-			printf("player %d move > ", i);
-			scanf("%d", &add);
-			while(addPiece(add-1, i) == 0)
+			do
 			{
 				printBoard();
-				printf("Can't add piece there > ");
+				printf("Player %d move > ", i);
 				scanf("%d", &add);
 				clearScreen();
-			}	
-			playCounter++;
+				playCounter++;
+			} while(addPiece((add-1), i) == 0);
 			playerwin = checkWin(winamount);
 			if(playerwin != 0)
-				return playerwin;			
+				return playerwin;
 		}
 	}
 	return 0;
@@ -126,7 +158,20 @@ int player(int winamount)
 
 int getBestMove(int winamount)
 {
-	return rand() % ncols + winamount - winamount;
+	int x, y;
+	for(x = 0; x < ncols; x++)
+	{
+		for(y = 0; y < nrows; y++)
+		{
+			if(board[x][y] == 0)
+				continue;
+			int i = 0;
+			if(y + (winamount-1) < ncols)
+				i = checkVerticalWin(winamount, x, y);
+			printf("should be %d\n", i);
+		}
+	}
+	return rand() % ncols;
 }
 
 int computer(int winamount)
@@ -140,7 +185,7 @@ int computer(int winamount)
 		{
 			printf("Player move > ");
 			scanf("%d", &add);
-		} while(addPiece(add, 1) == 0);
+		} while(addPiece((add-1), 1) == 0);
 		clearScreen();
 		playCounter++;
 		printf("Computer Moving..\n");
@@ -180,7 +225,6 @@ int main(void)
 			if(strcmp(mode, "player") == 0 || mode[0] == 'p')
 			{
 				winner = player(winamount);	
-				printBoard();
 				clearBoard();
 				if(winner == 0)
 					printf("Ran out of space to win\n");
