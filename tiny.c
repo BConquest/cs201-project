@@ -38,9 +38,9 @@ int addPiece(int j, int colour) {
 	
 	int index = (nrows-1)*ncols + j;
 
-	if (j > ncols || j <= -1 ) return 0;
+	if (j > ncols || j < 0 ) return 0;
 	
-	for(;index > ncols;index-=ncols)
+	for(;index > (ncols-1);index-=ncols)
 		if(board[index] == 0) break;
 	
 	if(index < ncols && board[index] != 0)
@@ -66,8 +66,19 @@ int checkHorizontalWin(int winamount, int index)
 int checkVerticalWin(int winamount, int index)
 {
 	int i = 1, count = 0;
-	for(; i < winamount; i-=ncols)
-		if(board[index-i] == board[index])
+	for(; i < winamount; i++)
+		if(board[index-(i*ncols)] == board[index])
+			count++;
+		else
+			return 0;
+	return count;
+}
+
+int checkUpDiagonalWin(int winamount, int index)
+{
+	int i = 1, count = 0;
+	for(; i < winamount; i++)
+		if(board[index-(i*ncols)+i] == board[index])
 			count++;
 		else
 			return 0;
@@ -84,8 +95,12 @@ int checkWin(int winamount)
 		if(((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount)
 			if(checkHorizontalWin(winamount, index) >= (winamount-1))
 				return board[index];
-		if((index - ((winamount - 1) * ncols)) > 0)
+		if((index - ((winamount - 1) * ncols)) >= 0)
 			if(checkVerticalWin(winamount, index) >= (winamount-1))
+				return board[index];
+		if((((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount) ||
+		   (index - ((winamount - 1) * ncols)) >= 0)
+			if(checkUpDiagonalWin(winamount, index) >= (winamount-1))
 				return board[index];
 	}
 
@@ -94,6 +109,7 @@ int checkWin(int winamount)
 
 void clearScreen()
 {
+	//printf("\n");
 	system("clear");
 }
 
