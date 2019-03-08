@@ -85,6 +85,12 @@ int checkUpDiagonalWin(int winamount, int index)
 	return count;
 }
 
+int checkDownDiagonalWin(int winamount, int index)
+{
+	printf("%d \n", index);
+	return 0;
+}
+
 int checkWin(int winamount)
 {
 	int index = (ncols * nrows) - 1;
@@ -101,6 +107,10 @@ int checkWin(int winamount)
 		if((((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount) ||
 		   (index - ((winamount - 1) * ncols)) >= 0)
 			if(checkUpDiagonalWin(winamount, index) >= (winamount-1))
+				return board[index];
+		if((((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount) ||
+		   (index + ((winamount-1) * ncols)) <= ncols*nrows)
+			if(checkDownDiagonalWin(winamount, index) >= (winamount-1))
 				return board[index];
 	}
 
