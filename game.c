@@ -147,30 +147,55 @@ int player(struct gameinfo *boardinfo)
         return 0;
 }
 
-int getBestMove(struct gameinfo *boardinfo)
+int easyMode(struct gameinfo *boardinfo)
 {
         return rand() % boardinfo->ncols;
 }
 
+int hardMode(struct gameinfo *boardinfo)
+{
+	return rand() % boardinfo->ncols;
+}
+
 int computer(struct gameinfo *boardinfo)
 {
+	char mode[25] = {'\0'};
         int playCounter = 0, playerwin = 0, add = 0;
+	printf("Hardness (easy, hard, impossible): ");
+	scanf("%s", mode);
+
         while(playCounter < (boardinfo->nrows * boardinfo->ncols))
         {
-                //clearScreen();
-                printBoard(boardinfo);
-                do
-                {
-                        printf("Player move > ");
-                        scanf("%d", &add);
-                } while(addPiece(boardinfo, add, 1) == 0);
                 clearScreen();
-                playCounter++;
-                printf("Computer Moving..\n");
-                addPiece(boardinfo, getBestMove(boardinfo), 2);
-                playerwin = checkWin(boardinfo);
-                if(playerwin != 0)
-                        return playerwin;
+		printBoard(boardinfo);
+		do
+		{
+			printf("Column to place peice in: ");
+			scanf("%d", &add);
+		} while(addPiece(boardinfo, add-1, 1) == 0);
+		printf("Computer is moving...\n");
+		clearScreen();
+		printf("Computer moved\n");
+		if (strcmp(mode, "easy") == 0)
+		{
+			addPiece(boardinfo, easyMode(boardinfo), 2);
+			playCounter++;
+		}
+		if (strcmp(mode, "hard") == 0)
+		{
+			addPiece(boardinfo, hardMode(boardinfo), 2);
+			playCounter++;
+		}
+		if (strcmp(mode, "impossible") == 0)
+		{
+			addPiece(boardinfo, hardMode(boardinfo), 2);
+			addPiece(boardinfo, hardMode(boardinfo), 2);
+			playCounter += 2;
+		}
+		printBoard(boardinfo);
+		playerwin = checkWin(boardinfo);
+		if(playerwin != 0)
+			return playerwin;
         }
         return 0;
 }

@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct gameinfo
-{
+struct gameinfo {
 	int nrows;
 	int ncols;
 	int winamount;
@@ -33,7 +32,8 @@ int checkWin(struct gameinfo *);
 
 int player(struct gameinfo *);
 
-int getBestMove(struct gameinfo *);
+int easyMode(struct gameinfo *);
+int hardMode(struct gameinfo *);
 int computer(struct gameinfo *);
 
 #endif

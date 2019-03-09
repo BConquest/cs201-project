@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <ncureses.h>
-
 #include "game.h"
 
 int main(void)
