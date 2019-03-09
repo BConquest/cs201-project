@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-/*
-#define nrows 6
-#define ncols 7
-*/
+
 int nrows = 6;
 int ncols = 7;
 
@@ -30,7 +26,6 @@ void printBoard(int *board)
 
 void clearBoard(int *board)
 {
-	printf("HERE");
 	int index = 0;
 	for(; index < nrows*ncols; index++)
 		board[index] = 0;
@@ -89,7 +84,8 @@ int checkUpDiagonalWin(int* board, int winamount, int index)
 
 int checkDownDiagonalWin(int* board, int winamount, int index)
 {
-	printf("%d \n", index);
+	index += board[0] + winamount - winamount - board[0];
+	printf("\n");
 	return 0;
 }
 
@@ -182,10 +178,73 @@ int computer(int* board, int winamount)
 
 void printMenu()
 {
-	printf("game will let you select either player or computer to play against\n");
-	printf("size will let you set custom sizes\n");
-	printf("quit will exit the game\n");
-	printf("> ");
+	printf("game -> lets you choose to play a game between a person and a computer\n");
+	printf("settings -> lets you changes game settings such as board size, and amount to win\n");
+	printf("clear -> clears the screen\n");
+	printf("help -> displays this help menu, also works in all the other sub menues\n");
+	printf("quit -> quits the game\n");
+}
+
+void settings(int *board, int winamount)
+{
+	char setting[25];
+	int newsetting = 0;
+
+	clearScreen();
+	while(strcmp(setting, "done") != 0)
+	{
+		printf("setting: ");
+		scanf("%s", setting);
+		if(strcmp(setting, "width") == 0)
+		{
+			do
+			{
+				newsetting = ncols;
+				printf("Current Width: %d\nNew Width: ", ncols);
+				scanf("%d", &newsetting);
+			} while(newsetting < 0);
+			ncols = newsetting;
+		}
+		else if(strcmp(setting, "rows") == 0)
+		{
+			do
+			{
+				printf("Current Height: %d\nNew Height: ", nrows);
+				scanf("%d", &newsetting);
+			} while(newsetting < 0);
+			nrows = newsetting;
+		}
+		else if(strcmp(setting, "amount") == 0)
+		{
+			do
+			{
+				printf("Current Amount to win: %d\nNew Amount to win: ", winamount);
+				scanf("%d",  &newsetting);
+			} while(newsetting < 0);
+			winamount = newsetting;
+		}
+		else if(strcmp(setting, "clear") == 0)
+		{
+			clearScreen();
+		}
+		else if(strcmp(setting, "print") == 0)
+		{
+			printBoard(board);
+			printf("width: %d\n", ncols);
+			printf("height: %d\n", nrows);
+		}
+		else if(strcmp(setting, "help") == 0)
+		{
+			printf("Current commands are: \n");
+			printf("width -> sets the new width of the game board\n\thas to be above 0\n");
+			printf("height -> sets the new height of the game board\n\thas to be above 0\n");
+			printf("amount -> changes the amount you need to win\n\thas to be above 0\n");
+			printf("clear -> clears the screen");
+			printf("print -> prints current board size\n");
+			printf("done -> saves settings and returns to main menu\n");
+			printf("help -> prints the message\n");
+		}
+	}
 }
 
 int main(void)
@@ -197,16 +256,17 @@ int main(void)
 
 	clearBoard(board);
 	clearScreen();	
+	printMenu();
 
         while (strcmp(mode, "quit") != 0)
         {
-		printMenu();
+		printf("main menu: ");
 		scanf("%s", mode);
 		if(strcmp(mode, "game") == 0)
 		{
 			printf("Player or Computer > ");
 			scanf("%s", mode);
-			if(strcmp(mode, "player") == 0 || mode[0] == 'p')
+			if(strcmp(mode, "player") == 0)
 			{
 				winner = player(board, winamount);	
 				printBoard(board);
@@ -216,7 +276,7 @@ int main(void)
 				else
 					printf("Player %d WON!!\n", winner);
 			}
-			else if(strcmp(mode, "computer") == 0 || mode[0] == 'c')
+			else if(strcmp(mode, "computer") == 0)
 			{
 				winner = computer(board, winamount);
 				clearBoard(board);
@@ -235,27 +295,17 @@ int main(void)
 				printf("Answer must be Player or Computer\n> ");
 			}
 		}
-		else if (strcmp(mode, "size") == 0)
+		else if (strcmp(mode, "settings") == 0)
 		{
-			printf("width         -> %d\n", ncols);
-			printf("height        -> %d\n", nrows);
-			printf("amount to win -> %d\n", winamount);
-			printf("new height > ");
-			scanf("%d", &winner);
-			nrows = winner;
-			printf("new width > ");
-			scanf("%d", &winner);
-			ncols = winner;
-			printf("new amount to win > ");
-			printf("HERE");
-			scanf("%d", &winner);
-			printf("HERE");
-			winamount = winner;
-			free(board);
-			printf("HERE");
-			board = (int *)(((nrows * ncols) * sizeof(int)));
-			printf("HERE");
-			clearBoard(board);
+			settings(board, winamount);
+		}
+		else if (strcmp(mode, "clear") == 0)
+		{
+			clearScreen();
+		}
+		else if (strcmp(mode, "help") == 0)
+		{
+			printMenu();
 		}
         }
 	
