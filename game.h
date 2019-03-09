@@ -28,7 +28,7 @@ int addPiece(struct gameinfo *, int, int);
 int checkHorizontalWin(struct gameinfo *, int);
 int checkVericalWin(struct gameinfo *, int);
 int checkUpDiagonalWin(struct gameinfo *, int);
-int checkDownDiagonalWin(int);
+int checkDownDiagonalWin(struct gameinfo *, int);
 int checkWin(struct gameinfo *);
 
 int player(struct gameinfo *);

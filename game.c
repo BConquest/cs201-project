@@ -78,9 +78,11 @@ int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
         return count;
 }
 
-int checkDownDiagonalWin(int index)
+int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
 {
-        return 0;
+	int i = 1, count = 0;
+	for(; i < boardinfo->winamount; i++)
+        return count;
 }
 
 int checkWin(struct gameinfo *boardinfo)
@@ -105,7 +107,7 @@ int checkWin(struct gameinfo *boardinfo)
                                 return boardinfo->board[index];
                 if((((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount) ||
                    (index + ((winamount-1) * ncols)) <= ncols*nrows)
-                        if(checkDownDiagonalWin(index) >= (winamount-1))
+                        if(checkDownDiagonalWin(boardinfo, index) >= (winamount-1))
                                 return boardinfo->board[index];
         }
 
@@ -190,21 +192,22 @@ struct gameinfo changeBoardSize(struct gameinfo *boardinfo)
 	newinfo.nrows = boardinfo->nrows;
 	newinfo.winamount = boardinfo->winamount;
 
-	newinfo.board = (int *)((boardinfo->ncols*boardinfo->nrows)*sizeof(int));
 	free(boardinfo->board);
-
+	newinfo.board = malloc((boardinfo->ncols*boardinfo->nrows)*sizeof(int));
+	
 	return newinfo;
 }
 
 void settings(struct gameinfo *boardinfo)
 {
-        char setting[25];
+        char setting[25] = {'\0'};
         int newsetting = 0;
 
         clearScreen();
         while(strcmp(setting, "done") != 0)
         {
-                printf("setting: ");
+                setting[0] = '\0';
+		printf("setting: ");
                 scanf("%s", setting);
                 if(strcmp(setting, "width") == 0)
                 {

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <ncureses.h>
+
 #include "game.h"
 
 int main(void)
@@ -11,7 +13,7 @@ int main(void)
 	boardinfo.ncols = 7;
 	boardinfo.nrows = 6;
 
-	boardinfo.board = (int *) malloc((boardinfo.ncols*boardinfo.nrows) * sizeof(int));
+	boardinfo.board = malloc((boardinfo.ncols*boardinfo.nrows) * sizeof(int));
 	boardinfo.winamount = 4;
 	
 	char mode[25] = {'\0'};
@@ -23,10 +25,12 @@ int main(void)
 
         while (strcmp(mode, "quit") != 0)
         {
+		mode[0] = '\0';
 		printf("main menu: ");
 		scanf("%s", mode);
 		if(strcmp(mode, "game") == 0)
 		{
+			mode[0] = '\0';
 			printf("Player or Computer > ");
 			scanf("%s", mode);
 			if(strcmp(mode, "player") == 0)
@@ -70,8 +74,8 @@ int main(void)
 			printMenu();
 		}
         }
-	
+       	
 	free(boardinfo.board);
 
-        return 0;
+	return 0;
 }
