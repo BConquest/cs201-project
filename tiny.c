@@ -185,6 +185,12 @@ void printMenu()
 	printf("quit -> quits the game\n");
 }
 
+void changeBoardSize(int *board)
+{
+	free(board);
+	board = (int *)((ncols * nrows) * sizeof(int));
+}
+
 void settings(int *board, int winamount)
 {
 	char setting[25];
@@ -213,6 +219,7 @@ void settings(int *board, int winamount)
 				scanf("%d", &newsetting);
 			} while(newsetting < 0);
 			nrows = newsetting;
+			changeBoardSize(board);
 		}
 		else if(strcmp(setting, "amount") == 0)
 		{
@@ -222,6 +229,7 @@ void settings(int *board, int winamount)
 				scanf("%d",  &newsetting);
 			} while(newsetting < 0);
 			winamount = newsetting;
+			changeBoardSize(board);
 		}
 		else if(strcmp(setting, "clear") == 0)
 		{
