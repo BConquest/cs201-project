@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "game.h"
+#include "./include/game.h"
+#include "./include/stack.h"
 
 int main(void)
 {
