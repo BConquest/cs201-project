@@ -45,69 +45,102 @@ int addPiece(struct gameinfo *boardinfo, int j, int colour)
 	return 1;
 }
 
-int dfs(struct gameinfo *boardinfo,int index)
+int dfs(struct gameinfo *boardinfo, int index, int solution)
 {
-	if(boardinfo->board[index] == 0)
-		return 0;
-	
-	printf("HERE");
-	const int SIZE = boardinfo->ncols * boardinfo->nrows;
-	int head, tail;
-	int queue[SIZE];
-	printf("HERE");
-	init(&head, &tail);
+	struct queue *q = malloc(sizeof(struct queue));
+	int visited[boardinfo->nrows*boardinfo->ncols];
+	int depth = 1;
+	int temp;
 
-	int visited[boardinfo->ncols*boardinfo->nrows];
-	
-	enqueue(queue, &tail, index);
-	printf("HERE");
-	while(!full(head, tail))
+	q->stack1 = NULL;
+	q->stack2 = NULL;
+
+	enqueue(q, index);
+
+	while(q->stack1 != NULL || q->stack2 != NULL)
 	{
-		printf("HERE");
-		int subtree_root = dequeue(queue, &head);
-		int neighbors[8] = {0};
-		int temp = index + 1;
-		if(temp < boardinfo->nrows*boardinfo->ncols)
-		{
-			if(boardinfo->board[index] == boardinfo->board[temp])
-				printf("neighbor -> %d", temp);
-			neighbors[0] = temp;
-		}
-		temp = index - 1;
-		if(temp > -1)
-		{
-			if(boardinfo->board[index] == boardinfo->board[temp])
-				printf("neighbor -> %d", --index);
-			neighbors[1] = temp;
-		}
+		temp = dequeue(q);
+		visited[temp] = 1;
+		
+		int test;
 
-		for(int nindex = 0; nindex < 8; nindex++)
-		{
-			if(visited[neighbors[nindex]] != 0)
-				continue;
+		test = temp + 1;
+		if(test < boardinfo->ncols*boardinfo->nrows)
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+				enqueue(q, test);
+		
+		test = temp - 1;
+		if(test > -1)
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+				enqueue(q, test);
+		
+		test = temp + boardinfo->ncols;
+		if(test < boardinfo->ncols*boardinfo->nrows)
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+				enqueue(q, test);
+		
+		test = temp - boardinfo->ncols;
+		if(test > -1)
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+				enqueue(q, test);
+		
+		test = (temp + boardinfo->ncols) + 1;
+		if(test < boardinfo->ncols*boardinfo->nrows)
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+				enqueue(q, test);
+		
+		test = (temp + boardinfo->ncols) - 1;
+		if(test < boardinfo->ncols*boardinfo->nrows)
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+				enqueue(q, test);
+		
+		test = (temp - boardinfo->ncols) + 1;
+		if(test > -1)
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+				enqueue(q, test);
 
-			if(visited[neighbors[nindex]] == 0)
-				enqueue(queue, &tail, neighbors[nindex]);
+		test = (temp - boardinfo->ncols) - 1;
+		if(test > -1)
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+				enqueue(q, test);
+
+		depth += 1;
+		if(depth >= boardinfo->winamount && temp == solution)
+		{
+			free(q);
+			return (boardinfo->winamount + 1);
 		}
+		
 	}
 
+	free(q);
 	return 0;
 }
 
 int checkWin(struct gameinfo *boardinfo)
 {
-	for(int i = 0; i < boardinfo->ncols*boardinfo->nrows; i++)
+	int index = 0;
+	for(; index < boardinfo->ncols*boardinfo->nrows; index++)
 	{
-		if (dfs(boardinfo, i) >= boardinfo->winamount)
-			return boardinfo->board[i];
+		if(boardinfo->board[index] == 0)
+			continue;
+		if (dfs(boardinfo, index, index + (boardinfo->winamount-1)) >= boardinfo->winamount)
+			return boardinfo->board[index];
+		if (dfs(boardinfo, index, index - (boardinfo->winamount-1)) >= boardinfo->winamount)
+			return boardinfo->board[index];
+		if (dfs(boardinfo, index, (index + (boardinfo->winamount-1)*(boardinfo->ncols-1))) >= boardinfo->winamount)
+			return boardinfo->board[index];
+		if (dfs(boardinfo, index, index - (boardinfo->winamount-1)*boardinfo->ncols)
+				         >= boardinfo->winamount)
+			return boardinfo->board[index];
 	}
 	return 0;
 }
 
 void clearScreen()
 {
-	printf("\n");
-        //system("clear");
+	//printf("\n");
+        system("clear");
 }
 
 int player(struct gameinfo *boardinfo)

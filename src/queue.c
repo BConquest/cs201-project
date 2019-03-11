@@ -1,27 +1,43 @@
 #include "../include/queue.h"
 
-void init(int *head, int *tail)
+void print(struct stackNode *master, struct stackNode *notmaster)
 {
-	*head = 0;
-	*tail = 0;
+	while (master != NULL)
+	{
+		printf("%d -> ", master->data);
+		master = master->next;
+	}
+
+	while (notmaster != NULL)
+	{
+		printf("%d -> ", notmaster->data);
+		notmaster = notmaster->next;		
+	}
+	printf("\n");
 }
 
-void enqueue(int *queue, int *tail, int element)
+void enqueue(struct queue *q, int key)
 {
-	queue[(*tail)++] = element;
+	push(&q->stack1, key);
 }
 
-int dequeue(int *queue, int *head)
+int dequeue(struct queue *q)
 {
-	return queue[(*head)++];
-}
+	int x;
+	if(q->stack1 == NULL && q->stack2 == NULL)
+	{
+		printf("QUEUE IS EMPTY\n");
+		return -1;
+	}
 
-int empty(int head, int tail)
-{
-	return tail == head;
-}
-
-int full(int tail, const int size)
-{
-	return tail == size;
+	if(q->stack2 == NULL)
+	{
+		while(q->stack1 != NULL)
+		{
+			x = pop(&q->stack1);
+			push(&q->stack2, x);
+		}
+	}
+	x = pop(&q->stack2);
+	return x;
 }

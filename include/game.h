@@ -24,13 +24,8 @@ void settings(struct gameinfo *);
 
 
 int addPiece(struct gameinfo *, int, int);
-/*
-int checkHorizontalWin(struct gameinfo *, int);
-int checkVericalWin(struct gameinfo *, int);
-int checkUpDiagonalWin(struct gameinfo *, int);
-int checkDownDiagonalWin(struct gameinfo *, int);*/
 
-int dfs(struct gameinfo *boardinfo, int index);
+int dfs(struct gameinfo *boardinfo, int, int);
 int checkWin(struct gameinfo *);
 
 int player(struct gameinfo *);

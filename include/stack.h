@@ -10,13 +10,8 @@ struct stackNode
 	struct stackNode* next;
 };
 
-struct stackNode* newNode(int);
-
-int isEmpty(struct stackNode *);
 int pop(struct stackNode **);
 
 void push(struct stackNode **, int);
-
-int peek(struct stackNode*);
 
 #endif

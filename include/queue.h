@@ -1,12 +1,19 @@
 #ifndef __queue_h__
 #define __queue_h__
 
-void init(int *, int *);
-void enqueue(int *, int *, int);
+#include <stdio.h>
 
-int dequeue(int *, int *);
+#include "./stack.h"
 
-int empty(int, int);
-int full(int,const int);
+struct queue
+{
+	struct stackNode *stack1;
+	struct stackNode *stack2;
+};
+
+void enqueue(struct queue *, int);
+int dequeue(struct queue *);
+
+void print(struct stackNode *, struct stackNode *);
 
 #endif
