@@ -5,22 +5,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "./stack.h"
+#include "./queue.h"
+
 struct gameinfo {
 	int nrows;
 	int ncols;
 	int winamount;
 	int *board;
 };
-/*
-struct playerData {
-	int player1;
-	int player2;
-	int computer1;
-	int computer2;
-	int computer3;
-};
-*/
+
 struct gameinfo changeBoardSize(struct gameinfo *);
 
 void printBoard(struct gameinfo *);

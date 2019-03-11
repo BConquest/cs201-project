@@ -44,124 +44,54 @@ int addPiece(struct gameinfo *boardinfo, int j, int colour)
 
 	return 1;
 }
-/*
-int checkHorizontalWin(struct gameinfo *boardinfo, int index)
-{
-        int i = 1, count = 0;
-        for(; i < boardinfo->winamount; i++)
-                if(boardinfo->board[index+i] == boardinfo->board[index])
-                        count++;
-                else
-                        return 0;
-        return count;
-}
-
-int checkVerticalWin(struct gameinfo *boardinfo, int index)
-{
-        int i = 1, count = 0;
-        for(; i < boardinfo->winamount; i++)
-                if(boardinfo->board[index-(i*boardinfo->ncols)] == boardinfo->board[index])
-                        count++;
-                else
-                        return 0;
-        return count;
-}
-
-int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
-{
-        int i = 1, count = 0;
-        for(; i < boardinfo->winamount; i++)
-                if(boardinfo->board[index-(i*boardinfo->ncols)+i] == boardinfo->board[index])
-                        count++;
-                else
-                        return 0;
-        return count;
-}
-
-int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
-{
-	int i = 1, count = 0;
-	for(; i < boardinfo->winamount; i++)
-        return count;
-}
-
-int checkWin(struct gameinfo *boardinfo)
-{
-        int index = (boardinfo->ncols * boardinfo->nrows) - 1;
-	int ncols = boardinfo->ncols;
-	int nrows = boardinfo->nrows;
-	int winamount = boardinfo->winamount;
-        for(; index >= 0; index--)
-        {
-                if(boardinfo->board[index] == 0)
-                        continue;
-                if(((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount)
-                        if(checkHorizontalWin(boardinfo, index) >= (winamount-1))
-                                return boardinfo->board[index];
-                if((index - ((winamount - 1) * ncols)) >= 0)
-                        if(checkVerticalWin(boardinfo, index) >= (winamount-1))
-                                return boardinfo->board[index];
-                if((((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount) ||
-                   (index - ((winamount - 1) * ncols)) >= 0)
-                        if(checkUpDiagonalWin(boardinfo, index) >= (winamount-1))
-                                return boardinfo->board[index];
-                if((((index+winamount)%ncols) == 0 || ((index+winamount)%ncols) >= winamount) ||
-                   (index + ((winamount-1) * ncols)) <= ncols*nrows)
-                        if(checkDownDiagonalWin(boardinfo, index) >= (winamount-1))
-                                return boardinfo->board[index];
-        }
-
-        return 0;
-}
-*/
 
 int dfs(struct gameinfo *boardinfo,int index)
 {
-	if(boardinfo->board[index] == 0) return 0;
+	if(boardinfo->board[index] == 0)
+		return 0;
+	
+	printf("HERE");
+	const int SIZE = boardinfo->ncols * boardinfo->nrows;
+	int head, tail;
+	int queue[SIZE];
+	printf("HERE");
+	init(&head, &tail);
 
-	int visited[boardinfo->nrows*boardinfo->ncols];
-	struct stackNode* root = NULL;
-	int currLength = 0;
-
-	push(&root, index);
-	visited[index] = 1;	
-	while(!isEmpty(root))
+	int visited[boardinfo->ncols*boardinfo->nrows];
+	
+	enqueue(queue, &tail, index);
+	printf("HERE");
+	while(!full(head, tail))
 	{
-		int newIndex = pop(&root);
-		printf("%d\t", newIndex);
-		int neighbors[8] = {0,0,0,0,0,0,0,0};
-		
-		if(newIndex += 1 < (boardinfo->ncols*boardinfo->nrows))
-			if(boardinfo->board[index] == boardinfo->board[newIndex])
-				neighbors[0] = newIndex + 1;
-		
-		if(newIndex -= 1 >= 0)
-			if(boardinfo->board[index] == boardinfo->board[newIndex])
-				neighbors[1] = newIndex - 1;
-		
-		if((newIndex += boardinfo->ncols) < boardinfo->ncols)
-			if(boardinfo->board[index] == boardinfo->board[newIndex])
-				neighbors[2] = (newIndex += boardinfo->ncols);
-		
-		if((newIndex -= boardinfo->ncols) > -1)
-			if(boardinfo->board[index] == boardinfo->board[newIndex])
-				neighbors[3] = (newIndex += boardinfo->ncols);
-		
-		if((newIndex -= (boardinfo->ncols-1) >= 0))
-			if(boardinfo->board[index] == boardinfo->board[newIndex])
-				neighbors[4] = (newIndex += boardinfo->ncols);
+		printf("HERE");
+		int subtree_root = dequeue(queue, &head);
+		int neighbors[8] = {0};
+		int temp = index + 1;
+		if(temp < boardinfo->nrows*boardinfo->ncols)
+		{
+			if(boardinfo->board[index] == boardinfo->board[temp])
+				printf("neighbor -> %d", temp);
+			neighbors[0] = temp;
+		}
+		temp = index - 1;
+		if(temp > -1)
+		{
+			if(boardinfo->board[index] == boardinfo->board[temp])
+				printf("neighbor -> %d", --index);
+			neighbors[1] = temp;
+		}
 
 		for(int nindex = 0; nindex < 8; nindex++)
-			if(neighbors[nindex] != 0 && visited[neighbors[nindex]] == 0)
-			{
-				push(&root, neighbors[nindex]);
-				visited[neighbors[nindex]] = 1;
-			}
+		{
+			if(visited[neighbors[nindex]] != 0)
+				continue;
+
+			if(visited[neighbors[nindex]] == 0)
+				enqueue(queue, &tail, neighbors[nindex]);
+		}
 	}
-	printf("\n");
-	free(root);
-	printf("%d", currLength);
-	return currLength;
+
+	return 0;
 }
 
 int checkWin(struct gameinfo *boardinfo)
