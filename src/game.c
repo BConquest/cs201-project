@@ -243,7 +243,7 @@ int hardMode(struct gameinfo *boardinfo)
 	{
 		int x = highest[k];
 		int j = k - 1;
-		while (j >= 0 && highest[j] > x)
+		while (j >= 0 && highest[j] < x)
 		{
 			highest[j+1] = highest[j];
 			j = j -1;
@@ -252,10 +252,14 @@ int hardMode(struct gameinfo *boardinfo)
 		k = k + 1;
 	}
 
-	for(int i = 0; i <boardinfo->ncols*boardinfo->nrows; i++)
-		printf("%d ", highest[i]);
-
-	return 1;
+	int temp = highest[0];
+	int l = 0;
+	while(checkAvailable(boardinfo, temp) == 0)
+	{
+		l++;
+		temp = highest[l];
+	}
+	return temp % boardinfo->ncols;
 }
 
 int computer(struct gameinfo *boardinfo)
