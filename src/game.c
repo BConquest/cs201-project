@@ -86,7 +86,6 @@ int dfs(struct gameinfo *boardinfo, int index, int solution)
 
 	while((searchQueue->stack1 != NULL || searchQueue->stack2 != NULL) && depth < boardinfo->winamount + 1)
 	{
-		printf("%d ", max);
 		temp = dequeue(searchQueue);
 		depth = dequeue(depthQueue);
 		visited[temp] = 1;
@@ -141,7 +140,6 @@ int dfs(struct gameinfo *boardinfo, int index, int solution)
 			return (boardinfo->winamount);
 		}
 	}
-	printf("\n");
 	free(depthQueue);
 	free(searchQueue);
 	return max;
@@ -227,22 +225,17 @@ int hardMode(struct gameinfo *boardinfo)
 			continue;
 		if((((index+boardinfo->winamount)%boardinfo->ncols) >= boardinfo->winamount) ||
 		   (((index+boardinfo->winamount)%boardinfo->ncols) == 0))
-			if(dfs(boardinfo, index, index+boardinfo->winamount-1) >= boardinfo->winamount)
-				highest[index] = dfs(boardinfo, index, index+boardinfo->winamount-1);
+			highest[index] = dfs(boardinfo, index, index+boardinfo->winamount-1);
+
 		
 		if(index-(boardinfo->ncols*(boardinfo->winamount - 1)) > -1)
-			if(dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1))) >= boardinfo->winamount)
-				highest[index] = dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1)));
+			highest[index] = dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1)));
 		
 		if(index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)) > -1)
-			if(dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount))))
-		           >= boardinfo->winamount)
-				highest[index] = dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount))));
+			highest[index] = dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount))));
 
 		if(index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)) > -1)
-			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount))))
-			   >= boardinfo->winamount)
-				highest[index] = dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount))));
+			highest[index] = dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount))));
 	}
 	
 	int k = 1;
@@ -262,7 +255,7 @@ int hardMode(struct gameinfo *boardinfo)
 	for(int i = 0; i <boardinfo->ncols*boardinfo->nrows; i++)
 		printf("%d ", highest[i]);
 
-	return easyMode(boardinfo);
+	return 1;
 }
 
 int computer(struct gameinfo *boardinfo)
@@ -272,6 +265,13 @@ int computer(struct gameinfo *boardinfo)
 	printf("Hardness (easy, hard, impossible): ");
 	scanf("%s", mode);
 
+	while(strcmp(mode, "easy") != 0 &&
+	      strcmp(mode, "hard") != 0 &&
+	      strcmp(mode, "impossible") != 0)
+	      {
+		      printf("Not an option\n");
+		      scanf("%s", mode);
+	      }
         while(playCounter < (boardinfo->nrows * boardinfo->ncols))
         {
                 clearScreen();
