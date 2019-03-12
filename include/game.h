@@ -24,6 +24,7 @@ void settings(struct gameinfo *);
 
 
 int addPiece(struct gameinfo *, int, int);
+int checkAvailable(struct gameinfo *, int);
 
 int dfs(struct gameinfo *boardinfo, int, int);
 int checkWin(struct gameinfo *);

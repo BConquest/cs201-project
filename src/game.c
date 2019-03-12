@@ -30,7 +30,8 @@ int addPiece(struct gameinfo *boardinfo, int j, int colour)
 {
 	int index = (boardinfo->nrows-1)*boardinfo->ncols + j;
 
-	if(j > boardinfo->ncols || j < 0)
+	
+	if(j >= boardinfo->ncols || j < 0)
 		return 0;
 
 	for(;index > (boardinfo->ncols-1); index-=boardinfo->ncols)
@@ -45,102 +46,140 @@ int addPiece(struct gameinfo *boardinfo, int j, int colour)
 	return 1;
 }
 
+int checkAvailable(struct gameinfo *boardinfo, int j)
+{
+	int index = (boardinfo->nrows-1)*boardinfo->ncols + j;
+
+	
+	if(j >= boardinfo->ncols || j < 0)
+		return 0;
+
+	for(;index > (boardinfo->ncols-1); index-=boardinfo->ncols)
+		if(boardinfo->board[index] == 0)
+			break;
+
+	if(index < boardinfo->ncols && boardinfo->board[index] != 0)
+		return 0;
+
+	return 1;
+}
+
 int dfs(struct gameinfo *boardinfo, int index, int solution)
 {
-	struct queue *q = malloc(sizeof(struct queue));
+	struct queue *searchQueue = malloc(sizeof(struct queue));
+	struct queue *depthQueue = malloc(sizeof(struct queue));
 	int visited[boardinfo->nrows*boardinfo->ncols];
-	int depth = 1;
-	int temp;
+	int depth = 0;
+	int temp = 0;
+	int max = -1;
 
-	q->stack1 = NULL;
-	q->stack2 = NULL;
+	for(int i = 0; i < boardinfo->nrows*boardinfo->ncols; i++)
+		visited[i] = 0;
 
-	enqueue(q, index);
+	searchQueue->stack1 = NULL;
+	searchQueue->stack2 = NULL;
+	depthQueue->stack1 = NULL;
+	depthQueue->stack2 = NULL;
 
-	while(q->stack1 != NULL || q->stack2 != NULL)
+	enqueue(searchQueue, index);
+	enqueue(depthQueue, depth);
+
+	while((searchQueue->stack1 != NULL || searchQueue->stack2 != NULL) && depth < boardinfo->winamount + 1)
 	{
-		temp = dequeue(q);
+		printf("%d ", max);
+		temp = dequeue(searchQueue);
+		depth = dequeue(depthQueue);
 		visited[temp] = 1;
-		
+		if(depth > max)
+			max = depth;
 		int test;
-
+		
 		test = temp + 1;
 		if(test < boardinfo->ncols*boardinfo->nrows)
+		{
 			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
-				enqueue(q, test);
-		
-		test = temp - 1;
-		if(test > -1)
-			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
-				enqueue(q, test);
-		
-		test = temp + boardinfo->ncols;
-		if(test < boardinfo->ncols*boardinfo->nrows)
-			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
-				enqueue(q, test);
-		
+			{
+				enqueue(depthQueue, depth+1);
+				enqueue(searchQueue, test);
+			}
+		}
+
 		test = temp - boardinfo->ncols;
 		if(test > -1)
-			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
-				enqueue(q, test);
-		
-		test = (temp + boardinfo->ncols) + 1;
-		if(test < boardinfo->ncols*boardinfo->nrows)
-			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
-				enqueue(q, test);
-		
-		test = (temp + boardinfo->ncols) - 1;
-		if(test < boardinfo->ncols*boardinfo->nrows)
-			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
-				enqueue(q, test);
-		
-		test = (temp - boardinfo->ncols) + 1;
-		if(test > -1)
-			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
-				enqueue(q, test);
-
-		test = (temp - boardinfo->ncols) - 1;
-		if(test > -1)
-			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
-				enqueue(q, test);
-
-		depth += 1;
-		if(depth >= boardinfo->winamount && temp == solution)
 		{
-			free(q);
-			return (boardinfo->winamount + 1);
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+			{
+				enqueue(depthQueue, depth+1);
+				enqueue(searchQueue, test);
+			}
+		}
+
+		test = temp - boardinfo->ncols + 1;
+		if(test > -1)
+		{
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+			{
+				enqueue(depthQueue, depth+1);
+				enqueue(searchQueue, test);
+			}
+		}
+
+		test = temp - boardinfo->ncols - 1;
+		if(test > -1)
+		{
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+			{
+				enqueue(depthQueue, depth+1);
+				enqueue(searchQueue, test);
+			}
 		}
 		
+		if(temp == solution)
+		{
+			free(depthQueue);
+			free(searchQueue);
+			return (boardinfo->winamount);
+		}
 	}
-
-	free(q);
-	return 0;
+	printf("\n");
+	free(depthQueue);
+	free(searchQueue);
+	return max;
 }
 
 int checkWin(struct gameinfo *boardinfo)
 {
-	int index = 0;
-	for(; index < boardinfo->ncols*boardinfo->nrows; index++)
+	int index = boardinfo->ncols*boardinfo->nrows - 1;
+	for(; index > -1; index--)
 	{
 		if(boardinfo->board[index] == 0)
 			continue;
-		if (dfs(boardinfo, index, index + (boardinfo->winamount-1)) >= boardinfo->winamount)
-			return boardinfo->board[index];
-		if (dfs(boardinfo, index, index - (boardinfo->winamount-1)) >= boardinfo->winamount)
-			return boardinfo->board[index];
-		if (dfs(boardinfo, index, (index + (boardinfo->winamount-1)*(boardinfo->ncols-1))) >= boardinfo->winamount)
-			return boardinfo->board[index];
-		if (dfs(boardinfo, index, index - (boardinfo->winamount-1)*boardinfo->ncols)
-				         >= boardinfo->winamount)
-			return boardinfo->board[index];
+		if((((index+boardinfo->winamount)%boardinfo->ncols) >= boardinfo->winamount) ||
+		   (((index+boardinfo->winamount)%boardinfo->ncols) == 0))
+			if(dfs(boardinfo, index, index+boardinfo->winamount-1) >= boardinfo->winamount)
+				return boardinfo->board[index];
+		
+		if(index-(boardinfo->ncols*(boardinfo->winamount - 1)) > -1)
+			if(dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1))) >= boardinfo->winamount)
+				return boardinfo->board[index];
+		
+		if(index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)) > -1)
+			if(dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount))))
+		           >= boardinfo->winamount)
+				return boardinfo->board[index];
+
+		if(index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)) > -1)
+			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount))))
+			   >= boardinfo->winamount)
+				return boardinfo->board[index];
 	}
 	return 0;
 }
 
 void clearScreen()
 {
-	//printf("\n");
-        system("clear");
+	printf("\n");
+	//system("clear");
 }
 
 int player(struct gameinfo *boardinfo)
@@ -177,7 +216,53 @@ int easyMode(struct gameinfo *boardinfo)
 
 int hardMode(struct gameinfo *boardinfo)
 {
-	return rand() % boardinfo->ncols;
+	int highest[boardinfo->ncols*boardinfo->nrows - 1];
+	int index = boardinfo->ncols*boardinfo->nrows - 1;
+	for(int i = 0; i <boardinfo->ncols*boardinfo->nrows; i++)
+		highest[i] = 0;
+
+	for(; index > -1; index--)
+	{
+		if(boardinfo->board[index] == 0)
+			continue;
+		if((((index+boardinfo->winamount)%boardinfo->ncols) >= boardinfo->winamount) ||
+		   (((index+boardinfo->winamount)%boardinfo->ncols) == 0))
+			if(dfs(boardinfo, index, index+boardinfo->winamount-1) >= boardinfo->winamount)
+				highest[index] = dfs(boardinfo, index, index+boardinfo->winamount-1);
+		
+		if(index-(boardinfo->ncols*(boardinfo->winamount - 1)) > -1)
+			if(dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1))) >= boardinfo->winamount)
+				highest[index] = dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1)));
+		
+		if(index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)) > -1)
+			if(dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount))))
+		           >= boardinfo->winamount)
+				highest[index] = dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount))));
+
+		if(index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)) > -1)
+			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount))))
+			   >= boardinfo->winamount)
+				highest[index] = dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount))));
+	}
+	
+	int k = 1;
+	while (k < boardinfo->nrows*boardinfo->ncols)
+	{
+		int x = highest[k];
+		int j = k - 1;
+		while (j >= 0 && highest[j] > x)
+		{
+			highest[j+1] = highest[j];
+			j = j -1;
+		}
+		highest[j+1] = x;
+		k = k + 1;
+	}
+
+	for(int i = 0; i <boardinfo->ncols*boardinfo->nrows; i++)
+		printf("%d ", highest[i]);
+
+	return easyMode(boardinfo);
 }
 
 int computer(struct gameinfo *boardinfo)
@@ -298,6 +383,7 @@ void settings(struct gameinfo *boardinfo)
                         printBoard(boardinfo);
                         printf("width: %d\n", boardinfo->ncols);
                         printf("height: %d\n", boardinfo->nrows);
+			printf("amount to win: %d\n", boardinfo->winamount);
                 }
                 else if(strcmp(setting, "help") == 0)
                 {

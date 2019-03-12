@@ -19,6 +19,7 @@ void print(struct stackNode *master, struct stackNode *notmaster)
 void enqueue(struct queue *q, int key)
 {
 	push(&q->stack1, key);
+	//printf("\t%d ->", key);
 }
 
 int dequeue(struct queue *q)

@@ -16,6 +16,7 @@ int main(void)
 	boardinfo.winamount = 4;
 	
 	char mode[25] = {'\0'};
+	char person[25] = {'\0'};
 	int winner = 0;
 
 	clearBoard(&boardinfo);
@@ -27,12 +28,11 @@ int main(void)
 		mode[0] = '\0';
 		printf("main menu: ");
 		scanf("%s", mode);
-		if(strcmp(mode, "game") == 0)
+		while(strcmp(mode, "game") == 0)
 		{
-			mode[0] = '\0';
 			printf("Player or Computer > ");
-			scanf("%s", mode);
-			if(strcmp(mode, "player") == 0)
+			scanf("%s", person);
+			if(strcmp(person, "player") == 0)
 			{
 				winner = player(&boardinfo);	
 				printBoard(&boardinfo);
@@ -42,7 +42,7 @@ int main(void)
 				else
 					printf("Player %d WON!!\n", winner);
 			}
-			else if(strcmp(mode, "computer") == 0)
+			else if(strcmp(person, "computer") == 0)
 			{
 				winner = computer(&boardinfo);
 				clearBoard(&boardinfo);
@@ -55,12 +55,20 @@ int main(void)
 				else
 					printf("Failure\n");
 			}
+			else if (strcmp(person,"clear") == 0)
+			{
+				clearScreen();
+			}
+			else if (strcmp(person, "done") == 0)
+			{
+				mode[0] = '\0';
+			}
 			else
 			{
-				printf("Answer must be Player or Computer\n> ");
+				printf("Answer must be Player or Computer\n");
 			}
 		}
-		else if (strcmp(mode, "settings") == 0)
+		if (strcmp(mode, "settings") == 0)
 		{
 			settings(&boardinfo);
 		}
