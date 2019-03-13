@@ -3,20 +3,39 @@
 void printBoard(struct gameinfo *boardinfo)
 {
 	int index = 0;
+
+	init_pair(1, COLOR_BLACK, COLOR_RED);
+	init_pair(2, COLOR_BLACK, COLOR_YELLOW);
+	init_pair(3, COLOR_BLACK, COLOR_WHITE);
+
 	for(; index < boardinfo->nrows*boardinfo->ncols; index++)
 	{
 		if(index % boardinfo->ncols == 0)
-			printf("\n");
+			printw("\n");
+
 		if(boardinfo->board[index] == 0)
-			printf("_ ");
+		{
+			attron(COLOR_PAIR(3));
+			printw("_ ");
+			attroff(COLOR_PAIR(3));
+		}
 		else if(boardinfo->board[index] == 1)
-			printf("O ");
+		{
+			attron(COLOR_PAIR(1));
+			printw("O ");
+			attroff(COLOR_PAIR(1));
+		}
 		else if(boardinfo->board[index] == 2)
-			printf("X ");
+		{
+			attron(COLOR_PAIR(2));
+			printw("X ");
+			attroff(COLOR_PAIR(2));
+		}
 		else
-			printf("E ");
+			printw("E ");
 	}
-	printf("\n");
+	printw("\n");
+	refresh();
 }
 
 void clearBoard(struct gameinfo *boardinfo)
@@ -176,8 +195,7 @@ int checkWin(struct gameinfo *boardinfo)
 
 void clearScreen()
 {
-	printf("\n");
-	//system("clear");
+	clear();
 }
 
 int player(struct gameinfo *boardinfo)
@@ -189,12 +207,14 @@ int player(struct gameinfo *boardinfo)
                 {
                         clearScreen();
                         printBoard(boardinfo);
-                        printf("player %d move > ", i);
+                        printw("player %d move > ", i);
+			refresh();
                         scanf("%d", &add);
                         while(addPiece(boardinfo, add-1, i) == 0)
                         {
                                 printBoard(boardinfo);
-                                puts("Can't add piece there > ");
+                                printw("Can't add piece there > ");
+				refresh();
                                 scanf("%d", &add);
                                 clearScreen();
                         }
@@ -266,14 +286,16 @@ int computer(struct gameinfo *boardinfo)
 {
 	char mode[25] = {'\0'};
         int playCounter = 0, playerwin = 0, add = 0;
-	printf("Hardness (easy, hard, impossible): ");
+	printw("Hardness (easy, hard, impossible): ");
+	refresh();
 	scanf("%s", mode);
 
 	while(strcmp(mode, "easy") != 0 &&
 	      strcmp(mode, "hard") != 0 &&
 	      strcmp(mode, "impossible") != 0)
 	      {
-		      printf("Not an option\n");
+		      printw("Not an option\n");
+		      refresh();
 		      scanf("%s", mode);
 	      }
         while(playCounter < (boardinfo->nrows * boardinfo->ncols))
@@ -282,28 +304,36 @@ int computer(struct gameinfo *boardinfo)
 		printBoard(boardinfo);
 		do
 		{
-			printf("Column to place peice in: ");
+			printw("Column to place peice in: ");
+			refresh();
 			scanf("%d", &add);
 		} while(addPiece(boardinfo, add-1, 1) == 0);
-		printf("Computer is moving...\n");
-		clearScreen();
-		printf("Computer moved\n");
+		printw("Computer is moving...\n");
+		refresh();
 		if (strcmp(mode, "easy") == 0)
 		{
 			addPiece(boardinfo, easyMode(boardinfo), 2);
 			playCounter++;
+			playerwin = checkWin(boardinfo);
 		}
 		if (strcmp(mode, "hard") == 0)
 		{
 			addPiece(boardinfo, hardMode(boardinfo), 2);
 			playCounter++;
+			playerwin = checkWin(boardinfo);
 		}
 		if (strcmp(mode, "impossible") == 0)
 		{
 			addPiece(boardinfo, hardMode(boardinfo), 2);
-			addPiece(boardinfo, hardMode(boardinfo), 2);
+			addPiece(boardinfo, easyMode(boardinfo), 2);
 			playCounter += 2;
+			playerwin = checkWin(boardinfo);
 		}
+		if(playerwin != 0)
+			return playerwin;
+		clearScreen();
+		printw("Computer moved\n");
+		refresh();
 		printBoard(boardinfo);
 		playerwin = checkWin(boardinfo);
 		if(playerwin != 0)
@@ -314,11 +344,12 @@ int computer(struct gameinfo *boardinfo)
 
 void printMenu()
 {
-        printf("game -> lets you choose to play a game between a person and a computer\n");
-        printf("settings -> lets you changes game settings such as board size, and amount to win\n");
-        printf("clear -> clears the screen\n");
-        printf("help -> displays this help menu, also works in all the other sub menues\n");
-        printf("quit -> quits the game\n");
+        printw("game -> lets you choose to play a game between a person and a computer\n");
+        printw("settings -> lets you changes game settings such as board size, and amount to win\n");
+        printw("clear -> clears the screen\n");
+        printw("help -> displays this help menu, also works in all the other sub menues\n");
+        printw("quit -> quits the game\n");
+	refresh();
 }
 
 struct gameinfo changeBoardSize(struct gameinfo *boardinfo)
@@ -344,15 +375,17 @@ void settings(struct gameinfo *boardinfo)
         while(strcmp(setting, "done") != 0)
         {
                 setting[0] = '\0';
-		printf("setting: ");
+		printw("setting: ");
+		refresh();
                 scanf("%s", setting);
                 if(strcmp(setting, "width") == 0)
                 {
                         do
                         {
                                 newsetting = boardinfo->ncols;
-                                printf("Current Width: %d\nNew Width: ", boardinfo->ncols);
-                                scanf("%d", &newsetting);
+                                printw("Current Width: %d\nNew Width: ", boardinfo->ncols);
+                                refresh();
+				scanf("%d", &newsetting);
                         } while(newsetting < 0);
                         boardinfo->ncols = newsetting;
 			*boardinfo = changeBoardSize(boardinfo);
@@ -362,8 +395,9 @@ void settings(struct gameinfo *boardinfo)
                         do
                         {
                                 newsetting = boardinfo->nrows;
-				printf("Current Height: %d\nNew Height: ", boardinfo->nrows);
-                                scanf("%d", &newsetting);
+				printw("Current Height: %d\nNew Height: ", boardinfo->nrows);
+                                refresh();
+				scanf("%d", &newsetting);
                         } while(newsetting < 0);
                         boardinfo->nrows = newsetting;
                         *boardinfo = changeBoardSize(boardinfo);
@@ -373,8 +407,9 @@ void settings(struct gameinfo *boardinfo)
                         do
                         {
                                 newsetting = boardinfo->winamount;
-				printf("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
-                                scanf("%d",  &newsetting);
+				printw("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
+                                refresh();
+				scanf("%d",  &newsetting);
                         } while(newsetting < 0);
                         boardinfo->winamount = newsetting;
                 }
@@ -385,20 +420,22 @@ void settings(struct gameinfo *boardinfo)
                 else if(strcmp(setting, "print") == 0)
                 {
                         printBoard(boardinfo);
-                        printf("width: %d\n", boardinfo->ncols);
-                        printf("height: %d\n", boardinfo->nrows);
-			printf("amount to win: %d\n", boardinfo->winamount);
-                }
+                        printw("width: %d\n", boardinfo->ncols);
+                        printw("height: %d\n", boardinfo->nrows);
+			printw("amount to win: %d\n", boardinfo->winamount);
+			refresh();
+		}
                 else if(strcmp(setting, "help") == 0)
                 {
-                        printf("Current commands are: \n");
-                        printf("width -> sets the new width of the game board\n\thas to be above 0\n");
-                        printf("height -> sets the new height of the game board\n\thas to be above 0\n");
-                        printf("amount -> changes the amount you need to win\n\thas to be above 0\n");
-                        printf("clear -> clears the screen");
-                        printf("print -> prints current board size\n");
-                        printf("done -> saves settings and returns to main menu\n");
-                        printf("help -> prints the message\n");
-                }
+                        printw("Current commands are: \n");
+                        printw("width -> sets the new width of the game board\n\thas to be above 0\n");
+                        printw("height -> sets the new height of the game board\n\thas to be above 0\n");
+                        printw("amount -> changes the amount you need to win\n\thas to be above 0\n");
+                        printw("clear -> clears the screen");
+                        printw("print -> prints current board size\n");
+                        printw("done -> saves settings and returns to main menu\n");
+                        printw("help -> prints the message\n");
+			refresh();
+	        }
         }
 }

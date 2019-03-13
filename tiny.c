@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ncurses.h>
 
 #include "./include/game.h"
 #include "./include/stack.h"
@@ -20,17 +21,29 @@ int main(void)
 	int winner = 0;
 
 	clearBoard(&boardinfo);
-	clearScreen();	
+	clear();
+	initscr();
+
+	if(has_colors() == FALSE)
+	{	endwin();
+		printf("Your terminal does not support color\n");
+		exit(1);
+	}
+
+	start_color();
+
 	printMenu();
 
         while (strcmp(mode, "quit") != 0)
         {
 		mode[0] = '\0';
-		printf("main menu: ");
+		printw("main menu: ");
+		refresh();
 		scanf("%s", mode);
 		while(strcmp(mode, "game") == 0)
 		{
-			printf("Player or Computer > ");
+			printw("Player or Computer > ");
+			refresh();
 			scanf("%s", person);
 			if(strcmp(person, "player") == 0)
 			{
@@ -38,22 +51,29 @@ int main(void)
 				printBoard(&boardinfo);
 				clearBoard(&boardinfo);
 				if(winner == 0)
-					printf("Ran out of space to win\n");
+				{
+					printw("Ran out of space to win\n");
+					refresh();
+				}
 				else
-					printf("Player %d WON!!\n", winner);
+				{
+					printw("Player %d WON!!\n", winner);
+					refresh();
+				}
 			}
 			else if(strcmp(person, "computer") == 0)
 			{
 				winner = computer(&boardinfo);
 				clearBoard(&boardinfo);
 				if(winner == 0)
-					printf("Ran out of space to win\n");
+					printw("Ran out of space to win\n");
 				else if(winner == 1)
-					printf("You have beat the computer. Congrats\n");
+					printw("You have beat the computer. Congrats\n");
 				else if(winner == 2)
-					printf("The Computer has beaten you.\n");
+					printw("The Computer has beaten you.\n");
 				else
-					printf("Failure\n");
+					printw("Failure\n");
+				refresh();
 			}
 			else if (strcmp(person,"clear") == 0)
 			{
@@ -65,7 +85,8 @@ int main(void)
 			}
 			else
 			{
-				printf("Answer must be Player or Computer\n");
+				printw("Answer must be Player or Computer\n");
+				refresh();
 			}
 		}
 		if (strcmp(mode, "settings") == 0)
@@ -83,6 +104,6 @@ int main(void)
         }
        	
 	free(boardinfo.board);
-
+	endwin();
 	return 0;
 }
