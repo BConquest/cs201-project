@@ -2,10 +2,6 @@
 
 
 # TODO
-- Implement graph based check win
-- Implement computer that isnt random
-- Implemnt scoring
-- add random who is first
-
-## Wishes
-- Implement ncureses
+- check if win state is correct
+- implement scoreboard
+- fix user input
