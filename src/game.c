@@ -200,44 +200,67 @@ void clearScreen()
 
 int player(struct gameinfo *boardinfo)
 {
-        int playCounter = 0, playerwin = 0, add = 0;
-        while(playCounter < (boardinfo->nrows * boardinfo->ncols))
-        {
-		for(int i = 1; i < 3; i++)
-		{
+	int firstplayer = rand() % 2 + 1;
+	int secondplayer = firstplayer == 1 ? 2 : 1;
+	int moveIndex = 0, playCount = 0;
+
+	printw("Player %d will go first.\n");
+	printw("Type the number of the column that you want to play in\n");
+	while(playCount < boardinfo->ncols * boardinfo->nrows)
+	{
 		clearScreen();
 		printBoard(boardinfo);
-		printw("player %d move > ", i);
-		refresh;
-		int tester = scanf("%d", &add);
-		while(tester != 1)
+		printw("Player %d move > ", firstplayer);
+		int test = scanw("%d", &moveIndex);
+		while(test != 1)
 		{
-			printw("Not a valid column\n");
-			printw("column number>\n");
-			refresh();
-			scanf("%d", &add);
+			printw("Not a Number\nPlease enter a number >");
+			test = scanw("%d", &moveIndex);
 		}
-		while(addPiece(boardinfo, add-1, i) == 0)
+		while(checkAvailable(boardinfo, moveIndex - 1) == 0)
 		{
-			printBoard(boardinfo);
-			printw("Can't add piece there > ");
-			tester = scanf("%d", &add);
-			while(tester != 1)
+			printw("That Place is not available to playing");
+			printw("Player %d move >", firstplayer);
+			test = scanw("%d", &moveIndex);
+			while(test != 1)
 			{
-				printw("Not a valid column\n");
-				printw("column number>\n");
-				refresh();
-				scanf("%d", &add);
+				printw("Not a Number\nPlease enter a number >");
+				test = scanw("%d", &moveIndex);
 			}
-			clearScreen();
 		}
-		playCounter++;
-		playerwin = checkWin(boardinfo);
-		if(playerwin != 0)
-			return playerwin;
+		addPiece(boardinfo, moveIndex - 1, firstplayer);
+		int winner = checkWin(boardinfo);
+		if(winner != 0)
+			return winner;
+		
+		playCount += 1;
 
-                }
-        }
+		clearScreen();
+		printBoard(boardinfo);
+		printw("Player %d move > ", secondplayer);
+		test = scanw("%d", &moveIndex);
+		while(test != 1)
+		{
+			printw("Not a number\nEnter a number >");
+			test = scanw("%d", &moveIndex);
+		}
+		while(checkAvailable(boardinfo, moveIndex - 1) == 0)
+		{
+			printw("That place is not available try somewhere else >");
+			printw("\nPlayer %d move > ", secondplayer);
+			test = scanw("%d", &moveIndex);
+			while(test != 1)
+			{
+				printw("Not a number\nPlease eneter a number > ");
+				test = scanw("%d", &moveIndex);
+			}
+		}
+		addPiece(boardinfo, moveIndex - 1, secondplayer);
+		winner = checkWin(boardinfo);
+		if(winner != 0)
+			return winner;
+		playCount += 1;
+	}
         return 0;
 }
 
@@ -302,7 +325,7 @@ int computer(struct gameinfo *boardinfo)
         int playCounter = 0, playerwin = 0, add = 0;
 	printw("Hardness (easy, hard, impossible): ");
 	refresh();
-	scanf("%s", mode);
+	scanw("%s", mode);
 
 	while(strcmp(mode, "easy") != 0 &&
 	      strcmp(mode, "hard") != 0 &&
@@ -310,7 +333,7 @@ int computer(struct gameinfo *boardinfo)
 	      {
 		      printw("Not an option\n");
 		      refresh();
-		      scanf("%s", mode);
+		      scanw("%s", mode);
 	      }
         while(playCounter < (boardinfo->nrows * boardinfo->ncols))
         {
@@ -320,7 +343,7 @@ int computer(struct gameinfo *boardinfo)
 		{
 			printw("Column to place peice in: ");
 			refresh();
-			scanf("%d", &add);
+			scanw("%d", &add);
 		} while(addPiece(boardinfo, add-1, 1) == 0);
 		printw("Computer is moving...\n");
 		refresh();
@@ -392,7 +415,7 @@ void settings(struct gameinfo *boardinfo)
                 setting[0] = '\0';
 		printw("setting: ");
 		refresh();
-                scanf("%s", setting);
+                scanw("%s", setting);
                 if(strcmp(setting, "width") == 0)
                 {
                         do
@@ -400,7 +423,7 @@ void settings(struct gameinfo *boardinfo)
                                 newsetting = boardinfo->ncols;
                                 printw("Current Width: %d\nNew Width: ", boardinfo->ncols);
                                 refresh();
-				scanf("%d", &newsetting);
+				scanw("%d", &newsetting);
                         } while(newsetting < 0);
                         boardinfo->ncols = newsetting;
 			*boardinfo = changeBoardSize(boardinfo);
@@ -412,7 +435,7 @@ void settings(struct gameinfo *boardinfo)
                                 newsetting = boardinfo->nrows;
 				printw("Current Height: %d\nNew Height: ", boardinfo->nrows);
                                 refresh();
-				scanf("%d", &newsetting);
+				scanw("%d", &newsetting);
                         } while(newsetting < 0);
                         boardinfo->nrows = newsetting;
                         *boardinfo = changeBoardSize(boardinfo);
@@ -424,7 +447,7 @@ void settings(struct gameinfo *boardinfo)
                                 newsetting = boardinfo->winamount;
 				printw("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
                                 refresh();
-				scanf("%d",  &newsetting);
+				scanw("%d",  &newsetting);
                         } while(newsetting < 0);
                         boardinfo->winamount = newsetting;
                 }
