@@ -8,6 +8,8 @@
 
 #include "./queue.h"
 
+WINDOW *win;
+
 /* Holds info about the current board */
 struct gameinfo {
 	int nrows;
@@ -41,6 +43,12 @@ int addPiece(struct gameinfo *, int, int);
 
 /* sees if avaible spot to play is good */
 int checkAvailable(struct gameinfo *, int);
+
+int checkHorizontalWin(struct gameinfo *, int);
+int checkVerticalWin(struct gameinfo *, int);
+int checkUpDiagonal(struct gameinfo *, int);
+int checkDownDiagonal(struct gameinfo *, int);
+int validatePath(struct gameinfo *, int);
 
 /* checks to see if their a path between two indexs */
 int bfs(struct gameinfo *boardinfo, int, int);

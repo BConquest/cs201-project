@@ -19,10 +19,18 @@ int main(void)
 	char mode[25] = {'\0'};
 	char person[25] = {'\0'};
 	int winner = 0;
+	
 
+	int height, width;
+	initscr();
+	getmaxyx(stdscr, height, width);
+	
 	clearBoard(&boardinfo);
 	clear();
-	initscr();
+	
+	win = newwin(height, width, 1, 1);
+
+	scrollok(win, TRUE);
 	echo();
 
 	if(has_colors() == FALSE)
@@ -40,14 +48,14 @@ int main(void)
         while (strcmp(mode, "quit") != 0)
         {
 		mode[0] = '\0';
-		printw("main menu: ");
-		refresh();
-		tested = scanw("%s", mode);
+		wprintw(win,"main menu: ");
+		wrefresh(win);
+		tested = wscanw(win, "%s", mode);
 		while(strcmp(mode, "game") == 0 && tested == 1)
 		{
-			printw("Player or Computer > ");
-			refresh();
-			scanw("%s", person);
+			wprintw(win,"Player or Computer > ");
+			wrefresh(win);
+			wscanw(win, "%s", person);
 			if(strcmp(person, "player") == 0)
 			{
 				winner = player(&boardinfo);	
@@ -55,13 +63,13 @@ int main(void)
 				clearBoard(&boardinfo);
 				if(winner == 0)
 				{
-					printw("Ran out of space to win\n");
-					refresh();
+					wprintw(win,"Ran out of space to win\n");
+					wrefresh(win);
 				}
 				else
 				{
-					printw("Player %d WON!!\n", winner);
-					refresh();
+					wprintw(win,"Player %d WON!!\n", winner);
+					wrefresh(win);
 				}
 			}
 			else if(strcmp(person, "computer") == 0)
@@ -70,14 +78,14 @@ int main(void)
 				printBoard(&boardinfo);
 				clearBoard(&boardinfo);
 				if(winner == 0)
-					printw("Ran out of space to win\n");
+					wprintw(win,"Ran out of space to win\n");
 				else if(winner == 1)
-					printw("You have beat the computer. Congrats\n");
+					wprintw(win,"You have beat the computer. Congrats\n");
 				else if(winner == 2)
-					printw("The Computer has beaten you.\n");
+					wprintw(win,"The Computer has beaten you.\n");
 				else
-					printw("Failure\n");
-				refresh();
+					wprintw(win,"Failure\n");
+				wrefresh(win);
 			}
 			else if (strcmp(person,"clear") == 0)
 			{
@@ -89,8 +97,8 @@ int main(void)
 			}
 			else
 			{
-				printw("Answer must be Player or Computer\n");
-				refresh();
+				wprintw(win,"Answer must be Player or Computer\n");
+				wrefresh(win);
 			}
 		}
 		if (strcmp(mode, "settings") == 0)

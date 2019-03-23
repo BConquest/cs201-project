@@ -1,9 +1,11 @@
 #include "../include/game.h"
+#include "../include/config.h"
 
 void printBoard(struct gameinfo *boardinfo)
 {
 	int index = 0;
-
+	
+	/* Colors are inverted so that they are more visible */
 	init_pair(1, COLOR_BLACK, COLOR_RED);
 	init_pair(2, COLOR_BLACK, COLOR_YELLOW);
 	init_pair(3, COLOR_BLACK, COLOR_WHITE);
@@ -11,31 +13,31 @@ void printBoard(struct gameinfo *boardinfo)
 	for(; index < boardinfo->nrows*boardinfo->ncols; index++)
 	{
 		if(index % boardinfo->ncols == 0)
-			printw("\n");
+			wprintw(win,"\n");
 
 		if(boardinfo->board[index] == 0)
 		{
-			attron(COLOR_PAIR(3));
-			printw("_ ");
-			attroff(COLOR_PAIR(3));
+			wattron(win, COLOR_PAIR(3));
+			wprintw(win,"_ ");
+			wattroff(win, COLOR_PAIR(3));
 		}
 		else if(boardinfo->board[index] == 1)
 		{
-			attron(COLOR_PAIR(1));
-			printw("O ");
-			attroff(COLOR_PAIR(1));
+			wattron(win, COLOR_PAIR(1));
+			wprintw(win,"O ");
+			wattroff(win, COLOR_PAIR(1));
 		}
 		else if(boardinfo->board[index] == 2)
 		{
-			attron(COLOR_PAIR(2));
-			printw("X ");
-			attroff(COLOR_PAIR(2));
+			wattron(win, COLOR_PAIR(2));
+			wprintw(win,"X ");
+			wattroff(win, COLOR_PAIR(2));
 		}
 		else
-			printw("E ");
+			wprintw(win,"E ");
 	}
-	printw("\n");
-	refresh();
+	wprintw(win,"\n");
+	wrefresh(win);
 }
 
 void clearBoard(struct gameinfo *boardinfo)
@@ -47,16 +49,19 @@ void clearBoard(struct gameinfo *boardinfo)
 
 int addPiece(struct gameinfo *boardinfo, int j, int colour)
 {
-	int index = (boardinfo->nrows-1)*boardinfo->ncols + j;
-
-	
+	/* Checks to see if that is a valid place to place */	
 	if(j >= boardinfo->ncols || j < 0)
 		return 0;
+	
+	/* Calculates the current index bassed on a column number */
+	int index = (boardinfo->nrows-1)*boardinfo->ncols + j;
 
+	/* Loops through the column to finding a free space */
 	for(;index > (boardinfo->ncols-1); index-=boardinfo->ncols)
 		if(boardinfo->board[index] == 0)
 			break;
 
+	/* if last space is filled returns error else places peice */
 	if(index < boardinfo->ncols && boardinfo->board[index] != 0)
 		return 0;
 	else
@@ -67,11 +72,11 @@ int addPiece(struct gameinfo *boardinfo, int j, int colour)
 
 int checkAvailable(struct gameinfo *boardinfo, int j)
 {
-	int index = (boardinfo->nrows-1)*boardinfo->ncols + j;
-
-	
+	/* Does the same thing as add Piece without adding the peice */
 	if(j >= boardinfo->ncols || j < 0)
 		return 0;
+
+	int index = (boardinfo->nrows-1)*boardinfo->ncols + j;
 
 	for(;index > (boardinfo->ncols-1); index-=boardinfo->ncols)
 		if(boardinfo->board[index] == 0)
@@ -85,6 +90,7 @@ int checkAvailable(struct gameinfo *boardinfo, int j)
 
 int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 {
+	/* Checks the horizontal winning */
         int i = 1, count = 0;
         for(; i < boardinfo->winamount; i++)
                 if(boardinfo->board[index+i] == boardinfo->board[index])
@@ -96,7 +102,8 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 
 int checkVerticalWin(struct gameinfo *boardinfo, int index)
 {
-        int i = 1, count = 0;
+        /* Checks Vertical winning */
+	int i = 1, count = 0;
         for(; i < boardinfo->winamount; i++)
                 if(boardinfo->board[index-(i*boardinfo->ncols)] == boardinfo->board[index])
                         count++;
@@ -107,7 +114,8 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
 
 int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
 {
-        int i = 1, count = 0;
+        /* Checks Up diagonal winning */
+	int i = 1, count = 0;
         for(; i < boardinfo->winamount; i++)
                 if(boardinfo->board[index-(i*boardinfo->ncols)+i] == boardinfo->board[index])
                         count++;
@@ -118,11 +126,12 @@ int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
 
 int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
 {
+	/* Checks Down Diagonal winning */
 	int i = 1, count = 0;
 	printf("%d -> ", index);
 	for(; i < boardinfo->winamount; i++)
 	{
-		printw("%d -> ", index+(i*boardinfo->ncols)+i);
+		wprintw(win,"%d -> ", index+(i*boardinfo->ncols)+i);
 		if(boardinfo->board[index+(i*boardinfo->ncols)+i] == boardinfo->board[index])
 			count++;
 		else
@@ -134,12 +143,17 @@ int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
 
 int validatePath(struct gameinfo *boardinfo, int index)
 {
+	/* Makes sure that the path found from bfs is valid */
 	int ncols = boardinfo->ncols;
 	int nrows = boardinfo->nrows;
 	int winamount = boardinfo->winamount;
         
         if(boardinfo->board[index] == 0)
         	return 0;
+
+	/* Only check 4 directions because checking 8 would be arbitray since
+	 * it would be checking the same peices going forward and backwards
+	 * if it wasnt a win */
         if(checkHorizontalWin(boardinfo, index) >= (winamount-1))
                 return boardinfo->board[index];
         if(checkVerticalWin(boardinfo, index) >= (winamount-1))
@@ -255,7 +269,7 @@ int checkWin(struct gameinfo *boardinfo)
 				if(validatePath(boardinfo, index) != 0)
 					return boardinfo->board[index];
 
-		if(index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)) > -1)	
+		if(index+(boardinfo->winamount-1*boardinfo->ncols)+boardinfo->winamount-1 < boardinfo->nrows*boardinfo->ncols); 
 			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)))) >= boardinfo->winamount)
 				if(validatePath(boardinfo, index) != 0)
 					return boardinfo->board[index];
@@ -265,8 +279,8 @@ int checkWin(struct gameinfo *boardinfo)
 
 void clearScreen()
 {
-	printw("\n");
-	clear();
+	wprintw(win,"\n");
+	wclear(win);
 }
 
 int player(struct gameinfo *boardinfo)
@@ -275,29 +289,28 @@ int player(struct gameinfo *boardinfo)
 	int secondplayer = firstplayer == 1 ? 2 : 1;
 	int moveIndex = 0, playCount = 0;
 
-	printw("Player %d will go first.\n");
-	printw("Type the number of the column that you want to play in\n");
+	wprintw(win,"Player %d will go first.\n", firstplayer);
+	wprintw(win,"Type the number of the column that you want to play in\n");
 	while(playCount < boardinfo->ncols * boardinfo->nrows)
 	{
-		scanw("%d", &moveIndex);
 		clearScreen();
 		printBoard(boardinfo);
-		printw("Player %d move > ", firstplayer);
-		int test = scanw("%d", &moveIndex);
+		wprintw(win,"Player %d move > ", firstplayer);
+		int test = wscanw(win, "%d", &moveIndex);
 		while(test != 1)
 		{
-			printw("Not a Number\nPlease enter a number >");
-			test = scanw("%d", &moveIndex);
+			wprintw(win,"Not a Number\nPlease enter a number >");
+			test = wscanw(win, "%d", &moveIndex);
 		}
 		while(checkAvailable(boardinfo, moveIndex - 1) == 0)
 		{
-			printw("That Place is not available to playing");
-			printw("\nPlayer %d move >", firstplayer);
-			test = scanw("%d", &moveIndex);
+			wprintw(win,"That Place is not available to playing");
+			wprintw(win,"\nPlayer %d move >", firstplayer);
+			test = wscanw(win, "%d", &moveIndex);
 			while(test != 1)
 			{
-				printw("Not a Number\nPlease enter a number >");
-				test = scanw("%d", &moveIndex);
+				wprintw(win,"Not a Number\nPlease enter a number >");
+				test = wscanw(win, "%d", &moveIndex);
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, firstplayer);
@@ -309,22 +322,22 @@ int player(struct gameinfo *boardinfo)
 
 		clearScreen();
 		printBoard(boardinfo);
-		printw("Player %d move > ", secondplayer);
-		test = scanw("%d", &moveIndex);
+		wprintw(win,"Player %d move > ", secondplayer);
+		test = wscanw(win, "%d", &moveIndex);
 		while(test != 1)
 		{
-			printw("Not a number\nEnter a number >");
-			test = scanw("%d", &moveIndex);
+			wprintw(win,"Not a number\nEnter a number >");
+			test = wscanw(win, "%d", &moveIndex);
 		}
 		while(checkAvailable(boardinfo, moveIndex - 1) == 0)
 		{
-			printw("That place is not available try somewhere else >");
-			printw("\nPlayer %d move > ", secondplayer);
-			test = scanw("%d", &moveIndex);
+			wprintw(win,"That place is not available try somewhere else >");
+			wprintw(win,"\nPlayer %d move > ", secondplayer);
+			test = wscanw(win, "%d", &moveIndex);
 			while(test != 1)
 			{
-				printw("Not a number\nPlease eneter a number > ");
-				test = scanw("%d", &moveIndex);
+				wprintw(win,"Not a number\nPlease eneter a number > ");
+				test = wscanw(win, "%d", &moveIndex);
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, secondplayer);
@@ -395,17 +408,17 @@ int computer(struct gameinfo *boardinfo)
 {
 	char mode[25] = {'\0'};
         int playCounter = 0, playerwin = 0, add = 0;
-	printw("Hardness (easy, hard, impossible): ");
-	refresh();
-	scanw("%s", mode);
+	wprintw(win,"Hardness (easy, hard, impossible): ");
+	wrefresh(win);
+	wscanw(win, "%s", mode);
 
 	while(strcmp(mode, "easy") != 0 &&
 	      strcmp(mode, "hard") != 0 &&
 	      strcmp(mode, "impossible") != 0)
 	{
-		      printw("Not an option\n");
-		      refresh();
-		      scanw("%s", mode);
+		      wprintw(win,"Not an option\n");
+		      wrefresh(win);
+		      wscanw(win, "%s", mode);
 	}
         
 	while(playCounter < (boardinfo->nrows * boardinfo->ncols))
@@ -414,12 +427,12 @@ int computer(struct gameinfo *boardinfo)
 		printBoard(boardinfo);
 		do
 		{
-			printw("Column to place peice in: ");
-			refresh();
-			scanw("%d", &add);
+			wprintw(win,"Column to place peice in: ");
+			wrefresh(win);
+			wscanw(win, "%d", &add);
 		} while(addPiece(boardinfo, add-1, 1) == 0);
-		printw("Computer is moving...\n");
-		refresh();
+		wprintw(win,"Computer is moving...\n");
+		wrefresh(win);
 		if (strcmp(mode, "easy") == 0)
 		{
 			addPiece(boardinfo, easyMode(boardinfo), 2);
@@ -442,8 +455,8 @@ int computer(struct gameinfo *boardinfo)
 		if(playerwin != 0)
 			return playerwin;
 		clearScreen();
-		printw("Computer moved\n");
-		refresh();
+		wprintw(win,"Computer moved\n");
+		wrefresh(win);
 		printBoard(boardinfo);
 		playerwin = checkWin(boardinfo);
 		printBoard(boardinfo);
@@ -455,12 +468,12 @@ int computer(struct gameinfo *boardinfo)
 
 void printMenu()
 {
-        printw("game -> lets you choose to play a game between a person and a computer\n");
-        printw("settings -> lets you changes game settings such as board size, and amount to win\n");
-        printw("clear -> clears the screen\n");
-        printw("help -> displays this help menu, also works in all the other sub menues\n");
-        printw("quit -> quits the game\n");
-	refresh();
+        wprintw(win,"game -> lets you choose to play a game between a person and a computer\n");
+        wprintw(win,"settings -> lets you changes game settings such as board size, and amount to win\n");
+        wprintw(win,"clear -> clears the screen\n");
+        wprintw(win,"help -> displays this help menu, also works in all the other sub menues\n");
+        wprintw(win,"quit -> quits the game\n");
+	wrefresh(win);
 }
 
 struct gameinfo changeBoardSize(struct gameinfo *boardinfo)
@@ -486,17 +499,17 @@ void settings(struct gameinfo *boardinfo)
         while(strcmp(setting, "done") != 0)
         {
                 setting[0] = '\0';
-		printw("setting: ");
-		refresh();
-                scanw("%s", setting);
+		wprintw(win,"setting: ");
+		wrefresh(win);
+                wscanw(win, "%s", setting);
                 if(strcmp(setting, "width") == 0)
                 {
                         do
                         {
                                 newsetting = boardinfo->ncols;
-                                printw("Current Width: %d\nNew Width: ", boardinfo->ncols);
-                                refresh();
-				scanw("%d", &newsetting);
+                                wprintw(win,"Current Width: %d\nNew Width: ", boardinfo->ncols);
+                                wrefresh(win);
+				wscanw(win, "%d", &newsetting);
                         } while(newsetting < 0);
                         boardinfo->ncols = newsetting;
 			*boardinfo = changeBoardSize(boardinfo);
@@ -506,9 +519,9 @@ void settings(struct gameinfo *boardinfo)
                         do
                         {
                                 newsetting = boardinfo->nrows;
-				printw("Current Height: %d\nNew Height: ", boardinfo->nrows);
-                                refresh();
-				scanw("%d", &newsetting);
+				wprintw(win,"Current Height: %d\nNew Height: ", boardinfo->nrows);
+                                wrefresh(win);
+				wscanw(win, "%d", &newsetting);
                         } while(newsetting < 0);
                         boardinfo->nrows = newsetting;
                         *boardinfo = changeBoardSize(boardinfo);
@@ -518,9 +531,9 @@ void settings(struct gameinfo *boardinfo)
                         do
                         {
                                 newsetting = boardinfo->winamount;
-				printw("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
-                                refresh();
-				scanw("%d",  &newsetting);
+				wprintw(win,"Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
+                                wrefresh(win);
+				wscanw(win, "%d",  &newsetting);
                         } while(newsetting < 0);
                         boardinfo->winamount = newsetting;
                 }
@@ -531,22 +544,22 @@ void settings(struct gameinfo *boardinfo)
                 else if(strcmp(setting, "print") == 0)
                 {
                         printBoard(boardinfo);
-                        printw("width: %d\n", boardinfo->ncols);
-                        printw("height: %d\n", boardinfo->nrows);
-			printw("amount to win: %d\n", boardinfo->winamount);
-			refresh();
+                        wprintw(win,"width: %d\n", boardinfo->ncols);
+                        wprintw(win,"height: %d\n", boardinfo->nrows);
+			wprintw(win,"amount to win: %d\n", boardinfo->winamount);
+			wrefresh(win);
 		}
                 else if(strcmp(setting, "help") == 0)
                 {
-                        printw("Current commands are: \n");
-                        printw("width -> sets the new width of the game board\n\thas to be above 0\n");
-                        printw("height -> sets the new height of the game board\n\thas to be above 0\n");
-                        printw("amount -> changes the amount you need to win\n\thas to be above 0\n");
-                        printw("clear -> clears the screen");
-                        printw("print -> prints current board size\n");
-                        printw("done -> saves settings and returns to main menu\n");
-                        printw("help -> prints the message\n");
-			refresh();
+                        wprintw(win,"Current commands are: \n");
+                        wprintw(win,"width -> sets the new width of the game board\n\thas to be above 0\n");
+                        wprintw(win,"height -> sets the new height of the game board\n\thas to be above 0\n");
+                        wprintw(win,"amount -> changes the amount you need to win\n\thas to be above 0\n");
+                        wprintw(win,"clear -> clears the screen");
+                        wprintw(win,"print -> prints current board size\n");
+                        wprintw(win,"done -> saves settings and returns to main menu\n");
+                        wprintw(win,"help -> prints the message\n");
+			wrefresh(win);
 	        }
         }
 }
