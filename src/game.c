@@ -83,6 +83,75 @@ int checkAvailable(struct gameinfo *boardinfo, int j)
 	return 1;
 }
 
+int checkHorizontalWin(struct gameinfo *boardinfo, int index)
+{
+        int i = 1, count = 0;
+        for(; i < boardinfo->winamount; i++)
+                if(boardinfo->board[index+i] == boardinfo->board[index])
+                        count++;
+                else
+                        return 0;
+        return count;
+}
+
+int checkVerticalWin(struct gameinfo *boardinfo, int index)
+{
+        int i = 1, count = 0;
+        for(; i < boardinfo->winamount; i++)
+                if(boardinfo->board[index-(i*boardinfo->ncols)] == boardinfo->board[index])
+                        count++;
+                else
+                        return 0;
+        return count;
+}
+
+int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
+{
+        int i = 1, count = 0;
+        for(; i < boardinfo->winamount; i++)
+                if(boardinfo->board[index-(i*boardinfo->ncols)+i] == boardinfo->board[index])
+                        count++;
+                else
+                        return 0;
+        return count;
+}
+
+int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
+{
+	int i = 1, count = 0;
+	printf("%d -> ", index);
+	for(; i < boardinfo->winamount; i++)
+	{
+		printw("%d -> ", index+(i*boardinfo->ncols)+i);
+		if(boardinfo->board[index+(i*boardinfo->ncols)+i] == boardinfo->board[index])
+			count++;
+		else
+			return 0;
+	}
+	printf("\n");
+        return count;
+}
+
+int validatePath(struct gameinfo *boardinfo, int index)
+{
+	int ncols = boardinfo->ncols;
+	int nrows = boardinfo->nrows;
+	int winamount = boardinfo->winamount;
+        
+        if(boardinfo->board[index] == 0)
+        	return 0;
+        if(checkHorizontalWin(boardinfo, index) >= (winamount-1))
+                return boardinfo->board[index];
+        if(checkVerticalWin(boardinfo, index) >= (winamount-1))
+                return boardinfo->board[index];
+        if(checkUpDiagonalWin(boardinfo, index) >= (winamount-1))
+                return boardinfo->board[index];
+        if(checkDownDiagonalWin(boardinfo, index) >= (winamount-1))
+                return boardinfo->board[index];
+        
+	return 0;
+}
+
 int dfs(struct gameinfo *boardinfo, int index, int solution)
 {
 	struct queue *searchQueue = malloc(sizeof(struct queue));
@@ -171,30 +240,32 @@ int checkWin(struct gameinfo *boardinfo)
 	{
 		if(boardinfo->board[index] == 0)
 			continue;
-		if((((index+boardinfo->winamount)%boardinfo->ncols) >= boardinfo->winamount) ||
-		   (((index+boardinfo->winamount)%boardinfo->ncols) == 0))
+		if((((index+boardinfo->winamount)%boardinfo->ncols) >= boardinfo->winamount) || (((index+boardinfo->winamount)%boardinfo->ncols) == 0))
 			if(dfs(boardinfo, index, index+boardinfo->winamount-1) >= boardinfo->winamount)
-				return boardinfo->board[index];
+				if(validatePath(boardinfo, index) != 0)
+					return boardinfo->board[index];
 		
 		if(index-(boardinfo->ncols*(boardinfo->winamount - 1)) > -1)
 			if(dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1))) >= boardinfo->winamount)
-				return boardinfo->board[index];
+				if(validatePath(boardinfo, index) != 0)
+					return boardinfo->board[index];
 		
 		if(index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)) > -1)
-			if(dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount))))
-		           >= boardinfo->winamount)
-				return boardinfo->board[index];
+			if(dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)))) >= boardinfo->winamount)
+				if(validatePath(boardinfo, index) != 0)
+					return boardinfo->board[index];
 
-		if(index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)) > -1)
-			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount))))
-			   >= boardinfo->winamount)
-				return boardinfo->board[index];
+		if(index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)) > -1)	
+			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)))) >= boardinfo->winamount)
+				if(validatePath(boardinfo, index) != 0)
+					return boardinfo->board[index];
 	}
 	return 0;
 }
 
 void clearScreen()
 {
+	printw("\n");
 	clear();
 }
 
@@ -208,6 +279,7 @@ int player(struct gameinfo *boardinfo)
 	printw("Type the number of the column that you want to play in\n");
 	while(playCount < boardinfo->ncols * boardinfo->nrows)
 	{
+		scanw("%d", &moveIndex);
 		clearScreen();
 		printBoard(boardinfo);
 		printw("Player %d move > ", firstplayer);
@@ -220,7 +292,7 @@ int player(struct gameinfo *boardinfo)
 		while(checkAvailable(boardinfo, moveIndex - 1) == 0)
 		{
 			printw("That Place is not available to playing");
-			printw("Player %d move >", firstplayer);
+			printw("\nPlayer %d move >", firstplayer);
 			test = scanw("%d", &moveIndex);
 			while(test != 1)
 			{
@@ -330,12 +402,13 @@ int computer(struct gameinfo *boardinfo)
 	while(strcmp(mode, "easy") != 0 &&
 	      strcmp(mode, "hard") != 0 &&
 	      strcmp(mode, "impossible") != 0)
-	      {
+	{
 		      printw("Not an option\n");
 		      refresh();
 		      scanw("%s", mode);
-	      }
-        while(playCounter < (boardinfo->nrows * boardinfo->ncols))
+	}
+        
+	while(playCounter < (boardinfo->nrows * boardinfo->ncols))
         {
                 clearScreen();
 		printBoard(boardinfo);
