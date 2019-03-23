@@ -23,6 +23,7 @@ int main(void)
 	clearBoard(&boardinfo);
 	clear();
 	initscr();
+	echo();
 
 	if(has_colors() == FALSE)
 	{	endwin();
@@ -31,20 +32,22 @@ int main(void)
 	}
 
 	start_color();
-
+	
 	printMenu();
+	
+	int tested;
 
         while (strcmp(mode, "quit") != 0)
         {
 		mode[0] = '\0';
 		printw("main menu: ");
 		refresh();
-		scanf("%s", mode);
-		while(strcmp(mode, "game") == 0)
+		tested = scanw("%s", mode);
+		while(strcmp(mode, "game") == 0 && tested == 1)
 		{
 			printw("Player or Computer > ");
 			refresh();
-			scanf("%s", person);
+			scanw("%s", person);
 			if(strcmp(person, "player") == 0)
 			{
 				winner = player(&boardinfo);	
@@ -64,6 +67,7 @@ int main(void)
 			else if(strcmp(person, "computer") == 0)
 			{
 				winner = computer(&boardinfo);
+				printBoard(&boardinfo);
 				clearBoard(&boardinfo);
 				if(winner == 0)
 					printw("Ran out of space to win\n");

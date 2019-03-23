@@ -203,25 +203,39 @@ int player(struct gameinfo *boardinfo)
         int playCounter = 0, playerwin = 0, add = 0;
         while(playCounter < (boardinfo->nrows * boardinfo->ncols))
         {
-                for(int i = 1; i < 3; i++)
-                {
-                        clearScreen();
-                        printBoard(boardinfo);
-                        printw("player %d move > ", i);
+		for(int i = 1; i < 3; i++)
+		{
+		clearScreen();
+		printBoard(boardinfo);
+		printw("player %d move > ", i);
+		refresh;
+		int tester = scanf("%d", &add);
+		while(tester != 1)
+		{
+			printw("Not a valid column\n");
+			printw("column number>\n");
 			refresh();
-                        scanf("%d", &add);
-                        while(addPiece(boardinfo, add-1, i) == 0)
-                        {
-                                printBoard(boardinfo);
-                                printw("Can't add piece there > ");
+			scanf("%d", &add);
+		}
+		while(addPiece(boardinfo, add-1, i) == 0)
+		{
+			printBoard(boardinfo);
+			printw("Can't add piece there > ");
+			tester = scanf("%d", &add);
+			while(tester != 1)
+			{
+				printw("Not a valid column\n");
+				printw("column number>\n");
 				refresh();
-                                scanf("%d", &add);
-                                clearScreen();
-                        }
-                        playCounter++;
-                        playerwin = checkWin(boardinfo);
-                        if(playerwin != 0)
-                                return playerwin;
+				scanf("%d", &add);
+			}
+			clearScreen();
+		}
+		playCounter++;
+		playerwin = checkWin(boardinfo);
+		if(playerwin != 0)
+			return playerwin;
+
                 }
         }
         return 0;
@@ -336,6 +350,7 @@ int computer(struct gameinfo *boardinfo)
 		refresh();
 		printBoard(boardinfo);
 		playerwin = checkWin(boardinfo);
+		printBoard(boardinfo);
 		if(playerwin != 0)
 			return playerwin;
         }
