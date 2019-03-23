@@ -93,7 +93,8 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 	/* Checks the horizontal winning */
         int i = 1, count = 0;
         for(; i < boardinfo->winamount; i++)
-                if(boardinfo->board[index+i] == boardinfo->board[index])
+                if(boardinfo->board[index+i] == boardinfo->board[index] &&
+		   (index+i < boardinfo->nrows*boardinfo->ncols))
                         count++;
                 else
                         return 0;
@@ -105,7 +106,8 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
         /* Checks Vertical winning */
 	int i = 1, count = 0;
         for(; i < boardinfo->winamount; i++)
-                if(boardinfo->board[index-(i*boardinfo->ncols)] == boardinfo->board[index])
+                if(boardinfo->board[index-(i*boardinfo->ncols)] == boardinfo->board[index] &&
+		   (index-(i*boardinfo->ncols) > -1))
                         count++;
                 else
                         return 0;
@@ -117,7 +119,8 @@ int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
         /* Checks Up diagonal winning */
 	int i = 1, count = 0;
         for(; i < boardinfo->winamount; i++)
-                if(boardinfo->board[index-(i*boardinfo->ncols)+i] == boardinfo->board[index])
+                if(boardinfo->board[index-(i*boardinfo->ncols)+i]==boardinfo->board[index] &&
+		   index-(i*boardinfo->ncols)+i > -1)
                         count++;
                 else
                         return 0;
@@ -128,40 +131,35 @@ int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
 {
 	/* Checks Down Diagonal winning */
 	int i = 1, count = 0;
-	printf("%d -> ", index);
 	for(; i < boardinfo->winamount; i++)
-	{
-		wprintw(win,"%d -> ", index+(i*boardinfo->ncols)+i);
-		if(boardinfo->board[index+(i*boardinfo->ncols)+i] == boardinfo->board[index])
+		if(boardinfo->board[index+(i*boardinfo->ncols)+i]==boardinfo->board[index] &&
+	           index+(i*boardinfo->ncols)+i < boardinfo->nrows*boardinfo->ncols)
 			count++;
 		else
 			return 0;
-	}
-	printf("\n");
         return count;
 }
 
-int validatePath(struct gameinfo *boardinfo, int index)
+int validatePath(struct gameinfo *boardinfo)
 {
-	/* Makes sure that the path found from bfs is valid */
-	int ncols = boardinfo->ncols;
-	int nrows = boardinfo->nrows;
-	int winamount = boardinfo->winamount;
-        
-        if(boardinfo->board[index] == 0)
-        	return 0;
+       	int winamount = boardinfo->winamount; 
+        for(int index = boardinfo->ncols*boardinfo->nrows-1; index > -1; index--)
+	{
+		if(boardinfo->board[index] == 0)
+        		continue;
 
-	/* Only check 4 directions because checking 8 would be arbitray since
-	 * it would be checking the same peices going forward and backwards
-	 * if it wasnt a win */
-        if(checkHorizontalWin(boardinfo, index) >= (winamount-1))
-                return boardinfo->board[index];
-        if(checkVerticalWin(boardinfo, index) >= (winamount-1))
-                return boardinfo->board[index];
-        if(checkUpDiagonalWin(boardinfo, index) >= (winamount-1))
-                return boardinfo->board[index];
-        if(checkDownDiagonalWin(boardinfo, index) >= (winamount-1))
-                return boardinfo->board[index];
+		/* Only check 4 directions because checking 8 would be arbitray since
+		 * it would be checking the same peices going forward and backwards
+		 * if it wasnt a win */
+        	if(checkHorizontalWin(boardinfo, index) >= (winamount-1))
+        	        return boardinfo->board[index];
+        	if(checkVerticalWin(boardinfo, index) >= (winamount-1))
+       		        return boardinfo->board[index];
+        	if(checkUpDiagonalWin(boardinfo, index) >= (winamount-1))
+                	return boardinfo->board[index];
+        	if(checkDownDiagonalWin(boardinfo, index) >= (winamount-1))
+                	return boardinfo->board[index];
+	}
         
 	return 0;
 }
@@ -256,30 +254,23 @@ int checkWin(struct gameinfo *boardinfo)
 			continue;
 		if((((index+boardinfo->winamount)%boardinfo->ncols) >= boardinfo->winamount) || (((index+boardinfo->winamount)%boardinfo->ncols) == 0))
 			if(dfs(boardinfo, index, index+boardinfo->winamount-1) >= boardinfo->winamount)
-				if(validatePath(boardinfo, index) != 0)
-					return boardinfo->board[index];
-		
+				return boardinfo->board[index];	
 		if(index-(boardinfo->ncols*(boardinfo->winamount - 1)) > -1)
 			if(dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1))) >= boardinfo->winamount)
-				if(validatePath(boardinfo, index) != 0)
-					return boardinfo->board[index];
-		
+				return boardinfo->board[index];
 		if(index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)) > -1)
 			if(dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)))) >= boardinfo->winamount)
-				if(validatePath(boardinfo, index) != 0)
-					return boardinfo->board[index];
-
-		if(index+(boardinfo->winamount-1*boardinfo->ncols)+boardinfo->winamount-1 < boardinfo->nrows*boardinfo->ncols); 
+				return boardinfo->board[index];
+		if(index+(boardinfo->winamount-1*boardinfo->ncols)+boardinfo->winamount-1 < boardinfo->nrows*boardinfo->ncols) 
 			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)))) >= boardinfo->winamount)
-				if(validatePath(boardinfo, index) != 0)
-					return boardinfo->board[index];
+				return boardinfo->board[index];
 	}
 	return 0;
 }
 
 void clearScreen()
 {
-	wprintw(win,"\n");
+	//wprintw(win,"\n");
 	wclear(win);
 }
 
@@ -314,7 +305,7 @@ int player(struct gameinfo *boardinfo)
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, firstplayer);
-		int winner = checkWin(boardinfo);
+		int winner = validatePath(boardinfo);
 		if(winner != 0)
 			return winner;
 		
@@ -341,7 +332,7 @@ int player(struct gameinfo *boardinfo)
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, secondplayer);
-		winner = checkWin(boardinfo);
+		winner = validatePath(boardinfo);
 		if(winner != 0)
 			return winner;
 		playCount += 1;
@@ -351,7 +342,10 @@ int player(struct gameinfo *boardinfo)
 
 int easyMode(struct gameinfo *boardinfo)
 {
-        return rand() % boardinfo->ncols;
+	int placement = rand() % boardinfo->ncols;
+	while(checkAvailable(boardinfo, placement) == 0)
+		placement = rand() % boardinfo->ncols;
+	return placement;
 }
 
 int hardMode(struct gameinfo *boardinfo)
@@ -407,6 +401,7 @@ int hardMode(struct gameinfo *boardinfo)
 int computer(struct gameinfo *boardinfo)
 {
 	char mode[25] = {'\0'};
+	int imode = 0;
         int playCounter = 0, playerwin = 0, add = 0;
 	wprintw(win,"Hardness (easy, hard, impossible): ");
 	wrefresh(win);
@@ -420,7 +415,13 @@ int computer(struct gameinfo *boardinfo)
 		      wrefresh(win);
 		      wscanw(win, "%s", mode);
 	}
-        
+	if(strcmp(mode, "easy") == 0)
+		imode = 0;
+	else if(strcmp(mode, "hard") == 0)
+		imode = 1;
+	else if(strcmp(mode, "impossible") == 0)
+		imode = 2;
+       	 
 	while(playCounter < (boardinfo->nrows * boardinfo->ncols))
         {
                 clearScreen();
@@ -433,35 +434,33 @@ int computer(struct gameinfo *boardinfo)
 		} while(addPiece(boardinfo, add-1, 1) == 0);
 		wprintw(win,"Computer is moving...\n");
 		wrefresh(win);
-		if (strcmp(mode, "easy") == 0)
+		playCounter++;
+		
+		switch (imode)
 		{
-			addPiece(boardinfo, easyMode(boardinfo), 2);
-			playCounter++;
-			playerwin = checkWin(boardinfo);
+			case 0:
+				addPiece(boardinfo, easyMode(boardinfo), 2);
+				playerwin = validatePath(boardinfo);
+				if(playerwin >= 0)
+					return playerwin;
+				playCounter++;
+				break;
+			case 1:
+				addPiece(boardinfo, hardMode(boardinfo), 2);
+				playerwin = validatePath(boardinfo);
+				if(playerwin != 0)
+					return playerwin;
+				playCounter++;
+				break;
+			case 2:
+				addPiece(boardinfo, easyMode(boardinfo), 2);
+				addPiece(boardinfo, hardMode(boardinfo), 2);
+				playerwin = validatePath(boardinfo);
+				if(playerwin != 0)
+					return playerwin;
+				playCounter += 2;
+				break;
 		}
-		if (strcmp(mode, "hard") == 0)
-		{
-			addPiece(boardinfo, hardMode(boardinfo), 2);
-			playCounter++;
-			playerwin = checkWin(boardinfo);
-		}
-		if (strcmp(mode, "impossible") == 0)
-		{
-			addPiece(boardinfo, hardMode(boardinfo), 2);
-			addPiece(boardinfo, easyMode(boardinfo), 2);
-			playCounter += 2;
-			playerwin = checkWin(boardinfo);
-		}
-		if(playerwin != 0)
-			return playerwin;
-		clearScreen();
-		wprintw(win,"Computer moved\n");
-		wrefresh(win);
-		printBoard(boardinfo);
-		playerwin = checkWin(boardinfo);
-		printBoard(boardinfo);
-		if(playerwin != 0)
-			return playerwin;
         }
         return 0;
 }

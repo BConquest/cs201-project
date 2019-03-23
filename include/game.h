@@ -48,7 +48,7 @@ int checkHorizontalWin(struct gameinfo *, int);
 int checkVerticalWin(struct gameinfo *, int);
 int checkUpDiagonal(struct gameinfo *, int);
 int checkDownDiagonal(struct gameinfo *, int);
-int validatePath(struct gameinfo *, int);
+int validatePath(struct gameinfo *);
 
 /* checks to see if their a path between two indexs */
 int bfs(struct gameinfo *boardinfo, int, int);
