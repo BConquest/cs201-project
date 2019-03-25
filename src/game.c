@@ -253,16 +253,16 @@ int checkWin(struct gameinfo *boardinfo)
 		if(boardinfo->board[index] == 0)
 			continue;
 		if((((index+boardinfo->winamount)%boardinfo->ncols) >= boardinfo->winamount) || (((index+boardinfo->winamount)%boardinfo->ncols) == 0))
-			if(dfs(boardinfo, index, index+boardinfo->winamount-1) >= boardinfo->winamount)
+			if(dfs(boardinfo, index, index+boardinfo->winamount-1) >= 1 /*boardinfo->winamount*/)
 				return boardinfo->board[index];	
 		if(index-(boardinfo->ncols*(boardinfo->winamount - 1)) > -1)
-			if(dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1))) >= boardinfo->winamount)
+			if(dfs(boardinfo, index, index-(boardinfo->ncols*(boardinfo->winamount-1))) >= 1 /*boardinfo->winamount*/)
 				return boardinfo->board[index];
 		if(index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)) > -1)
-			if(dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)))) >= boardinfo->winamount)
+			if(dfs(boardinfo, index, (index-(((boardinfo->winamount-2)*boardinfo->ncols)+(boardinfo->winamount)))) >= 1 /*boardinfo->winamount*/)
 				return boardinfo->board[index];
 		if(index+(boardinfo->winamount-1*boardinfo->ncols)+boardinfo->winamount-1 < boardinfo->nrows*boardinfo->ncols) 
-			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)))) >= boardinfo->winamount)
+			if(dfs(boardinfo, index, (index-(((boardinfo->winamount)*boardinfo->ncols)-(boardinfo->winamount)))) >= 1 /*boardinfo->winamount*/)
 				return boardinfo->board[index];
 	}
 	return 0;
@@ -270,7 +270,6 @@ int checkWin(struct gameinfo *boardinfo)
 
 void clearScreen()
 {
-	//wprintw(win,"\n");
 	wclear(win);
 }
 
@@ -430,8 +429,18 @@ int computer(struct gameinfo *boardinfo)
 		{
 			wprintw(win,"Column to place peice in: ");
 			wrefresh(win);
-			wscanw(win, "%d", &add);
+			int test = wscanw(win, "%d", &add);
+			while(test != 1)
+			{
+				wprintw(win, "Error not a number, please input a number: ");
+				test = wscanw(win, "%d", &add);
+			}
 		} while(addPiece(boardinfo, add-1, 1) == 0);
+		
+		playerwin = validatePath(boardinfo);
+		if(playerwin != 0)
+			return playerwin;
+
 		wprintw(win,"Computer is moving...\n");
 		wrefresh(win);
 		playCounter++;
@@ -441,7 +450,7 @@ int computer(struct gameinfo *boardinfo)
 			case 0:
 				addPiece(boardinfo, easyMode(boardinfo), 2);
 				playerwin = validatePath(boardinfo);
-				if(playerwin >= 0)
+				if(playerwin != 0)
 					return playerwin;
 				playCounter++;
 				break;
@@ -508,8 +517,13 @@ void settings(struct gameinfo *boardinfo)
                                 newsetting = boardinfo->ncols;
                                 wprintw(win,"Current Width: %d\nNew Width: ", boardinfo->ncols);
                                 wrefresh(win);
-				wscanw(win, "%d", &newsetting);
-                        } while(newsetting < 0);
+				int test = wscanw(win, "%d", &newsetting);
+				while(test != 1)
+				{
+					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
+					test = wscanw(win, "%d", &newsetting);
+				}
+                        } while(newsetting <= 0);
                         boardinfo->ncols = newsetting;
 			*boardinfo = changeBoardSize(boardinfo);
                 }
@@ -520,8 +534,13 @@ void settings(struct gameinfo *boardinfo)
                                 newsetting = boardinfo->nrows;
 				wprintw(win,"Current Height: %d\nNew Height: ", boardinfo->nrows);
                                 wrefresh(win);
-				wscanw(win, "%d", &newsetting);
-                        } while(newsetting < 0);
+				int test = wscanw(win, "%d", &newsetting);
+				while(test != 1)
+				{
+					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
+					test = wscanw(win, "%d", &newsetting);
+				}
+                        } while(newsetting <= 0);
                         boardinfo->nrows = newsetting;
                         *boardinfo = changeBoardSize(boardinfo);
                 }
@@ -532,7 +551,12 @@ void settings(struct gameinfo *boardinfo)
                                 newsetting = boardinfo->winamount;
 				wprintw(win,"Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
                                 wrefresh(win);
-				wscanw(win, "%d",  &newsetting);
+				int test = wscanw(win, "%d",  &newsetting);
+				while(test != 1)
+				{
+					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
+					test = wscanw(win, "%d", &newsetting);
+				}
                         } while(newsetting < 0);
                         boardinfo->winamount = newsetting;
                 }

@@ -116,6 +116,7 @@ int main(void)
         }
        	
 	free(boardinfo.board);
+	delwin(win);
 	endwin();
 	return 0;
 }
