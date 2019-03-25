@@ -11,7 +11,8 @@
 WINDOW *win;
 
 /* Holds info about the current board */
-struct gameinfo {
+struct gameinfo
+{
 	int nrows;
 	int ncols;
 	int winamount;
@@ -36,9 +37,8 @@ void printMenu();
 /* Allows you to change most of the things about the game */
 void settings(struct gameinfo *);
 
-
 /* adds a peice at the bottom of the column*/
-							/* index, color */
+/* index, color */
 int addPiece(struct gameinfo *, int, int);
 
 /* sees if avaible spot to play is good */

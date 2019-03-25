@@ -7,7 +7,7 @@
 struct stackNode
 {
 	int data;
-	struct stackNode* next;
+	struct stackNode *next;
 };
 
 int pop(struct stackNode **);

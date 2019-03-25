@@ -13,81 +13,81 @@ int main(void)
 	boardinfo.ncols = 7;
 	boardinfo.nrows = 6;
 
-	boardinfo.board = malloc((boardinfo.ncols*boardinfo.nrows) * sizeof(int));
+	boardinfo.board = malloc((boardinfo.ncols * boardinfo.nrows) * sizeof(int));
 	boardinfo.winamount = 4;
-	
+
 	char mode[25] = {'\0'};
 	char person[25] = {'\0'};
 	int winner = 0;
-	
 
 	int height, width;
 	initscr();
 	getmaxyx(stdscr, height, width);
-	
+
 	clearBoard(&boardinfo);
 	clear();
-	
+
 	win = newwin(height, width, 1, 1);
 
 	scrollok(win, TRUE);
 	echo();
 
-	if(has_colors() == FALSE)
-	{	endwin();
+	if (has_colors() == FALSE)
+	{
+		endwin();
 		printf("Your terminal does not support color\n");
 		exit(1);
 	}
 
 	start_color();
-	
+
 	printMenu();
-	
+
 	int tested;
 
-        while (strcmp(mode, "quit") != 0)
-        {
+	while (strcmp(mode, "quit") != 0)
+	{
 		mode[0] = '\0';
-		wprintw(win,"main menu: ");
+		wprintw(win, "main menu: ");
 		wrefresh(win);
 		tested = wscanw(win, "%s", mode);
-		while(strcmp(mode, "game") == 0 && tested == 1)
+		while (strcmp(mode, "game") == 0 && tested == 1)
 		{
-			wprintw(win,"Player or Computer > ");
+			wprintw(win, "game: ");
 			wrefresh(win);
 			wscanw(win, "%s", person);
-			if(strcmp(person, "player") == 0)
+			if (strcmp(person, "player") == 0)
 			{
-				winner = player(&boardinfo);	
+				winner = player(&boardinfo);
 				printBoard(&boardinfo);
 				clearBoard(&boardinfo);
-				if(winner == 0)
+				if (winner == 0)
 				{
-					wprintw(win,"Ran out of space to win\n");
+					wprintw(win, "Ran out of space to win\n");
 					wrefresh(win);
 				}
 				else
 				{
-					wprintw(win,"Player %d WON!!\n", winner);
+					wprintw(win, "Player %d WON!!\n", winner);
 					wrefresh(win);
 				}
 			}
-			else if(strcmp(person, "computer") == 0)
+			else if (strcmp(person, "computer") == 0)
 			{
 				winner = computer(&boardinfo);
 				printBoard(&boardinfo);
 				clearBoard(&boardinfo);
-				if(winner == 0)
-					wprintw(win,"Ran out of space to win\n");
-				else if(winner == 1)
-					wprintw(win,"You have beat the computer. Congrats\n");
-				else if(winner == 2)
-					wprintw(win,"The Computer has beaten you.\n");
+				if (winner == 0)
+					wprintw(win, "Ran out of space to win\n");
+				else if (winner == 1)
+					wprintw(win, "You have beat the computer. Congrats\n");
+				else if (winner == 2)
+					wprintw(win, "The Computer has beaten you.\n");
 				else
-					wprintw(win,"Failure\n");
+					wprintw(win, "Failure\n");
 				wrefresh(win);
 			}
-			else if (strcmp(person,"clear") == 0)
+			else if (strcmp(person, "clear") == 0)
 			{
 				clearScreen();
 			}
@@ -95,9 +95,18 @@ int main(void)
 			{
 				mode[0] = '\0';
 			}
+			else if (strcmp(person, "help") == 0)
+			{
+				wprintw(win, "player -> will enter into a game versues a player\n");
+				wprintw(win, "computer -> will enter into a game versues a computer\n");
+				wprintw(win, "\t-> 'easy' -> the computer will play randomly and plays second\n\t-> 'hard' -> the computer uses bfs to find the best move and plays first\n\t>'impossible' -> plays randomly and uses bfs while letting the player go first\n");
+				wprintw(win, "clear -> clears the screen\n");
+				wprintw(win, "done -> takes you back to the main menu\n");
+				wprintw(win, "help -> prints the help message\n");
+			}
 			else
 			{
-				wprintw(win,"Answer must be Player or Computer\n");
+				wprintw(win, "ERROR: '%s' -> not a valid command, try 'help'\n", person);
 				wrefresh(win);
 			}
 		}
@@ -113,8 +122,12 @@ int main(void)
 		{
 			printMenu();
 		}
-        }
-       	
+		else
+		{
+			wprintw(win, "ERROR: '%s' -> not a valid command, try 'help'\n", mode);
+		}
+	}
+
 	free(boardinfo.board);
 	delwin(win);
 	endwin();

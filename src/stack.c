@@ -1,10 +1,10 @@
 #include "../include/stack.h"
 
-int pop(struct stackNode** root)
+int pop(struct stackNode **root)
 {
 	int buff;
 	struct stackNode *temp;
-	if(*root == NULL)
+	if (*root == NULL)
 	{
 		printf("STACK UNDERFLOW\n");
 		return -1;
@@ -19,16 +19,16 @@ int pop(struct stackNode** root)
 	}
 }
 
-void push(struct stackNode** top, int data)
+void push(struct stackNode **top, int data)
 {
-	struct stackNode* newnode = malloc(sizeof(struct stackNode));
-	
-	if(newnode == NULL)
+	struct stackNode *newnode = malloc(sizeof(struct stackNode));
+
+	if (newnode == NULL)
 	{
 		printf("STACK OVERFLOW\n");
 	}
 	else
-	{	
+	{
 		newnode->data = data;
 		newnode->next = (*top);
 		(*top) = newnode;
