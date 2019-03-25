@@ -24,13 +24,13 @@ void printBoard(struct gameinfo *boardinfo)
 		else if(boardinfo->board[index] == 1)
 		{
 			wattron(win, COLOR_PAIR(1));
-			wprintw(win,"O ");
+			wprintw(win,"%c ", player1);
 			wattroff(win, COLOR_PAIR(1));
 		}
 		else if(boardinfo->board[index] == 2)
 		{
 			wattron(win, COLOR_PAIR(2));
-			wprintw(win,"X ");
+			wprintw(win,"%c ", player2);
 			wattroff(win, COLOR_PAIR(2));
 		}
 		else
@@ -275,8 +275,10 @@ int checkWin(struct gameinfo *boardinfo)
 
 void clearScreen()
 {
-	wprintw(win, "->Clear\n");
-	//wclear(win);
+	if(DEBUG == 0)
+		wprintw(win, "\n");
+	else
+		wclear(win);
 }
 
 int player(struct gameinfo *boardinfo)
