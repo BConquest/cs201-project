@@ -93,11 +93,16 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 	/* Checks the horizontal winning */
         int i = 1, count = 0;
         for(; i < boardinfo->winamount; i++)
-                if(boardinfo->board[index+i] == boardinfo->board[index] &&
-		   (index+i < boardinfo->nrows*boardinfo->ncols))
-                        count++;
-                else
-                        return 0;
+		if(index + i < boardinfo->nrows*boardinfo->ncols)
+		{
+                	if(boardinfo->board[index+i] == boardinfo->board[index])
+			{
+				count++;
+				wprintw(win, "HEY\n");
+			}
+                	else
+                	        return 0;
+		}
         return count;
 }
 
@@ -270,7 +275,8 @@ int checkWin(struct gameinfo *boardinfo)
 
 void clearScreen()
 {
-	wclear(win);
+	wprintw(win, "->Clear\n");
+	//wclear(win);
 }
 
 int player(struct gameinfo *boardinfo)
@@ -388,11 +394,11 @@ int hardMode(struct gameinfo *boardinfo)
 	}
 
 	int temp = highest[0];
-	int l = 0;
+	int highestIndex = 0;
 	while(checkAvailable(boardinfo, temp) == 0)
 	{
-		l++;
-		temp = highest[l];
+		highestIndex++;
+		temp = highest[highestIndex];
 	}
 	return temp % boardinfo->ncols;
 }
@@ -526,6 +532,7 @@ void settings(struct gameinfo *boardinfo)
                         } while(newsetting <= 0);
                         boardinfo->ncols = newsetting;
 			*boardinfo = changeBoardSize(boardinfo);
+			clearBoard(boardinfo);
                 }
                 else if(strcmp(setting, "height") == 0)
                 {
@@ -543,6 +550,7 @@ void settings(struct gameinfo *boardinfo)
                         } while(newsetting <= 0);
                         boardinfo->nrows = newsetting;
                         *boardinfo = changeBoardSize(boardinfo);
+			clearBoard(boardinfo);
                 }
                 else if(strcmp(setting, "amount") == 0)
                 {
