@@ -102,7 +102,7 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 				return 0;
 		}
 	}
-	return 0;
+	return count;
 }
 
 int checkVerticalWin(struct gameinfo *boardinfo, int index)
@@ -119,7 +119,7 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
 				return 0;
 		}
 	}
-	return 0;
+	return count;
 }
 
 int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
@@ -136,7 +136,7 @@ int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
 				return 0;
 		}
 	}
-	return 0;
+	return count;
 }
 
 int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
@@ -153,7 +153,7 @@ int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
 				return 0;
 		}
 	}
-	return 0;
+	return count;
 }
 
 int validatePath(struct gameinfo *boardinfo)
@@ -167,13 +167,13 @@ int validatePath(struct gameinfo *boardinfo)
 		/* Only check 4 directions because checking 8 would be arbitray since
 		 * it would be checking the same peices going forward and backwards
 		 * if it wasnt a win */
-		if (checkHorizontalWin(boardinfo, index) >= (winamount - 1))
+		if (checkHorizontalWin(boardinfo, index) >= (winamount))
 			return boardinfo->board[index];
-		if (checkVerticalWin(boardinfo, index) >= (winamount - 1))
+		if (checkVerticalWin(boardinfo, index) >= (winamount))
 			return boardinfo->board[index];
-		if (checkUpDiagonalWin(boardinfo, index) >= (winamount - 1))
+		if (checkUpDiagonalWin(boardinfo, index) >= (winamount))
 			return boardinfo->board[index];
-		if (checkDownDiagonalWin(boardinfo, index) >= (winamount - 1))
+		if (checkDownDiagonalWin(boardinfo, index) >= (winamount))
 			return boardinfo->board[index];
 	}
 
@@ -338,6 +338,7 @@ int player(struct gameinfo *boardinfo)
 			return winner;
 
 		playCount += 1;
+		if(playCount >= boardinfo->ncols * boardinfo->nrows) return 0;
 
 		clearScreen();
 		printBoard(boardinfo);
