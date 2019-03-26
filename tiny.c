@@ -6,15 +6,33 @@
 #include "./include/game.h"
 #include "./include/stack.h"
 
+struct scoreboard
+{
+	int playervplayer;
+	int player1wins;
+	int playerdraws;
+	int playervcomputer;
+	int computerwins;
+	int computerdraws;
+};
+
 int main(void)
 {
 	struct gameinfo boardinfo;
+	struct scoreboard scores;
 
 	boardinfo.ncols = 7;
 	boardinfo.nrows = 6;
 
 	boardinfo.board = malloc((boardinfo.ncols * boardinfo.nrows) * sizeof(int));
 	boardinfo.winamount = 4;
+
+	scores.playervplayer = 0;
+	scores.player1wins = 0;
+	scores.playerdraws = 0;
+	scores.playervcomputer = 0;
+	scores.computerwins = 0;
+	scores.computerdraws = 0;
 
 	char mode[25] = {'\0'};
 	char person[25] = {'\0'};
@@ -59,15 +77,19 @@ int main(void)
 				winner = player(&boardinfo);
 				printBoard(&boardinfo);
 				clearBoard(&boardinfo);
+				scores.playervplayer = scores.playervplayer + 1;
 				if (winner == 0)
 				{
 					wprintw(win, "Ran out of space to win\n");
 					wrefresh(win);
+					scores.playerdraws = scores.playerdraws + 1;
 				}
 				else
 				{
 					wprintw(win, "Player %d WON!!\n", winner);
 					wrefresh(win);
+					if(winner == 1)
+						scores.player1wins = scores.player1wins + 1;
 				}
 			}
 			else if (strncmp(person, "computer", 25) == 0)
@@ -75,14 +97,25 @@ int main(void)
 				winner = computer(&boardinfo);
 				printBoard(&boardinfo);
 				clearBoard(&boardinfo);
+				scores.playervcomputer = scores.playervcomputer + 1;
 				if (winner == 0)
+				{
 					wprintw(win, "Ran out of space to win\n");
+					scores.computerdraws = scores.computerdraws + 1;
+				}
 				else if (winner == 1)
+				{
 					wprintw(win, "You have beat the computer. Congrats\n");
+				}
 				else if (winner == 2)
+				{
 					wprintw(win, "The Computer has beaten you.\n");
+					scores.computerwins = scores.computerwins + 1;
+				}
 				else
+				{
 					wprintw(win, "Failure\n");
+				}
 				wrefresh(win);
 			}
 			else if (strncmp(person, "clear", 25) == 0)
