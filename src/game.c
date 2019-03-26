@@ -122,7 +122,7 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
 	return count;
 }
 
-int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
+int checkRightDiagonalWin(struct gameinfo *boardinfo, int index)
 {
 	/* Checks Up diagonal winning */
 	int i = 1, count = 0;
@@ -139,7 +139,7 @@ int checkUpDiagonalWin(struct gameinfo *boardinfo, int index)
 	return count;
 }
 
-int checkDownDiagonalWin(struct gameinfo *boardinfo, int index)
+int checkLeftDiagonalWin(struct gameinfo *boardinfo, int index)
 {
 	/* Checks Down Diagonal winning */
 	int i = 1, count = 0;
@@ -167,14 +167,24 @@ int validatePath(struct gameinfo *boardinfo)
 		/* Only check 4 directions because checking 8 would be arbitray since
 		 * it would be checking the same peices going forward and backwards
 		 * if it wasnt a win */
-		if (checkHorizontalWin(boardinfo, index) >= (winamount))
+
+		/* Checkiung to make sure that it wont go out of bounds or wrap around the board*/
+		if ((((index + boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index + boardinfo->winamount) % boardinfo->ncols) == 0))
+				if (checkHorizontalWin(boardinfo, index) >= (winamount-1))
+					return boardinfo->board[index];
+
+		/* Dont wrap around because it will be out of bounds instead of wrapping to bottom */
+		if (checkVerticalWin(boardinfo, index) >= (winamount-1))
 			return boardinfo->board[index];
-		if (checkVerticalWin(boardinfo, index) >= (winamount))
-			return boardinfo->board[index];
-		if (checkUpDiagonalWin(boardinfo, index) >= (winamount))
-			return boardinfo->board[index];
-		if (checkDownDiagonalWin(boardinfo, index) >= (winamount))
-			return boardinfo->board[index];
+		
+		/* Checkiung to make sure that it wont go out of bounds or wrap around the board*/
+		if ((((index + boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index + boardinfo->winamount) % boardinfo->ncols) == 0))
+			if (checkLeftDiagonalWin(boardinfo, index) >= (winamount-1))
+				return boardinfo->board[index];
+		
+		if ((((index - boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index - boardinfo->winamount) % boardinfo->ncols) == 0))		
+			if (checkLeftDiagonalWin(boardinfo, index) >= (winamount-1))
+				return boardinfo->board[index];
 	}
 
 	return 0;
