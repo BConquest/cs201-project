@@ -43,20 +43,18 @@ int main(void)
 
 	printMenu();
 
-	int tested;
-
-	while (strcmp(mode, "quit") != 0)
+	while (strncmp(mode, "quit", 25) != 0)
 	{
 		mode[0] = '\0';
 		wprintw(win, "main menu: ");
 		wrefresh(win);
-		tested = wscanw(win, "%s", mode);
-		while (strcmp(mode, "game") == 0 && tested == 1)
+		int tested = wscanw(win, "%25s", mode);
+		while (strncmp(mode, "game", 25) == 0 && tested == 1)
 		{
 			wprintw(win, "game: ");
 			wrefresh(win);
-			wscanw(win, "%s", person);
-			if (strcmp(person, "player") == 0)
+			wscanw(win, "%25s", person);
+			if (strncmp(person, "player", 25) == 0)
 			{
 				winner = player(&boardinfo);
 				printBoard(&boardinfo);
@@ -72,7 +70,7 @@ int main(void)
 					wrefresh(win);
 				}
 			}
-			else if (strcmp(person, "computer") == 0)
+			else if (strncmp(person, "computer", 25) == 0)
 			{
 				winner = computer(&boardinfo);
 				printBoard(&boardinfo);
@@ -87,15 +85,15 @@ int main(void)
 					wprintw(win, "Failure\n");
 				wrefresh(win);
 			}
-			else if (strcmp(person, "clear") == 0)
+			else if (strncmp(person, "clear", 25) == 0)
 			{
 				clearScreen();
 			}
-			else if (strcmp(person, "done") == 0)
+			else if (strncmp(person, "done", 25) == 0)
 			{
 				mode[0] = '\0';
 			}
-			else if (strcmp(person, "help") == 0)
+			else if (strncmp(person, "help", 25) == 0)
 			{
 				wprintw(win, "player -> will enter into a game versues a player\n");
 				wprintw(win, "computer -> will enter into a game versues a computer\n");
@@ -110,15 +108,15 @@ int main(void)
 				wrefresh(win);
 			}
 		}
-		if (strcmp(mode, "settings") == 0)
+		if (strcmp(mode, "settings") == 0 && tested == 1)
 		{
 			settings(&boardinfo);
 		}
-		else if (strcmp(mode, "clear") == 0)
+		else if (strcmp(mode, "clear") == 0 && tested == 1)
 		{
 			clearScreen();
 		}
-		else if (strcmp(mode, "help") == 0)
+		else if (strcmp(mode, "help") == 0 && tested == 1)
 		{
 			printMenu();
 		}

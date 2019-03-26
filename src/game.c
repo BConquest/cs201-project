@@ -112,10 +112,10 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
 	{
 		if (boardinfo->board[newIndex] == boardinfo->board[index])
 			count++;
-		if (index - (i * boardinfo->ncols) > -1)
-			newIndex = index - (i * boardinfo->ncols);
-		else
+		if (index - (i * boardinfo->ncols) < (-1-boardinfo->ncols))
 			return 0;
+		else
+			newIndex = index - (i * boardinfo->ncols);
 	}
 	return count;
 }
@@ -168,7 +168,7 @@ int validatePath(struct gameinfo *boardinfo)
 		if ((((index + boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index + boardinfo->winamount) % boardinfo->ncols) == 0))
 			if (checkHorizontalWin(boardinfo, index) >= (winamount))
 				return boardinfo->board[index];
-		wprintw(win, "\n");
+		
 		/* Dont wrap around because it will be out of bounds instead of wrapping to bottom */
 		if (checkVerticalWin(boardinfo, index) >= (winamount))
 			return boardinfo->board[index];
@@ -240,6 +240,16 @@ int dfs(struct gameinfo *boardinfo, int index, int solution)
 		if (test > -1)
 		{
 			if (boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
+			{
+				enqueue(depthQueue, depth + 1);
+				enqueue(searchQueue, test);
+			}
+		}
+		
+		test = temp + boardinfo->ncols;
+		if(test < boardinfo->ncols * boardinfo->nrows)
+		{
+			if(boardinfo->board[test] == boardinfo->board[index] && (visited[test] != 1))
 			{
 				enqueue(depthQueue, depth + 1);
 				enqueue(searchQueue, test);
@@ -431,6 +441,14 @@ int hardMode(struct gameinfo *boardinfo)
 		highestIndex++;
 		temp = highest[highestIndex];
 	}
+	if(highest[highestIndex] == highest[highestIndex + 1])
+	{
+		int randMove = rand();
+		if (randMove % 2 == 0)
+			return highest[highestIndex] % boardinfo->ncols;
+		else
+			return highest[highestIndex + 1] % boardinfo->ncols;
+	}
 	return temp % boardinfo->ncols;
 }
 
@@ -443,19 +461,19 @@ int computer(struct gameinfo *boardinfo)
 	wrefresh(win);
 	wscanw(win, "%s", mode);
 
-	while (strcmp(mode, "easy") != 0 &&
-		   strcmp(mode, "hard") != 0 &&
-		   strcmp(mode, "impossible") != 0)
+	while (strncmp(mode, "easy", 25) != 0 &&
+		   strncmp(mode, "hard", 25) != 0 &&
+		   strncmp(mode, "impossible", 25) != 0)
 	{
 		wprintw(win, "Not an option\n");
 		wrefresh(win);
 		wscanw(win, "%s", mode);
 	}
-	if (strcmp(mode, "easy") == 0)
+	if (strncmp(mode, "easy", 25) == 0)
 		imode = 0;
-	else if (strcmp(mode, "hard") == 0)
+	else if (strncmp(mode, "hard", 25) == 0)
 		imode = 1;
-	else if (strcmp(mode, "impossible") == 0)
+	else if (strncmp(mode, "impossible", 25) == 0)
 		imode = 2;
 
 	while (playCounter < (boardinfo->nrows * boardinfo->ncols))
@@ -541,13 +559,13 @@ void settings(struct gameinfo *boardinfo)
 	int newsetting = 0;
 
 	clearScreen();
-	while (strcmp(setting, "done") != 0)
+	while (strncmp(setting, "done", 25) != 0)
 	{
 		setting[0] = '\0';
 		wprintw(win, "setting: ");
 		wrefresh(win);
 		wscanw(win, "%s", setting);
-		if (strcmp(setting, "width") == 0)
+		if (strncmp(setting, "width", 25) == 0)
 		{
 			do
 			{
@@ -578,7 +596,7 @@ void settings(struct gameinfo *boardinfo)
 			*boardinfo = changeBoardSize(boardinfo);
 			clearBoard(boardinfo);
 		}
-		else if (strcmp(setting, "height") == 0)
+		else if (strncmp(setting, "height", 25) == 0)
 		{
 			do
 			{
@@ -608,7 +626,7 @@ void settings(struct gameinfo *boardinfo)
 			*boardinfo = changeBoardSize(boardinfo);
 			clearBoard(boardinfo);
 		}
-		else if (strcmp(setting, "amount") == 0)
+		else if (strncmp(setting, "amount", 25) == 0)
 		{
 			do
 			{
@@ -636,11 +654,11 @@ void settings(struct gameinfo *boardinfo)
 			} while (newsetting < 0);
 			boardinfo->winamount = newsetting;
 		}
-		else if (strcmp(setting, "clear") == 0)
+		else if (strncmp(setting, "clear", 25) == 0)
 		{
 			clearScreen();
 		}
-		else if (strcmp(setting, "print") == 0)
+		else if (strncmp(setting, "print", 25) == 0)
 		{
 			printBoard(boardinfo);
 			wprintw(win, "width: %d\n", boardinfo->ncols);
@@ -648,7 +666,7 @@ void settings(struct gameinfo *boardinfo)
 			wprintw(win, "amount to win: %d\n", boardinfo->winamount);
 			wrefresh(win);
 		}
-		else if (strcmp(setting, "help") == 0)
+		else if (strncmp(setting, "help", 25) == 0)
 		{
 			wprintw(win, "Current commands are: \n");
 			wprintw(win, "width -> sets the new width of the game board\n\thas to be above 0\n");
