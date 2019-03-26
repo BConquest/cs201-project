@@ -129,11 +129,11 @@ int main(void)
 			else if (strncmp(person, "stats", 25) == 0)
 			{
 				wprintw(win, "====STATS====\n");
-				wprintw(win, "Player Vs. Player:%d\n", scores.playervplayer);
+				wprintw(win, "Player Vs. Player: %d\n", scores.playervplayer);
 				wprintw(win, "Player1 wins: %d\n", scores.player1wins);
 				wprintw(win, "Player2 wins: %d\n", scores.playervplayer - scores.player1wins - scores.playerdraws);
 				wprintw(win, "Amount of Draws: %d\n", scores.playerdraws);
-				wprintw(win, "Player Vs. Computer:%d\n", scores.playervcomputer);
+				wprintw(win, "Player Vs. Computer: %d\n", scores.playervcomputer);
 				wprintw(win, "Player wins: %d\n", scores.playervcomputer - scores.computerwins - scores.computerdraws);
 				wprintw(win, "Computer wins: %d\n", scores.computerwins);
 				wprintw(win, "Amount of Draws: %d\n", scores.computerdraws);
