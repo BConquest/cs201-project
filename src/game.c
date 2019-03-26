@@ -559,8 +559,21 @@ void settings(struct gameinfo *boardinfo)
 				{
 					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
 					test = wscanw(win, "%d", &newsetting);
+					wrefresh(win);
 				}
-			} while (newsetting <= 0);
+				while (newsetting < boardinfo->winamount)
+				{
+					wprintw(win, "That number is to small, please input a nuber larger than the winamount %d\nnew width: ", boardinfo->winamount);
+					test = wscanw(win, "%d", &newsetting);
+					wrefresh(win);
+					while (test != 1)
+					{
+						wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
+						test = wscanw(win, "%d", &newsetting);
+						wrefresh(win);
+					}
+				}
+			} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
 			boardinfo->ncols = newsetting;
 			*boardinfo = changeBoardSize(boardinfo);
 			clearBoard(boardinfo);
@@ -577,6 +590,18 @@ void settings(struct gameinfo *boardinfo)
 				{
 					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
 					test = wscanw(win, "%d", &newsetting);
+				}
+				while (newsetting < boardinfo->winamount)
+				{
+					wprintw(win, "That number is to small, please input a nuber larger than the winamount %d\nnew height: ", boardinfo->winamount);
+					test = wscanw(win, "%d", &newsetting);
+					wrefresh(win);
+					while (test != 1)
+					{
+						wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
+						test = wscanw(win, "%d", &newsetting);
+						wrefresh(win);
+					}
 				}
 			} while (newsetting <= 0);
 			boardinfo->nrows = newsetting;
@@ -595,6 +620,18 @@ void settings(struct gameinfo *boardinfo)
 				{
 					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
 					test = wscanw(win, "%d", &newsetting);
+				}
+				while (newsetting > boardinfo->nrows || newsetting > boardinfo->ncols)
+				{
+					wprintw(win, "That number is to small, please input a nuber smaller than linear board width and height of %d x %d\nnew amount: ", boardinfo->ncols, boardinfo->nrows);
+					test = wscanw(win, "%d", &newsetting);
+					wrefresh(win);
+					while (test != 1)
+					{
+						wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
+						test = wscanw(win, "%d", &newsetting);
+						wrefresh(win);
+					}
 				}
 			} while (newsetting < 0);
 			boardinfo->winamount = newsetting;
