@@ -124,7 +124,7 @@ int main(void)
 			}
 			else if (strncmp(person, "done", 25) == 0)
 			{
-				mode[0] = '\0';
+				strncpy(mode, "clear", 5);
 			}
 			else if (strncmp(person, "stats", 25) == 0)
 			{
@@ -167,7 +167,7 @@ int main(void)
 		}
 		else
 		{
-			wprintw(win, "ERROR: '%s' -> not a valid command, try 'help'\n", mode);
+			wprintw(win, "MERROR: '%s' -> not a valid command, try 'help'\n", mode);
 		}
 	}
 
