@@ -124,7 +124,7 @@ int checkRightDiagonalWin(struct gameinfo *boardinfo, int index)
 {
 	/* Checks Up diagonal winning */
 	int i = 1, count = 0, newIndex = index;
-	for (; i < boardinfo->winamount; i++)
+	for (; i <= boardinfo->winamount; i++)
 	{
 		if (boardinfo->board[newIndex] == boardinfo->board[index])
 			count++;
@@ -140,12 +140,12 @@ int checkLeftDiagonalWin(struct gameinfo *boardinfo, int index)
 {
 	/* Checks Down Diagonal winning */
 	int i = 1, count = 0, newIndex = index;
-	for (; i < boardinfo->winamount; i++)
+	for (; i <= boardinfo->winamount; i++)
 	{
 		if (boardinfo->board[newIndex] == boardinfo->board[index])
 			count++;
-		if (index + (i * boardinfo->ncols) + i > -1)
-			newIndex = index + (i * boardinfo->ncols) + i;
+		if (index - (i * boardinfo->ncols) - i > -1)
+			newIndex = index - (i * boardinfo->ncols) - i;
 		else
 			return 0;
 	}
@@ -175,10 +175,11 @@ int validatePath(struct gameinfo *boardinfo)
 
 		/* Checkiung to make sure that it wont go out of bounds or wrap around the board*/
 		if ((((index + boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index + boardinfo->winamount) % boardinfo->ncols) == 0))
-			if (checkLeftDiagonalWin(boardinfo, index) >= (winamount))
+			if (checkRightDiagonalWin(boardinfo, index) >= (winamount))
 				return boardinfo->board[index];
 
-		if ((((index - boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index - boardinfo->winamount) % boardinfo->ncols) == 0))
+		/* checking to make sure board wrap around does not happen */
+		if (((index % boardinfo->ncols) - boardinfo->winamount) >= -1)
 			if (checkLeftDiagonalWin(boardinfo, index) >= (winamount))
 				return boardinfo->board[index];
 	}
@@ -206,7 +207,7 @@ int dfs(struct gameinfo *boardinfo, int index, int solution)
 	enqueue(searchQueue, index);
 	enqueue(depthQueue, depth);
 
-	while ((searchQueue->stack1 != NULL || searchQueue->stack2 != NULL) && depth < boardinfo->winamount + 1)
+	while ((searchQueue->stack1 != NULL || searchQueue->stack2 != NULL) /*&& depth < boardinfo->winamount + 1*/)
 	{
 		temp = dequeue(searchQueue);
 		depth = dequeue(depthQueue);
@@ -276,7 +277,7 @@ int dfs(struct gameinfo *boardinfo, int index, int solution)
 	free(searchQueue);
 	return max;
 }
-
+/*
 int checkWin(struct gameinfo *boardinfo)
 {
 	int index = boardinfo->ncols * boardinfo->nrows - 1;
@@ -285,21 +286,21 @@ int checkWin(struct gameinfo *boardinfo)
 		if (boardinfo->board[index] == 0)
 			continue;
 		if ((((index + boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index + boardinfo->winamount) % boardinfo->ncols) == 0))
-			if (dfs(boardinfo, index, index + boardinfo->winamount - 1) >= 1 /*boardinfo->winamount*/)
+			if (dfs(boardinfo, index, index + boardinfo->winamount - 1) >= 1 /*boardinfo->winamount)
 				return boardinfo->board[index];
 		if (index - (boardinfo->ncols * (boardinfo->winamount - 1)) > -1)
-			if (dfs(boardinfo, index, index - (boardinfo->ncols * (boardinfo->winamount - 1))) >= 1 /*boardinfo->winamount*/)
+			if (dfs(boardinfo, index, index - (boardinfo->ncols * (boardinfo->winamount - 1))) >= 1 /*boardinfo->winamount)
 				return boardinfo->board[index];
 		if (index - (((boardinfo->winamount - 2) * boardinfo->ncols) + (boardinfo->winamount)) > -1)
-			if (dfs(boardinfo, index, (index - (((boardinfo->winamount - 2) * boardinfo->ncols) + (boardinfo->winamount)))) >= 1 /*boardinfo->winamount*/)
+			if (dfs(boardinfo, index, (index - (((boardinfo->winamount - 2) * boardinfo->ncols) + (boardinfo->winamount)))) >= 1 /*boardinfo->winamount)
 				return boardinfo->board[index];
 		if (index + (boardinfo->winamount - 1 * boardinfo->ncols) + boardinfo->winamount - 1 < boardinfo->nrows * boardinfo->ncols)
-			if (dfs(boardinfo, index, (index - (((boardinfo->winamount) * boardinfo->ncols) - (boardinfo->winamount)))) >= 1 /*boardinfo->winamount*/)
+			if (dfs(boardinfo, index, (index - (((boardinfo->winamount) * boardinfo->ncols) - (boardinfo->winamount)))) >= 1 /*boardinfo->winamount)
 				return boardinfo->board[index];
 	}
 	return 0;
 }
-
+*/
 void clearScreen()
 {
 	if (DEBUG == 0)
