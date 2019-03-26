@@ -96,7 +96,7 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 	{
 		if (boardinfo->board[newIndex] == boardinfo->board[index])
 			count++;
-		if (index + i >= boardinfo->nrows * boardinfo->ncols)
+		if (index + i > boardinfo->nrows * boardinfo->ncols)
 			return 0;
 		else
 			newIndex = index + i;
@@ -168,7 +168,7 @@ int validatePath(struct gameinfo *boardinfo)
 		if ((((index + boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index + boardinfo->winamount) % boardinfo->ncols) == 0))
 			if (checkHorizontalWin(boardinfo, index) >= (winamount))
 				return boardinfo->board[index];
-
+		wprintw(win, "\n");
 		/* Dont wrap around because it will be out of bounds instead of wrapping to bottom */
 		if (checkVerticalWin(boardinfo, index) >= (winamount))
 			return boardinfo->board[index];
@@ -286,16 +286,16 @@ int checkWin(struct gameinfo *boardinfo)
 		if (boardinfo->board[index] == 0)
 			continue;
 		if ((((index + boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) || (((index + boardinfo->winamount) % boardinfo->ncols) == 0))
-			if (dfs(boardinfo, index, index + boardinfo->winamount - 1) >= 1 /*boardinfo->winamount)
+			if (dfs(boardinfo, index, index + boardinfo->winamount - 1) >= 1 boardinfo->winamount)
 				return boardinfo->board[index];
 		if (index - (boardinfo->ncols * (boardinfo->winamount - 1)) > -1)
-			if (dfs(boardinfo, index, index - (boardinfo->ncols * (boardinfo->winamount - 1))) >= 1 /*boardinfo->winamount)
+			if (dfs(boardinfo, index, index - (boardinfo->ncols * (boardinfo->winamount - 1))) >= boardinfo->winamount)
 				return boardinfo->board[index];
 		if (index - (((boardinfo->winamount - 2) * boardinfo->ncols) + (boardinfo->winamount)) > -1)
-			if (dfs(boardinfo, index, (index - (((boardinfo->winamount - 2) * boardinfo->ncols) + (boardinfo->winamount)))) >= 1 /*boardinfo->winamount)
+			if (dfs(boardinfo, index, (index - (((boardinfo->winamount - 2) * boardinfo->ncols) + (boardinfo->winamount)))) >= boardinfo->winamount)
 				return boardinfo->board[index];
 		if (index + (boardinfo->winamount - 1 * boardinfo->ncols) + boardinfo->winamount - 1 < boardinfo->nrows * boardinfo->ncols)
-			if (dfs(boardinfo, index, (index - (((boardinfo->winamount) * boardinfo->ncols) - (boardinfo->winamount)))) >= 1 /*boardinfo->winamount)
+			if (dfs(boardinfo, index, (index - (((boardinfo->winamount) * boardinfo->ncols) - (boardinfo->winamount)))) >= boardinfo->winamount)
 				return boardinfo->board[index];
 	}
 	return 0;

@@ -1,4 +1,5 @@
-char player1 = 'O';
-char player2 = 'X';
+const char player1 = 'O';
+const char player2 = 'X';
 
-int DEBUG = 1;
+/* Set if screen should be cleared(1) or not (0) values other than this will break stuff*/
+const int DEBUG = 0;
