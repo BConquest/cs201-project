@@ -275,10 +275,12 @@ int hardMode(struct gameinfo *boardinfo)
 				positions[i] = temp;
 		}
 	}
-
+	int cols[boardinfo->ncols];
+	/*
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		printf("%d -> ", i);
+		cols[i] = i;
 	}
 	printf("\n");
 	for (int i = 0; i < boardinfo->ncols; i++)
@@ -286,21 +288,27 @@ int hardMode(struct gameinfo *boardinfo)
 		printf("%d -> ", positions[i]);
 	}
 	printf("\n");
-
-	int tempMax = 0;
-	int moveIndex = 0;
-	for (int i = 0; i < boardinfo->ncols; i++)
+	quickSort(positions, cols, 0, boardinfo->ncols-1);
+	for (int i = boardinfo->ncols-1;i > -1; i--)
 	{
-		if (checkAvailable(boardinfo, i) == 1)
+		printf("%d -> ", positions[i]);
+	}
+	printf("\n");
+	for (int i = boardinfo->ncols-1;i > -1; i--)
+	{
+		printf("%d -> ", cols[i]);
+	}
+	printf("\n");*/
+	
+	for(int i = boardinfo->ncols-1; i > -1; i--)
+	{
+		if(checkAvailable(boardinfo, cols[i]) == 1)
 		{
-			if (positions[i] > tempMax)
-			{
-				tempMax = positions[i];
-				moveIndex = i;
-			}
+			return cols[i];
 		}
 	}
-	return moveIndex;
+
+	return easyMode(boardinfo);
 }
 
 int computer(struct gameinfo *boardinfo)

@@ -15,9 +15,12 @@
 	- hard -> the ai chooses the best move
 	- impossible -> plays randomly and plays the best move (2 moves)
 - 3) to play a peice type column number that you want to play in (columns start at 1)
-- 4) after game ends by running out of moves or someone wins can type `stats` to print out stats for the current session
+
+## Config File
+- player1 requires it to be an ascii character anything else will break it
+- player2 is the same as player1
+- DEBUG - when this is set to 0 then the terminal will not be cleared but a newline is printed
 
 # TODO
-- Issue with large boardsizes above 1000
 - Make AI the best
 - get A
