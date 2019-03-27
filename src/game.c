@@ -112,7 +112,7 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
 	{
 		if (boardinfo->board[newIndex] == boardinfo->board[index])
 			count++;
-		if (index - (i * boardinfo->ncols) < (-1-boardinfo->ncols))
+		if (index - (i * boardinfo->ncols) < (-1 - boardinfo->ncols))
 			return 0;
 		else
 			newIndex = index - (i * boardinfo->ncols);
@@ -144,7 +144,7 @@ int checkLeftDiagonalWin(struct gameinfo *boardinfo, int index)
 	{
 		if (boardinfo->board[newIndex] == boardinfo->board[index])
 			count++;
-		if (index - (i * boardinfo->ncols) - i >= (-1-boardinfo->ncols))
+		if (index - (i * boardinfo->ncols) - i >= (-1 - boardinfo->ncols))
 			newIndex = index - (i * boardinfo->ncols) - i;
 		else
 			return 0;
@@ -157,7 +157,8 @@ int validatePath(struct gameinfo *boardinfo)
 	int winamount = boardinfo->winamount;
 	for (int index = boardinfo->ncols * boardinfo->nrows - 1; index > -1; index--)
 	{
-		if (boardinfo->board[index] == 0) continue;
+		if (boardinfo->board[index] == 0)
+			continue;
 		/* Only check 4 directions because checking 8 would be arbitray since
 		 * it would be checking the same peices going forward and backwards
 		 * if it wasnt a win */
@@ -177,15 +178,15 @@ int validatePath(struct gameinfo *boardinfo)
 		}
 
 		/* Checkiung to make sure that it wont go out of bounds or wrap around the board*/
-		if ((index+boardinfo->winamount)%boardinfo->ncols >= boardinfo->winamount || (index+boardinfo->winamount)%boardinfo->ncols == 0)
+		if ((index + boardinfo->winamount) % boardinfo->ncols >= boardinfo->winamount || (index + boardinfo->winamount) % boardinfo->ncols == 0)
 		{
 			if (checkRightDiagonalWin(boardinfo, index) >= (winamount))
 				return boardinfo->board[index];
 		}
 
 		/* checking to make sure board wrap around does not happen */
-		if (((index-boardinfo->winamount)%boardinfo->ncols) < boardinfo->winamount ||
-		    (index-boardinfo->winamount)%boardinfo->ncols == (boardinfo->ncols-1))
+		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount ||
+			(index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
 		{
 			if (checkLeftDiagonalWin(boardinfo, index) >= (winamount))
 				return boardinfo->board[index];
@@ -253,11 +254,11 @@ int dfs(struct gameinfo *boardinfo, int index, int solution, int color)
 				enqueue(searchQueue, test);
 			}
 		}
-		
+
 		test = temp + boardinfo->ncols;
-		if(test < boardinfo->ncols * boardinfo->nrows)
+		if (test < boardinfo->ncols * boardinfo->nrows)
 		{
-			if(boardinfo->board[test] == color && (visited[test] != 1))
+			if (boardinfo->board[test] == color && (visited[test] != 1))
 			{
 				enqueue(depthQueue, depth + 1);
 				enqueue(searchQueue, test);
@@ -385,40 +386,40 @@ int hardMode(struct gameinfo *boardinfo)
 {
 	int positions[boardinfo->ncols];
 
-	for(int i = 0; i < boardinfo->ncols; i++)
+	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		/*initilize array index to 0 before compating it*/
 		int temp;
 		positions[i] = 0;
 		/*Horizontal Checking if oponent will win*/
-		if ((i-boardinfo->winamount) >= 0)
-			positions[i] = dfs(boardinfo, i, i-boardinfo->winamount, 1);
-		if ((i+boardinfo->winamount) < boardinfo->ncols)
+		if ((i - boardinfo->winamount) >= 0)
+			positions[i] = dfs(boardinfo, i, i - boardinfo->winamount, 1);
+		if ((i + boardinfo->winamount) < boardinfo->ncols)
 		{
-			temp = dfs(boardinfo, i, i+boardinfo->winamount, 1);
-			if(temp > positions[i])
+			temp = dfs(boardinfo, i, i + boardinfo->winamount, 1);
+			if (temp > positions[i])
 				positions[i] = temp;
 		}
 
 		/*Vertical Checking, only checking downwards because a peice cant be played uner a different peice*/
-		if (i+((boardinfo->winamount-1)*boardinfo->ncols) < boardinfo->ncols*boardinfo->nrows)
+		if (i + ((boardinfo->winamount - 1) * boardinfo->ncols) < boardinfo->ncols * boardinfo->nrows)
 		{
-			temp = dfs(boardinfo, i, i+((boardinfo->ncols-1)*boardinfo->winamount), 1);
-			if(temp > positions[i])
+			temp = dfs(boardinfo, i, i + ((boardinfo->ncols - 1) * boardinfo->winamount), 1);
+			if (temp > positions[i])
 				positions[i] = temp;
 		}
-	}	
+	}
 	int k = 1;
-	while(k < boardinfo->ncols)
+	while (k < boardinfo->ncols)
 	{
 		int x = positions[k];
-		int j = k -1;
+		int j = k - 1;
 		while (j >= 0 && positions[j] < x)
 		{
-			positions[j+1] = positions[j];
+			positions[j + 1] = positions[j];
 			j -= 1;
 		}
-		positions[j+1] = x;
+		positions[j + 1] = x;
 		k = k + 1;
 	}
 	int temp = positions[boardinfo->ncols];
@@ -429,8 +430,8 @@ int hardMode(struct gameinfo *boardinfo)
 		temp = positions[highestIndex];
 	}
 	return temp % boardinfo->ncols;
-	
-/*	
+
+	/*	
 	int highest[boardinfo->ncols * boardinfo->nrows - 1];
 	int index = boardinfo->ncols * boardinfo->nrows - 1;
 	for (int i = 0; i < boardinfo->ncols * boardinfo->nrows; i++)
@@ -632,6 +633,37 @@ void settings(struct gameinfo *boardinfo)
 		{
 			do
 			{
+				newsetting = boardinfo->ncols;
+				wprintw(win, "Current height: %d\nNew height: ", boardinfo->nrows);
+				wrefresh(win);
+				int test = wscanw(win, "%d", &newsetting);
+				while (test != 1)
+				{
+					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
+					test = wscanw(win, "%d", &newsetting);
+					wrefresh(win);
+				}
+				while (newsetting < boardinfo->winamount)
+				{
+					wprintw(win, "That number is to small, please input a nuber larger than the winamount %d\nnew height: ", boardinfo->winamount);
+					test = wscanw(win, "%d", &newsetting);
+					wrefresh(win);
+					while (test != 1)
+					{
+						wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
+						test = wscanw(win, "%d", &newsetting);
+						wrefresh(win);
+					}
+				}
+			} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
+			boardinfo->ncols = newsetting;
+			*boardinfo = changeBoardSize(boardinfo);
+			clearBoard(boardinfo);
+		}
+		else if (strncmp(setting, "amount", 25) == 0)
+		{
+			do
+			{
 				wprintw(win, "Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
 				wrefresh(win);
 				int test = wscanw(win, "%d", &newsetting);
@@ -642,7 +674,7 @@ void settings(struct gameinfo *boardinfo)
 				}
 				while (newsetting > boardinfo->nrows || newsetting > boardinfo->ncols)
 				{
-					wprintw(win, "That number is to small, please input a nuber smaller than linear board width and height of %d x %d\nnew amount: ", boardinfo->ncols, boardinfo->nrows);
+					wprintw(win, "That number is to small, please input a nuber smaller than boath board width and height of %d x %d\nnew amount: ", boardinfo->ncols, boardinfo->nrows);
 					test = wscanw(win, "%d", &newsetting);
 					wrefresh(win);
 					while (test != 1)
