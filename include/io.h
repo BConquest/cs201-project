@@ -13,10 +13,14 @@ void printSettingsMenu();
 void printGameMenu();
 void printStats(struct scoreboard *);
 
+/* Inits board to be cleared */
 void clearBoard(struct gameinfo *);
+
+/* Clears the console */
 void clearScreen();
 
-void settings(struct gameinfo *);
+/* Functions below return 1 when finished */
+int settings(struct gameinfo *);
 int game(struct gameinfo *, struct scoreboard *);
 
 #endif

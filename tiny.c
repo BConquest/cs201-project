@@ -43,7 +43,9 @@ int main(void)
 		}
 		else if (strcmp(mode, "settings") == 0 && tested == 1)
 		{
-			settings(&boardinfo);
+			clearScreen();
+			printSettingsMenu();
+			while (settings(&boardinfo) != 1);
 		}
 		else if (strcmp(mode, "clear") == 0 && tested == 1)
 		{

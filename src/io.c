@@ -84,122 +84,115 @@ void clearScreen()
 		system("clear");
 }
 
-void settings(struct gameinfo *boardinfo)
+int settings(struct gameinfo *boardinfo)
 {
-	clearScreen();
-	printSettingsMenu();
-	char setting[25] = {'\0'};
+	char setting[25];
 	int newsetting = 0;
 
-	while (strncmp(setting, "done", 25) != 0)
+	setting[0] = '\0';
+	printf("setting: ");
+
+	scanf("%s", setting);
+	if (strncmp(setting, "width", 25) == 0)
 	{
-		setting[0] = '\0';
-		printf("setting: ");
-
-		scanf("%s", setting);
-		if (strncmp(setting, "width", 25) == 0)
+		do
 		{
-			do
+			newsetting = boardinfo->ncols;
+			printf("Current Width: %d\nNew Width: ", boardinfo->ncols);
+			int test = scanf("%d", &newsetting);
+			while (test != 1)
 			{
-				newsetting = boardinfo->ncols;
-				printf("Current Width: %d\nNew Width: ", boardinfo->ncols);
-
-				int test = scanf("%d", &newsetting);
+				printf("That is not a valid number, please input a non-zero positive integer: ");
+				test = scanf("%d", &newsetting);
+			}
+			while (newsetting < boardinfo->winamount)
+			{
+				printf("That number is to small, please input a nuber larger than the winamount %d\nnew width: ", boardinfo->winamount);
+				test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
 					printf("That is not a valid number, please input a non-zero positive integer: ");
 					test = scanf("%d", &newsetting);
 				}
-				while (newsetting < boardinfo->winamount)
-				{
-					printf("That number is to small, please input a nuber larger than the winamount %d\nnew width: ", boardinfo->winamount);
-					test = scanf("%d", &newsetting);
-
-					while (test != 1)
-					{
-						printf("That is not a valid number, please input a non-zero positive integer: ");
-						test = scanf("%d", &newsetting);
-					}
-				}
-			} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
-			boardinfo->ncols = newsetting;
-			*boardinfo = changeBoardSize(boardinfo);
-			clearBoard(boardinfo);
-		}
-		else if (strncmp(setting, "height", 25) == 0)
+			}
+		} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
+		boardinfo->ncols = newsetting;
+		*boardinfo = changeBoardSize(boardinfo);
+		clearBoard(boardinfo);
+	}
+	else if (strncmp(setting, "height", 25) == 0)
+	{
+		do
 		{
-			do
+			newsetting = boardinfo->nrows;
+			printf("Current height: %d\nNew height: ", boardinfo->nrows);
+			int test = scanf("%d", &newsetting);
+			while (test != 1)
 			{
-				newsetting = boardinfo->nrows;
-				printf("Current height: %d\nNew height: ", boardinfo->nrows);
-
-				int test = scanf("%d", &newsetting);
+				printf(ANSI_COLOR_RED "That is not a valid number, please input a non-zero positive integer: "ANSI_COLOR_RESET);
+				test = scanf("%d", &newsetting);
+			}
+			while (newsetting < boardinfo->winamount)
+			{
+				printf(ANSI_COLOR_RED "That number is to small, please input a nuber larger than the winamount %d\nnew height: " ANSI_COLOR_RESET, boardinfo->winamount);
+				test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
-					printf("That is not a valid number, please input a non-zero positive integer: ");
+					printf(ANSI_COLOR_RED "That is not a valid number, please input a non-zero positive integer: " ANSI_COLOR_RESET);
 					test = scanf("%d", &newsetting);
 				}
-				while (newsetting < boardinfo->winamount)
-				{
-					printf("That number is to small, please input a nuber larger than the winamount %d\nnew height: ", boardinfo->winamount);
-					test = scanf("%d", &newsetting);
-
-					while (test != 1)
-					{
-						printf("That is not a valid number, please input a non-zero positive integer: ");
-						test = scanf("%d", &newsetting);
-					}
-				}
-			} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
-			boardinfo->nrows = newsetting;
-			*boardinfo = changeBoardSize(boardinfo);
-			clearBoard(boardinfo);
-		}
-		else if (strncmp(setting, "amount", 25) == 0)
+			}
+		} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
+		boardinfo->nrows = newsetting;
+		*boardinfo = changeBoardSize(boardinfo);
+		clearBoard(boardinfo);
+	}
+	else if (strncmp(setting, "amount", 25) == 0)
+	{
+		do
 		{
-			do
+			printf("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
+			int test = scanf("%d", &newsetting);
+			while (test != 1)
 			{
-				printf("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
-
-				int test = scanf("%d", &newsetting);
+				printf(ANSI_COLOR_RED "That is not a valid number, please input a non-zero positive integer: " ANSI_COLOR_RESET);
+				test = scanf("%d", &newsetting);
+			}
+			while (newsetting > boardinfo->nrows || newsetting > boardinfo->ncols)
+			{
+				printf(ANSI_COLOR_RED "That number is to small, please input a nuber smaller than boath board width and height of %d x %d\nnew amount: " ANSI_COLOR_RESET, boardinfo->ncols, boardinfo->nrows);
+				test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
-					printf("That is not a valid number, please input a non-zero positive integer: ");
+					printf(ANSI_COLOR_RED "That is not a valid number, please input a non-zero positive integer: " ANSI_COLOR_RESET);
 					test = scanf("%d", &newsetting);
 				}
-				while (newsetting > boardinfo->nrows || newsetting > boardinfo->ncols)
-				{
-					printf("That number is to small, please input a nuber smaller than boath board width and height of %d x %d\nnew amount: ", boardinfo->ncols, boardinfo->nrows);
-					test = scanf("%d", &newsetting);
-
-					while (test != 1)
-					{
-						printf("That is not a valid number, please input a non-zero positive integer: ");
-						test = scanf("%d", &newsetting);
-					}
-				}
-			} while (newsetting < 0);
-			boardinfo->winamount = newsetting;
-		}
-		else if (strncmp(setting, "clear", 25) == 0)
-		{
-			clearScreen();
-		}
-		else if (strncmp(setting, "print", 25) == 0)
-		{
-			printBoard(boardinfo);
-			printf("width: %d\n", boardinfo->ncols);
-			printf("height: %d\n", boardinfo->nrows);
-			printf("amount to win: %d\n", boardinfo->winamount);
-		}
-		else if (strncmp(setting, "help", 25) == 0)
-		{
-			printSettingsMenu();
-		}
-		else
-		{
-			printf("ERROR: '%s' is not a command try 'help'\n", setting);
-		}
+			}
+		} while (newsetting < 0);
+		boardinfo->winamount = newsetting;
+	}
+	else if (strncmp(setting, "clear", 25) == 0)
+	{
+		clearScreen();
+	}
+	else if (strncmp(setting, "print", 25) == 0)
+	{
+		printBoard(boardinfo);
+		printf("width: %d\n", boardinfo->ncols);
+		printf("height: %d\n", boardinfo->nrows);
+		printf("amount to win: %d\n", boardinfo->winamount);
+	}
+	else if (strncmp(setting, "help", 25) == 0)
+	{
+		printSettingsMenu();
+	}
+	else if (strncmp(setting, "done", 25) == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		printf(ANSI_COLOR_MAGENTA "ERROR: '%s' is not a command try 'help'\n" ANSI_COLOR_RESET, setting);
 	}
 }
 
@@ -270,7 +263,7 @@ int game(struct gameinfo *boardinfo, struct scoreboard *scores)
 	}
 	else
 	{
-		printf("ERROR: '%s' -> not a valid command, try 'help'\n", person);
+		printf(ANSI_COLOR_MAGENTA "ERROR: '%s' -> not a valid command, try 'help'\n" ANSI_COLOR_RESET, person);
 	}
 	return 0;
 }
