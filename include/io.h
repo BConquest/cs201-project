@@ -10,10 +10,13 @@
 void printBoard(struct gameinfo *);
 void printMenu();
 void printSettingsMenu();
+void printGameMenu();
+void printStats(struct scoreboard *);
 
 void clearBoard(struct gameinfo *);
 void clearScreen();
 
 void settings(struct gameinfo *);
+int game(struct gameinfo *, struct scoreboard *);
 
 #endif

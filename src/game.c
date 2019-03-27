@@ -353,51 +353,49 @@ int hardMode(struct gameinfo *boardinfo)
 		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount || (index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
 		{
 			temp = bfs(boardinfo, (index - boardinfo->winamount) - 1, index, 2);
-			if(temp > positions[i])
+			if (temp > positions[i])
 				positions[i] = temp;
 		}
 		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount || (index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
 		{
 			temp = bfs(boardinfo, (index - boardinfo->winamount) - 1, index, 1);
-			if(temp > positions[i])
+			if (temp > positions[i])
 				positions[i] = temp;
 		}
 
 		/*Vertical Checking if computer can win and then checks to see if player has a chance */
-		if ((index -((boardinfo->winamount-1)*boardinfo->ncols)) > -1)
+		if ((index - ((boardinfo->winamount - 1) * boardinfo->ncols)) > -1)
 		{
-			temp = bfs(boardinfo, index, (index -((boardinfo->winamount-1)*boardinfo->ncols)), 2);
-			if(temp > positions[i])
+			temp = bfs(boardinfo, index, (index - ((boardinfo->winamount - 1) * boardinfo->ncols)), 2);
+			if (temp > positions[i])
 				positions[i] = temp;
 		}
-		if ((index -((boardinfo->winamount-1)*boardinfo->ncols)) > -1)
+		if ((index - ((boardinfo->winamount - 1) * boardinfo->ncols)) > -1)
 		{
-			temp = bfs(boardinfo, index, (index -((boardinfo->winamount-1)*boardinfo->ncols)), 1);
-			if(temp > positions[i])
+			temp = bfs(boardinfo, index, (index - ((boardinfo->winamount - 1) * boardinfo->ncols)), 1);
+			if (temp > positions[i])
 				positions[i] = temp;
 		}
 	}
 
-
-	for(int i = 0; i < boardinfo->ncols; i++)
+	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		printf("%d -> ", i);
 	}
 	printf("\n");
-	for(int i = 0; i < boardinfo->ncols; i++)
+	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		printf("%d -> ", positions[i]);
 	}
 	printf("\n");
 
-
 	int tempMax = 0;
 	int moveIndex = 0;
-	for(int i = 0; i < boardinfo->ncols;i++)
+	for (int i = 0; i < boardinfo->ncols; i++)
 	{
-		if(checkAvailable(boardinfo, i) == 1)
+		if (checkAvailable(boardinfo, i) == 1)
 		{
-			if(positions[i] > tempMax)
+			if (positions[i] > tempMax)
 			{
 				tempMax = positions[i];
 				moveIndex = i;
@@ -413,7 +411,7 @@ int computer(struct gameinfo *boardinfo)
 	int imode = 0;
 	int playCounter = 0, playerwin = 0, add = 0;
 	printf("Hardness (easy, hard, impossible): ");
-	
+
 	scanf("%s", mode);
 
 	while (strncmp(mode, "easy", 25) != 0 &&
@@ -421,7 +419,6 @@ int computer(struct gameinfo *boardinfo)
 		   strncmp(mode, "impossible", 25) != 0)
 	{
 		printf("Not an option\n");
-		
 		scanf("%s", mode);
 	}
 	if (strncmp(mode, "easy", 25) == 0)
@@ -438,7 +435,7 @@ int computer(struct gameinfo *boardinfo)
 		do
 		{
 			printf("Column to place peice in: ");
-			
+
 			int test = scanf("%d", &add);
 			while (test != 1)
 			{
@@ -451,8 +448,6 @@ int computer(struct gameinfo *boardinfo)
 		if (playerwin != 0)
 			return playerwin;
 
-		printf("Computer is moving...\n");
-		
 		playCounter++;
 
 		switch (imode)

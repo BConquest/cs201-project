@@ -16,6 +16,17 @@ struct gameinfo
 	int *board;
 };
 
+struct scoreboard
+{
+	int playervplayer;
+	int player1wins;
+	int playerdraws;
+	int playervcomputer;
+	int computerwins;
+	int computerdraws;
+};
+
+
 #include "./io.h"
 
 /* Updates the current boardsize */
