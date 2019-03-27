@@ -51,7 +51,7 @@ int checkRightDiagonalWin(struct gameinfo *, int);
 int validatePath(struct gameinfo *);
 
 /* checks to see if their a path between two indexs */
-int bfs(struct gameinfo *boardinfo, int, int);
+int bfs(struct gameinfo *boardinfo, int, int, int);
 /* checks to see if their a win in the game*/
 int checkWin(struct gameinfo *);
 

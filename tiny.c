@@ -124,7 +124,7 @@ int main(void)
 			}
 			else if (strncmp(person, "done", 25) == 0)
 			{
-				strncpy(mode, "clear", 5);
+				strncpy(mode, "clear", 25);
 			}
 			else if (strncmp(person, "stats", 25) == 0)
 			{

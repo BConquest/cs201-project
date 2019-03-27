@@ -185,8 +185,7 @@ int validatePath(struct gameinfo *boardinfo)
 		}
 
 		/* checking to make sure board wrap around does not happen */
-		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount ||
-			(index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
+		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount || (index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
 		{
 			if (checkLeftDiagonalWin(boardinfo, index) >= (winamount))
 				return boardinfo->board[index];
@@ -196,7 +195,7 @@ int validatePath(struct gameinfo *boardinfo)
 	return 0;
 }
 
-int dfs(struct gameinfo *boardinfo, int index, int solution, int color)
+int bfs(struct gameinfo *boardinfo, int index, int solution, int color)
 {
 	struct queue *searchQueue = malloc(sizeof(struct queue));
 	struct queue *depthQueue = malloc(sizeof(struct queue));
@@ -225,6 +224,7 @@ int dfs(struct gameinfo *boardinfo, int index, int solution, int color)
 			max = depth;
 		int test;
 
+		/* Searches to the right */
 		test = temp + 1;
 		if (test < boardinfo->ncols * boardinfo->nrows)
 		{
@@ -235,6 +235,7 @@ int dfs(struct gameinfo *boardinfo, int index, int solution, int color)
 			}
 		}
 
+		/* Searches to the right */
 		test = temp - 1;
 		if (test > -1)
 		{
@@ -245,18 +246,9 @@ int dfs(struct gameinfo *boardinfo, int index, int solution, int color)
 			}
 		}
 
+		/* Searches top wards */
 		test = temp - boardinfo->ncols;
 		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
-			{
-				enqueue(depthQueue, depth + 1);
-				enqueue(searchQueue, test);
-			}
-		}
-
-		test = temp + boardinfo->ncols;
-		if (test < boardinfo->ncols * boardinfo->nrows)
 		{
 			if (boardinfo->board[test] == color && (visited[test] != 1))
 			{
@@ -294,6 +286,7 @@ int dfs(struct gameinfo *boardinfo, int index, int solution, int color)
 	}
 	free(depthQueue);
 	free(searchQueue);
+	wprintw(win, "%d -> bfs -> %d\n", index, solution);
 	return max;
 }
 
@@ -388,101 +381,84 @@ int hardMode(struct gameinfo *boardinfo)
 
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
+		int index = (boardinfo->nrows - 1) * boardinfo->ncols + i;
+
+		for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
+			if (boardinfo->board[index] == 0)
+				break;
+		wprintw(win, "column %d: %d\n", i, index);
+
 		/*initilize array index to 0 before compating it*/
 		int temp;
 		positions[i] = 0;
-		/*Horizontal Checking if oponent will win*/
-		if ((i - boardinfo->winamount) >= 0)
-			positions[i] = dfs(boardinfo, i, i - boardinfo->winamount, 1);
-		if ((i + boardinfo->winamount) < boardinfo->ncols)
+		/*Horizontal Checking if computer can win and then if the person has a higher chance*/
+		if ((((index + boardinfo->winamount) % boardinfo->ncols >= boardinfo->winamount || (index + boardinfo->winamount) % boardinfo->ncols == 0)))
 		{
-			temp = dfs(boardinfo, i, i + boardinfo->winamount, 1);
+			temp = bfs(boardinfo, index, index + boardinfo->winamount - 1, 2);
 			if (temp > positions[i])
 				positions[i] = temp;
 		}
-
-		/*Vertical Checking, only checking downwards because a peice cant be played uner a different peice*/
-		if (i + ((boardinfo->winamount - 1) * boardinfo->ncols) < boardinfo->ncols * boardinfo->nrows)
+		if ((((index + boardinfo->winamount) % boardinfo->ncols >= boardinfo->winamount || (index + boardinfo->winamount) % boardinfo->ncols == 0)))
 		{
-			temp = dfs(boardinfo, i, i + ((boardinfo->ncols - 1) * boardinfo->winamount), 1);
+			temp = bfs(boardinfo, index, index + boardinfo->winamount - 1, 1);
 			if (temp > positions[i])
 				positions[i] = temp;
 		}
-	}
-	int k = 1;
-	while (k < boardinfo->ncols)
-	{
-		int x = positions[k];
-		int j = k - 1;
-		while (j >= 0 && positions[j] < x)
+		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount || (index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
 		{
-			positions[j + 1] = positions[j];
-			j -= 1;
+			temp = bfs(boardinfo, (index - boardinfo->winamount) - 1, index, 2);
+			if(temp > positions[i])
+				positions[i] = temp;
 		}
-		positions[j + 1] = x;
-		k = k + 1;
-	}
-	int temp = positions[boardinfo->ncols];
-	int highestIndex = 0;
-	while (checkAvailable(boardinfo, temp) == 0)
-	{
-		highestIndex++;
-		temp = positions[highestIndex];
-	}
-	return temp % boardinfo->ncols;
-
-	/*	
-	int highest[boardinfo->ncols * boardinfo->nrows - 1];
-	int index = boardinfo->ncols * boardinfo->nrows - 1;
-	for (int i = 0; i < boardinfo->ncols * boardinfo->nrows; i++)
-		highest[i] = 0;
-
-	for (; index > -1; index--)
-	{
-		if ((((index + boardinfo->winamount) % boardinfo->ncols) >= boardinfo->winamount) ||
-			(((index + boardinfo->winamount) % boardinfo->ncols) == 0))
-			highest[index] = dfs(boardinfo, index, index + boardinfo->winamount - 1);
-
-		if (index - (boardinfo->ncols * (boardinfo->winamount - 1)) > -1)
-			highest[index] = dfs(boardinfo, index, index - (boardinfo->ncols * (boardinfo->winamount - 1)));
-
-		if (index - (((boardinfo->winamount - 2) * boardinfo->ncols) + (boardinfo->winamount)) > -1)
-			highest[index] = dfs(boardinfo, index, (index - (((boardinfo->winamount - 2) * boardinfo->ncols) + (boardinfo->winamount))));
-
-		if (index - (((boardinfo->winamount) * boardinfo->ncols) - (boardinfo->winamount)) > -1)
-			highest[index] = dfs(boardinfo, index, (index - (((boardinfo->winamount) * boardinfo->ncols) - (boardinfo->winamount))));
-	}
-
-	int k = 1;
-	while (k < boardinfo->nrows * boardinfo->ncols)
-	{
-		int x = highest[k];
-		int j = k - 1;
-		while (j >= 0 && highest[j] < x)
+		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount || (index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
 		{
-			highest[j + 1] = highest[j];
-			j = j - 1;
+			temp = bfs(boardinfo, (index - boardinfo->winamount) - 1, index, 1);
+			if(temp > positions[i])
+				positions[i] = temp;
 		}
-		highest[j + 1] = x;
-		k = k + 1;
+
+		/*Vertical Checking if computer can win and then checks to see if player has a chance */
+		if ((index -((boardinfo->winamount-1)*boardinfo->ncols)) > -1)
+		{
+			temp = bfs(boardinfo, index, (index -((boardinfo->winamount-1)*boardinfo->ncols)), 2);
+			if(temp > positions[i])
+				positions[i] = temp;
+		}
+		if ((index -((boardinfo->winamount-1)*boardinfo->ncols)) > -1)
+		{
+			temp = bfs(boardinfo, index, (index -((boardinfo->winamount-1)*boardinfo->ncols)), 1);
+			if(temp > positions[i])
+				positions[i] = temp;
+		}
 	}
 
-	int temp = highest[0];
-	int highestIndex = 0;
-	while (checkAvailable(boardinfo, temp) == 0)
+
+	for(int i = 0; i < boardinfo->ncols; i++)
 	{
-		highestIndex++;
-		temp = highest[highestIndex];
+		wprintw(win, "%d -> ", i);
 	}
-	if(highest[highestIndex] == highest[highestIndex + 1])
+	wprintw(win, "\n");
+	for(int i = 0; i < boardinfo->ncols; i++)
 	{
-		int randMove = rand();
-		if (randMove % 2 == 0)
-			return highest[highestIndex] % boardinfo->ncols;
-		else
-			return highest[highestIndex + 1] % boardinfo->ncols;
+		wprintw(win, "%d -> ", positions[i]);
 	}
-	return temp % boardinfo->ncols;*/
+	wprintw(win, "\n");
+
+
+	int tempMax = 0;
+	int moveIndex = 0;
+	for(int i = 0; i < boardinfo->ncols;i++)
+	{
+		if(checkAvailable(boardinfo, i) == 1)
+		{
+			if(positions[i] > tempMax)
+			{
+				tempMax = positions[i];
+				moveIndex = i;
+			}
+		}
+	}
+	return moveIndex;
 }
 
 int computer(struct gameinfo *boardinfo)
