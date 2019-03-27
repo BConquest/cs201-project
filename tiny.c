@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "./include/io.h"
 #include "./include/game.h"
+
 #include "./include/stack.h"
 
 struct scoreboard
@@ -17,6 +18,8 @@ struct scoreboard
 
 int main(void)
 {
+	clearScreen();
+
 	struct gameinfo boardinfo;
 	struct scoreboard scores;
 
@@ -38,10 +41,7 @@ int main(void)
 	int winner = 0;
 
 	clearBoard(&boardinfo);
-	clear();
-
 	printMenu();
-
 	while (strncmp(mode, "quit", 25) != 0)
 	{
 		mode[0] = '\0';
@@ -126,7 +126,6 @@ int main(void)
 			else
 			{
 				printf( "ERROR: '%s' -> not a valid command, try 'help'\n", person);
-				
 			}
 		}
 		if (strcmp(mode, "settings") == 0 && tested == 1)
