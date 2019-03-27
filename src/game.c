@@ -1,13 +1,13 @@
 #include "../include/game.h"
 
-int addPiece(struct gameinfo *boardinfo, int j, int colour)
+int addPiece(struct gameinfo *boardinfo, int col, int colour)
 {
 	/* Checks to see if that is a valid place to place */
-	if (j >= boardinfo->ncols || j < 0)
+	if (col >= boardinfo->ncols || col < 0)
 		return 0;
 
 	/* Calculates the current index bassed on a column number */
-	int index = (boardinfo->nrows - 1) * boardinfo->ncols + j;
+	int index = (boardinfo->nrows - 1) * boardinfo->ncols + col;
 
 	/* Loops through the column to finding a free space bottom up to save time*/
 	for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
@@ -23,13 +23,13 @@ int addPiece(struct gameinfo *boardinfo, int j, int colour)
 	return 1;
 }
 
-int checkAvailable(struct gameinfo *boardinfo, int j)
+int checkAvailable(struct gameinfo *boardinfo, int col)
 {
 	/* Checks to make sure that j is not out of bounds */
-	if (j >= boardinfo->ncols || j < 0)
+	if (col >= boardinfo->ncols || col < 0)
 		return 0;
 
-	int index = (boardinfo->nrows - 1) * boardinfo->ncols + j;
+	int index = (boardinfo->nrows - 1) * boardinfo->ncols + col;
 
 	/* Loops through the column to finding a free space bottom up to save time*/
 	for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
