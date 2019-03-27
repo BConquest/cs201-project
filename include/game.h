@@ -4,11 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ncurses.h>
 
 #include "./queue.h"
-
-WINDOW *win;
 
 /* Holds info about the current board */
 struct gameinfo

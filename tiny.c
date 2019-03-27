@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ncurses.h>
 
 #include "./include/game.h"
 #include "./include/stack.h"
@@ -38,40 +37,20 @@ int main(void)
 	char person[25] = {'\0'};
 	int winner = 0;
 
-	int height, width;
-	initscr();
-	getmaxyx(stdscr, height, width);
-
 	clearBoard(&boardinfo);
 	clear();
-
-	win = newwin(height, width, 1, 1);
-
-	scrollok(win, TRUE);
-	echo();
-
-	if (has_colors() == FALSE)
-	{
-		endwin();
-		printf("Your terminal does not support color\n");
-		exit(1);
-	}
-
-	start_color();
 
 	printMenu();
 
 	while (strncmp(mode, "quit", 25) != 0)
 	{
 		mode[0] = '\0';
-		wprintw(win, "main menu: ");
-		wrefresh(win);
-		int tested = wscanw(win, "%25s", mode);
+		printf( "main menu: ");
+		int tested = scanf("%25s", mode);
 		while (strncmp(mode, "game", 25) == 0 && tested == 1)
 		{
-			wprintw(win, "game: ");
-			wrefresh(win);
-			wscanw(win, "%25s", person);
+			printf( "game: ");
+			scanf("%25s", person);
 			if (strncmp(person, "player", 25) == 0)
 			{
 				winner = player(&boardinfo);
@@ -80,14 +59,12 @@ int main(void)
 				scores.playervplayer = scores.playervplayer + 1;
 				if (winner == 0)
 				{
-					wprintw(win, "Ran out of space to win\n");
-					wrefresh(win);
+					printf( "Ran out of space to win\n");
 					scores.playerdraws = scores.playerdraws + 1;
 				}
 				else
 				{
-					wprintw(win, "Player %d WON!!\n", winner);
-					wrefresh(win);
+					printf( "Player %d WON!!\n", winner);
 					if(winner == 1)
 						scores.player1wins = scores.player1wins + 1;
 				}
@@ -100,23 +77,22 @@ int main(void)
 				scores.playervcomputer = scores.playervcomputer + 1;
 				if (winner == 0)
 				{
-					wprintw(win, "Ran out of space to win\n");
+					printf( "Ran out of space to win\n");
 					scores.computerdraws = scores.computerdraws + 1;
 				}
 				else if (winner == 1)
 				{
-					wprintw(win, "You have beat the computer. Congrats\n");
+					printf( "You have beat the computer. Congrats\n");
 				}
 				else if (winner == 2)
 				{
-					wprintw(win, "The Computer has beaten you.\n");
+					printf( "The Computer has beaten you.\n");
 					scores.computerwins = scores.computerwins + 1;
 				}
 				else
 				{
-					wprintw(win, "Failure\n");
+					printf( "Failure\n");
 				}
-				wrefresh(win);
 			}
 			else if (strncmp(person, "clear", 25) == 0)
 			{
@@ -128,29 +104,29 @@ int main(void)
 			}
 			else if (strncmp(person, "stats", 25) == 0)
 			{
-				wprintw(win, "====STATS====\n");
-				wprintw(win, "Player Vs. Player: %d\n", scores.playervplayer);
-				wprintw(win, "Player1 wins: %d\n", scores.player1wins);
-				wprintw(win, "Player2 wins: %d\n", scores.playervplayer - scores.player1wins - scores.playerdraws);
-				wprintw(win, "Amount of Draws: %d\n", scores.playerdraws);
-				wprintw(win, "Player Vs. Computer: %d\n", scores.playervcomputer);
-				wprintw(win, "Player wins: %d\n", scores.playervcomputer - scores.computerwins - scores.computerdraws);
-				wprintw(win, "Computer wins: %d\n", scores.computerwins);
-				wprintw(win, "Amount of Draws: %d\n", scores.computerdraws);
+				printf( "====STATS====\n");
+				printf( "Player Vs. Player: %d\n", scores.playervplayer);
+				printf( "Player1 wins: %d\n", scores.player1wins);
+				printf( "Player2 wins: %d\n", scores.playervplayer - scores.player1wins - scores.playerdraws);
+				printf( "Amount of Draws: %d\n", scores.playerdraws);
+				printf( "Player Vs. Computer: %d\n", scores.playervcomputer);
+				printf( "Player wins: %d\n", scores.playervcomputer - scores.computerwins - scores.computerdraws);
+				printf( "Computer wins: %d\n", scores.computerwins);
+				printf( "Amount of Draws: %d\n", scores.computerdraws);
 			}
 			else if (strncmp(person, "help", 25) == 0)
 			{
-				wprintw(win, "player -> will enter into a game versues a player\n");
-				wprintw(win, "computer -> will enter into a game versues a computer\n");
-				wprintw(win, "\t-> 'easy' -> the computer will play randomly and plays second\n\t-> 'hard' -> the computer uses bfs to find the best move and plays first\n\t>'impossible' -> plays randomly and uses bfs while letting the player go first\n");
-				wprintw(win, "clear -> clears the screen\n");
-				wprintw(win, "done -> takes you back to the main menu\n");
-				wprintw(win, "help -> prints the help message\n");
+				printf( "player -> will enter into a game versues a player\n");
+				printf( "computer -> will enter into a game versues a computer\n");
+				printf( "\t-> 'easy' -> the computer will play randomly and plays second\n\t-> 'hard' -> the computer uses bfs to find the best move and plays first\n\t>'impossible' -> plays randomly and uses bfs while letting the player go first\n");
+				printf( "clear -> clears the screen\n");
+				printf( "done -> takes you back to the main menu\n");
+				printf( "help -> prints the help message\n");
 			}
 			else
 			{
-				wprintw(win, "ERROR: '%s' -> not a valid command, try 'help'\n", person);
-				wrefresh(win);
+				printf( "ERROR: '%s' -> not a valid command, try 'help'\n", person);
+				
 			}
 		}
 		if (strcmp(mode, "settings") == 0 && tested == 1)
@@ -167,12 +143,9 @@ int main(void)
 		}
 		else
 		{
-			wprintw(win, "MERROR: '%s' -> not a valid command, try 'help'\n", mode);
+			printf( "ERROR: '%s' -> not a valid command, try 'help'\n", mode);
 		}
 	}
-
 	free(boardinfo.board);
-	delwin(win);
-	endwin();
 	return 0;
 }

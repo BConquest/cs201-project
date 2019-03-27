@@ -5,39 +5,28 @@ void printBoard(struct gameinfo *boardinfo)
 {
 	int index = 0;
 
-	/* Colors are inverted so that they are more visible */
-	init_pair(1, COLOR_BLACK, COLOR_RED);
-	init_pair(2, COLOR_BLACK, COLOR_YELLOW);
-	init_pair(3, COLOR_BLACK, COLOR_WHITE);
-
 	for (; index < boardinfo->nrows * boardinfo->ncols; index++)
 	{
 		if (index % boardinfo->ncols == 0)
-			wprintw(win, "\n");
+			printf("\n");
 
 		if (boardinfo->board[index] == 0)
 		{
-			wattron(win, COLOR_PAIR(3));
-			wprintw(win, "_ ");
-			wattroff(win, COLOR_PAIR(3));
+			printf("_ ");
 		}
 		else if (boardinfo->board[index] == 1)
 		{
-			wattron(win, COLOR_PAIR(1));
-			wprintw(win, "%c ", player1);
-			wattroff(win, COLOR_PAIR(1));
+			printf(ANSI_COLOR_RED "%c " ANSI_COLOR_RESET, player1);
 		}
 		else if (boardinfo->board[index] == 2)
 		{
-			wattron(win, COLOR_PAIR(2));
-			wprintw(win, "%c ", player2);
-			wattroff(win, COLOR_PAIR(2));
+			printf(ANSI_COLOR_BLUE "%c " ANSI_COLOR_RESET, player2);
 		}
 		else
-			wprintw(win, "E ");
+			printf("E ");
 	}
-	wprintw(win, "\n");
-	wrefresh(win);
+	printf("\n");
+	
 }
 
 void clearBoard(struct gameinfo *boardinfo)
@@ -286,16 +275,16 @@ int bfs(struct gameinfo *boardinfo, int index, int solution, int color)
 	}
 	free(depthQueue);
 	free(searchQueue);
-	wprintw(win, "%d -> bfs -> %d\n", index, solution);
+	printf("%d -> bfs -> %d\n", index, solution);
 	return max;
 }
 
 void clearScreen()
 {
 	if (DEBUG == 0)
-		wprintw(win, "\n");
+		printf("\n");
 	else
-		wclear(win);
+		system("clear");
 }
 
 int player(struct gameinfo *boardinfo)
@@ -304,28 +293,28 @@ int player(struct gameinfo *boardinfo)
 	int secondplayer = firstplayer == 1 ? 2 : 1;
 	int moveIndex = 0, playCount = 0;
 
-	wprintw(win, "Player %d will go first.\n", firstplayer);
-	wprintw(win, "Type the number of the column that you want to play in\n");
+	printf("Player %d will go first.\n", firstplayer);
+	printf("Type the number of the column that you want to play in\n");
 	while (playCount < boardinfo->ncols * boardinfo->nrows)
 	{
 		clearScreen();
 		printBoard(boardinfo);
-		wprintw(win, "Player %d move > ", firstplayer);
-		int test = wscanw(win, "%d", &moveIndex);
+		printf("Player %d move > ", firstplayer);
+		int test = scanf("%d", &moveIndex);
 		while (test != 1)
 		{
-			wprintw(win, "Not a Number\nPlease enter a number >");
-			test = wscanw(win, "%d", &moveIndex);
+			printf("Not a Number\nPlease enter a number >");
+			test = scanf("%d", &moveIndex);
 		}
 		while (checkAvailable(boardinfo, moveIndex - 1) == 0)
 		{
-			wprintw(win, "That Place is not available to playing");
-			wprintw(win, "\nPlayer %d move >", firstplayer);
-			test = wscanw(win, "%d", &moveIndex);
+			printf("That Place is not available to playing");
+			printf("\nPlayer %d move >", firstplayer);
+			test = scanf("%d", &moveIndex);
 			while (test != 1)
 			{
-				wprintw(win, "Not a Number\nPlease enter a number >");
-				test = wscanw(win, "%d", &moveIndex);
+				printf("Not a Number\nPlease enter a number >");
+				test = scanf("%d", &moveIndex);
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, firstplayer);
@@ -339,22 +328,22 @@ int player(struct gameinfo *boardinfo)
 
 		clearScreen();
 		printBoard(boardinfo);
-		wprintw(win, "Player %d move > ", secondplayer);
-		test = wscanw(win, "%d", &moveIndex);
+		printf("Player %d move > ", secondplayer);
+		test = scanf("%d", &moveIndex);
 		while (test != 1)
 		{
-			wprintw(win, "Not a number\nEnter a number >");
-			test = wscanw(win, "%d", &moveIndex);
+			printf("Not a number\nEnter a number >");
+			test = scanf("%d", &moveIndex);
 		}
 		while (checkAvailable(boardinfo, moveIndex - 1) == 0)
 		{
-			wprintw(win, "That place is not available try somewhere else >");
-			wprintw(win, "\nPlayer %d move > ", secondplayer);
-			test = wscanw(win, "%d", &moveIndex);
+			printf("That place is not available try somewhere else >");
+			printf("\nPlayer %d move > ", secondplayer);
+			test = scanf("%d", &moveIndex);
 			while (test != 1)
 			{
-				wprintw(win, "Not a number\nPlease eneter a number > ");
-				test = wscanw(win, "%d", &moveIndex);
+				printf("Not a number\nPlease eneter a number > ");
+				test = scanf("%d", &moveIndex);
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, secondplayer);
@@ -386,7 +375,7 @@ int hardMode(struct gameinfo *boardinfo)
 		for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
 			if (boardinfo->board[index] == 0)
 				break;
-		wprintw(win, "column %d: %d\n", i, index);
+		printf("column %d: %d\n", i, index);
 
 		/*initilize array index to 0 before compating it*/
 		int temp;
@@ -435,14 +424,14 @@ int hardMode(struct gameinfo *boardinfo)
 
 	for(int i = 0; i < boardinfo->ncols; i++)
 	{
-		wprintw(win, "%d -> ", i);
+		printf("%d -> ", i);
 	}
-	wprintw(win, "\n");
+	printf("\n");
 	for(int i = 0; i < boardinfo->ncols; i++)
 	{
-		wprintw(win, "%d -> ", positions[i]);
+		printf("%d -> ", positions[i]);
 	}
-	wprintw(win, "\n");
+	printf("\n");
 
 
 	int tempMax = 0;
@@ -466,17 +455,17 @@ int computer(struct gameinfo *boardinfo)
 	char mode[25] = {'\0'};
 	int imode = 0;
 	int playCounter = 0, playerwin = 0, add = 0;
-	wprintw(win, "Hardness (easy, hard, impossible): ");
-	wrefresh(win);
-	wscanw(win, "%s", mode);
+	printf("Hardness (easy, hard, impossible): ");
+	
+	scanf("%s", mode);
 
 	while (strncmp(mode, "easy", 25) != 0 &&
 		   strncmp(mode, "hard", 25) != 0 &&
 		   strncmp(mode, "impossible", 25) != 0)
 	{
-		wprintw(win, "Not an option\n");
-		wrefresh(win);
-		wscanw(win, "%s", mode);
+		printf("Not an option\n");
+		
+		scanf("%s", mode);
 	}
 	if (strncmp(mode, "easy", 25) == 0)
 		imode = 0;
@@ -491,13 +480,13 @@ int computer(struct gameinfo *boardinfo)
 		printBoard(boardinfo);
 		do
 		{
-			wprintw(win, "Column to place peice in: ");
-			wrefresh(win);
-			int test = wscanw(win, "%d", &add);
+			printf("Column to place peice in: ");
+			
+			int test = scanf("%d", &add);
 			while (test != 1)
 			{
-				wprintw(win, "Error not a number, please input a number: ");
-				test = wscanw(win, "%d", &add);
+				printf("Error not a number, please input a number: ");
+				test = scanf("%d", &add);
 			}
 		} while (addPiece(boardinfo, add - 1, 1) == 0);
 
@@ -505,8 +494,8 @@ int computer(struct gameinfo *boardinfo)
 		if (playerwin != 0)
 			return playerwin;
 
-		wprintw(win, "Computer is moving...\n");
-		wrefresh(win);
+		printf("Computer is moving...\n");
+		
 		playCounter++;
 
 		switch (imode)
@@ -540,12 +529,12 @@ int computer(struct gameinfo *boardinfo)
 
 void printMenu()
 {
-	wprintw(win, "game -> lets you choose to play a game between a person and a computer\n");
-	wprintw(win, "settings -> lets you changes game settings such as board size, and amount to win\n");
-	wprintw(win, "clear -> clears the screen\n");
-	wprintw(win, "help -> displays this help menu, also works in all the other sub menues\n");
-	wprintw(win, "quit -> quits the game\n");
-	wrefresh(win);
+	printf("game -> lets you choose to play a game between a person and a computer\n");
+	printf("settings -> lets you changes game settings such as board size, and amount to win\n");
+	printf("clear -> clears the screen\n");
+	printf("help -> displays this help menu, also works in all the other sub menues\n");
+	printf("quit -> quits the game\n");
+	
 }
 
 struct gameinfo changeBoardSize(struct gameinfo *boardinfo)
@@ -571,33 +560,33 @@ void settings(struct gameinfo *boardinfo)
 	while (strncmp(setting, "done", 25) != 0)
 	{
 		setting[0] = '\0';
-		wprintw(win, "setting: ");
-		wrefresh(win);
-		wscanw(win, "%s", setting);
+		printf("setting: ");
+		
+		scanf("%s", setting);
 		if (strncmp(setting, "width", 25) == 0)
 		{
 			do
 			{
 				newsetting = boardinfo->ncols;
-				wprintw(win, "Current Width: %d\nNew Width: ", boardinfo->ncols);
-				wrefresh(win);
-				int test = wscanw(win, "%d", &newsetting);
+				printf("Current Width: %d\nNew Width: ", boardinfo->ncols);
+				
+				int test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
-					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
-					test = wscanw(win, "%d", &newsetting);
-					wrefresh(win);
+					printf("That is not a valid number, please input a non-zero positive integer: ");
+					test = scanf("%d", &newsetting);
+					
 				}
 				while (newsetting < boardinfo->winamount)
 				{
-					wprintw(win, "That number is to small, please input a nuber larger than the winamount %d\nnew width: ", boardinfo->winamount);
-					test = wscanw(win, "%d", &newsetting);
-					wrefresh(win);
+					printf("That number is to small, please input a nuber larger than the winamount %d\nnew width: ", boardinfo->winamount);
+					test = scanf("%d", &newsetting);
+					
 					while (test != 1)
 					{
-						wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
-						test = wscanw(win, "%d", &newsetting);
-						wrefresh(win);
+						printf("That is not a valid number, please input a non-zero positive integer: ");
+						test = scanf("%d", &newsetting);
+						
 					}
 				}
 			} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
@@ -610,25 +599,25 @@ void settings(struct gameinfo *boardinfo)
 			do
 			{
 				newsetting = boardinfo->ncols;
-				wprintw(win, "Current height: %d\nNew height: ", boardinfo->nrows);
-				wrefresh(win);
-				int test = wscanw(win, "%d", &newsetting);
+				printf("Current height: %d\nNew height: ", boardinfo->nrows);
+				
+				int test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
-					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
-					test = wscanw(win, "%d", &newsetting);
-					wrefresh(win);
+					printf("That is not a valid number, please input a non-zero positive integer: ");
+					test = scanf("%d", &newsetting);
+					
 				}
 				while (newsetting < boardinfo->winamount)
 				{
-					wprintw(win, "That number is to small, please input a nuber larger than the winamount %d\nnew height: ", boardinfo->winamount);
-					test = wscanw(win, "%d", &newsetting);
-					wrefresh(win);
+					printf("That number is to small, please input a nuber larger than the winamount %d\nnew height: ", boardinfo->winamount);
+					test = scanf("%d", &newsetting);
+					
 					while (test != 1)
 					{
-						wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
-						test = wscanw(win, "%d", &newsetting);
-						wrefresh(win);
+						printf("That is not a valid number, please input a non-zero positive integer: ");
+						test = scanf("%d", &newsetting);
+						
 					}
 				}
 			} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
@@ -640,24 +629,24 @@ void settings(struct gameinfo *boardinfo)
 		{
 			do
 			{
-				wprintw(win, "Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
-				wrefresh(win);
-				int test = wscanw(win, "%d", &newsetting);
+				printf("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
+				
+				int test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
-					wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
-					test = wscanw(win, "%d", &newsetting);
+					printf("That is not a valid number, please input a non-zero positive integer: ");
+					test = scanf("%d", &newsetting);
 				}
 				while (newsetting > boardinfo->nrows || newsetting > boardinfo->ncols)
 				{
-					wprintw(win, "That number is to small, please input a nuber smaller than boath board width and height of %d x %d\nnew amount: ", boardinfo->ncols, boardinfo->nrows);
-					test = wscanw(win, "%d", &newsetting);
-					wrefresh(win);
+					printf("That number is to small, please input a nuber smaller than boath board width and height of %d x %d\nnew amount: ", boardinfo->ncols, boardinfo->nrows);
+					test = scanf("%d", &newsetting);
+					
 					while (test != 1)
 					{
-						wprintw(win, "That is not a valid number, please input a non-zero positive integer: ");
-						test = wscanw(win, "%d", &newsetting);
-						wrefresh(win);
+						printf("That is not a valid number, please input a non-zero positive integer: ");
+						test = scanf("%d", &newsetting);
+						
 					}
 				}
 			} while (newsetting < 0);
@@ -670,27 +659,27 @@ void settings(struct gameinfo *boardinfo)
 		else if (strncmp(setting, "print", 25) == 0)
 		{
 			printBoard(boardinfo);
-			wprintw(win, "width: %d\n", boardinfo->ncols);
-			wprintw(win, "height: %d\n", boardinfo->nrows);
-			wprintw(win, "amount to win: %d\n", boardinfo->winamount);
-			wrefresh(win);
+			printf("width: %d\n", boardinfo->ncols);
+			printf("height: %d\n", boardinfo->nrows);
+			printf("amount to win: %d\n", boardinfo->winamount);
+			
 		}
 		else if (strncmp(setting, "help", 25) == 0)
 		{
-			wprintw(win, "Current commands are: \n");
-			wprintw(win, "width -> sets the new width of the game board\n\thas to be above 0\n");
-			wprintw(win, "height -> sets the new height of the game board\n\thas to be above 0\n");
-			wprintw(win, "amount -> changes the amount you need to win\n\thas to be above 0\n");
-			wprintw(win, "clear -> clears the screen\n");
-			wprintw(win, "print -> prints current board size\n");
-			wprintw(win, "done -> saves settings and returns to main menu\n");
-			wprintw(win, "help -> prints the message\n");
-			wrefresh(win);
+			printf("Current commands are: \n");
+			printf("width -> sets the new width of the game board\n\thas to be above 0\n");
+			printf("height -> sets the new height of the game board\n\thas to be above 0\n");
+			printf("amount -> changes the amount you need to win\n\thas to be above 0\n");
+			printf("clear -> clears the screen\n");
+			printf("print -> prints current board size\n");
+			printf("done -> saves settings and returns to main menu\n");
+			printf("help -> prints the message\n");
+			
 		}
 		else
 		{
-			wprintw(win, "ERROR: '%s' is not a command try 'help'\n", setting);
-			wrefresh(win);
+			printf("ERROR: '%s' is not a command try 'help'\n", setting);
+			
 		}
 	}
 }
