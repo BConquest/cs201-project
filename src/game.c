@@ -382,16 +382,16 @@ int hardMode(struct gameinfo *boardinfo)
 		}
 	}
 
-	//for (int i = 0; i < boardinfo->ncols; i++)
-	//{
-	//	printf("%d -> ", i);
-	//}
-	//printf("\n");
-	//for (int i = 0; i < boardinfo->ncols; i++)
-	//{
-	//	printf("%d -> ", positions[i]);
-	//}
-	//printf("\n");
+	for (int i = 0; i < boardinfo->ncols; i++)
+	{
+		printf("%d -> ", i);
+	}
+	printf("\n");
+	for (int i = 0; i < boardinfo->ncols; i++)
+	{
+		printf("%d -> ", positions[i]);
+	}
+	printf("\n");
 
 	int tempMax = 0;
 	int moveIndex = 0;
