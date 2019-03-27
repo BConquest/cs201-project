@@ -129,7 +129,7 @@ void settings(struct gameinfo *boardinfo)
 		{
 			do
 			{
-				newsetting = boardinfo->ncols;
+				newsetting = boardinfo->nrows;
 				printf("Current height: %d\nNew height: ", boardinfo->nrows);
 
 				int test = scanf("%d", &newsetting);
@@ -150,7 +150,7 @@ void settings(struct gameinfo *boardinfo)
 					}
 				}
 			} while (newsetting <= 0 && (newsetting < boardinfo->winamount));
-			boardinfo->ncols = newsetting;
+			boardinfo->nrows = newsetting;
 			*boardinfo = changeBoardSize(boardinfo);
 			clearBoard(boardinfo);
 		}

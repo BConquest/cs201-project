@@ -153,10 +153,12 @@ int bfs(struct gameinfo *boardinfo, int index, int solution, int color)
 {
 	struct queue *searchQueue = malloc(sizeof(struct queue));
 	struct queue *depthQueue = malloc(sizeof(struct queue));
-	int visited[boardinfo->nrows * boardinfo->ncols];
 	int depth = 0;
 	int temp = 0;
 	int max = -1;
+
+	int* visited;
+	visited = malloc((boardinfo->nrows *boardinfo->ncols) * sizeof(int));
 
 	for (int i = 0; i < boardinfo->nrows * boardinfo->ncols; i++)
 		visited[i] = 0;
@@ -235,12 +237,14 @@ int bfs(struct gameinfo *boardinfo, int index, int solution, int color)
 		{
 			free(depthQueue);
 			free(searchQueue);
+			free(visited);
 			return (boardinfo->winamount);
 		}
 	}
 	free(depthQueue);
 	free(searchQueue);
-	printf("%d -> bfs -> %d\n", index, solution);
+	free(visited);
+	//printf("%d -> bfs -> %d\n", index, solution);
 	return max;
 }
 
@@ -332,7 +336,7 @@ int hardMode(struct gameinfo *boardinfo)
 		for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
 			if (boardinfo->board[index] == 0)
 				break;
-		printf("column %d: %d\n", i, index);
+		//printf("column %d: %d\n", i, index);
 
 		/*initilize array index to 0 before compating it*/
 		int temp;
@@ -378,16 +382,16 @@ int hardMode(struct gameinfo *boardinfo)
 		}
 	}
 
-	for (int i = 0; i < boardinfo->ncols; i++)
-	{
-		printf("%d -> ", i);
-	}
-	printf("\n");
-	for (int i = 0; i < boardinfo->ncols; i++)
-	{
-		printf("%d -> ", positions[i]);
-	}
-	printf("\n");
+	//for (int i = 0; i < boardinfo->ncols; i++)
+	//{
+	//	printf("%d -> ", i);
+	//}
+	//printf("\n");
+	//for (int i = 0; i < boardinfo->ncols; i++)
+	//{
+	//	printf("%d -> ", positions[i]);
+	//}
+	//printf("\n");
 
 	int tempMax = 0;
 	int moveIndex = 0;

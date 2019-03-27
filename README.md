@@ -18,5 +18,6 @@
 - 4) after game ends by running out of moves or someone wins can type `stats` to print out stats for the current session
 
 # TODO
+- Issue with large boardsizes above 1000
 - Make AI the best
 - get A
