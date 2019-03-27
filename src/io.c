@@ -54,6 +54,7 @@ void printGameMenu()
 	printf("player -> will enter into a game versues a player\n");
 	printf("computer -> will enter into a game versues a computer\n");
 	printf("\t-> 'easy' -> the computer will play randomly and plays second\n\t-> 'hard' -> the computer uses bfs to find the best move and plays first\n\t>'impossible' -> plays randomly and uses bfs while letting the player go first\n");
+	printf("stats -> prints the stats for the current game session\n");
 	printf("clear -> clears the screen\n");
 	printf("done -> takes you back to the main menu\n");
 	printf("help -> prints the help message\n");
