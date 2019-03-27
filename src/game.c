@@ -1,5 +1,4 @@
 #include "../include/game.h"
-//#include "../include/config.h"
 
 int addPiece(struct gameinfo *boardinfo, int j, int colour)
 {
@@ -10,7 +9,7 @@ int addPiece(struct gameinfo *boardinfo, int j, int colour)
 	/* Calculates the current index bassed on a column number */
 	int index = (boardinfo->nrows - 1) * boardinfo->ncols + j;
 
-	/* Loops through the column to finding a free space */
+	/* Loops through the column to finding a free space bottom up to save time*/
 	for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
 		if (boardinfo->board[index] == 0)
 			break;
@@ -26,127 +25,22 @@ int addPiece(struct gameinfo *boardinfo, int j, int colour)
 
 int checkAvailable(struct gameinfo *boardinfo, int j)
 {
-	/* Does the same thing as add Piece without adding the peice */
+	/* Checks to make sure that j is not out of bounds */
 	if (j >= boardinfo->ncols || j < 0)
 		return 0;
 
 	int index = (boardinfo->nrows - 1) * boardinfo->ncols + j;
 
+	/* Loops through the column to finding a free space bottom up to save time*/
 	for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
 		if (boardinfo->board[index] == 0)
 			break;
 
+	/* When the index is at the top of the line checks to see if that spot is filled */
 	if (index < boardinfo->ncols && boardinfo->board[index] != 0)
 		return 0;
 
 	return 1;
-}
-
-int checkHorizontalWin(struct gameinfo *boardinfo, int index)
-{
-	/* Checks the horizontal winning */
-	int i = 1, count = 0, newIndex = index;
-	for (; i <= boardinfo->winamount; i++)
-	{
-		if (boardinfo->board[newIndex] == boardinfo->board[index])
-			count++;
-		if (index + i > boardinfo->nrows * boardinfo->ncols)
-			return 0;
-		else
-			newIndex = index + i;
-	}
-	return count;
-}
-
-int checkVerticalWin(struct gameinfo *boardinfo, int index)
-{
-	/* Checks Vertical winning */
-	int i = 1, count = 0, newIndex = index;
-	for (; i <= boardinfo->winamount; i++)
-	{
-		if (boardinfo->board[newIndex] == boardinfo->board[index])
-			count++;
-		if (index - (i * boardinfo->ncols) < (-1 - boardinfo->ncols))
-			return 0;
-		else
-			newIndex = index - (i * boardinfo->ncols);
-	}
-	return count;
-}
-
-int checkRightDiagonalWin(struct gameinfo *boardinfo, int index)
-{
-	/* Checks Up diagonal winning */
-	int i = 1, count = 0, newIndex = index;
-	for (; i <= boardinfo->winamount; i++)
-	{
-		if (boardinfo->board[newIndex] == boardinfo->board[index])
-			count++;
-		if (index - (i * boardinfo->ncols) + i > -1)
-			newIndex = index - (i * boardinfo->ncols) + i;
-		else
-			return 0;
-	}
-	return count;
-}
-
-int checkLeftDiagonalWin(struct gameinfo *boardinfo, int index)
-{
-	/* Checks Down Diagonal winning */
-	int i = 1, count = 0, newIndex = index;
-	for (; i <= boardinfo->winamount; i++)
-	{
-		if (boardinfo->board[newIndex] == boardinfo->board[index])
-			count++;
-		if (index - (i * boardinfo->ncols) - i >= (-1 - boardinfo->ncols))
-			newIndex = index - (i * boardinfo->ncols) - i;
-		else
-			return 0;
-	}
-	return count;
-}
-
-int validatePath(struct gameinfo *boardinfo)
-{
-	int winamount = boardinfo->winamount;
-	for (int index = boardinfo->ncols * boardinfo->nrows - 1; index > -1; index--)
-	{
-		if (boardinfo->board[index] == 0)
-			continue;
-		/* Only check 4 directions because checking 8 would be arbitray since
-		 * it would be checking the same peices going forward and backwards
-		 * if it wasnt a win */
-
-		/* Checking to make sure that it wont go out of bounds or wrap around the board*/
-		if ((((index + boardinfo->winamount) % boardinfo->ncols >= boardinfo->winamount || (index + boardinfo->winamount) % boardinfo->ncols == 0)))
-		{
-			if (checkHorizontalWin(boardinfo, index) >= (winamount))
-			{
-				return boardinfo->board[index];
-			}
-		}
-		/* Dont wrap around because it will be out of bounds instead of wrapping to bottom */
-		if (checkVerticalWin(boardinfo, index) >= (winamount))
-		{
-			return boardinfo->board[index];
-		}
-
-		/* Checkiung to make sure that it wont go out of bounds or wrap around the board*/
-		if ((index + boardinfo->winamount) % boardinfo->ncols >= boardinfo->winamount || (index + boardinfo->winamount) % boardinfo->ncols == 0)
-		{
-			if (checkRightDiagonalWin(boardinfo, index) >= (winamount))
-				return boardinfo->board[index];
-		}
-
-		/* checking to make sure board wrap around does not happen */
-		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount || (index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
-		{
-			if (checkLeftDiagonalWin(boardinfo, index) >= (winamount))
-				return boardinfo->board[index];
-		}
-	}
-
-	return 0;
 }
 
 int bfs(struct gameinfo *boardinfo, int index, int solution, int color)
@@ -279,7 +173,7 @@ int player(struct gameinfo *boardinfo)
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, firstplayer);
-		int winner = validatePath(boardinfo);
+		int winner = checkWin(boardinfo);
 		if (winner != 0)
 			return winner;
 
@@ -308,7 +202,7 @@ int player(struct gameinfo *boardinfo)
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, secondplayer);
-		winner = validatePath(boardinfo);
+		winner = checkWin(boardinfo);
 		if (winner != 0)
 			return winner;
 		playCount += 1;
@@ -448,7 +342,7 @@ int computer(struct gameinfo *boardinfo)
 			}
 		} while (addPiece(boardinfo, add - 1, 1) == 0);
 
-		playerwin = validatePath(boardinfo);
+		playerwin = checkWin(boardinfo);
 		if (playerwin != 0)
 			return playerwin;
 
@@ -458,14 +352,14 @@ int computer(struct gameinfo *boardinfo)
 		{
 		case 0:
 			addPiece(boardinfo, easyMode(boardinfo), 2);
-			playerwin = validatePath(boardinfo);
+			playerwin = checkWin(boardinfo);
 			if (playerwin != 0)
 				return playerwin;
 			playCounter++;
 			break;
 		case 1:
 			addPiece(boardinfo, hardMode(boardinfo), 2);
-			playerwin = validatePath(boardinfo);
+			playerwin = checkWin(boardinfo);
 			if (playerwin != 0)
 				return playerwin;
 			playCounter++;
@@ -473,7 +367,7 @@ int computer(struct gameinfo *boardinfo)
 		case 2:
 			addPiece(boardinfo, easyMode(boardinfo), 2);
 			addPiece(boardinfo, hardMode(boardinfo), 2);
-			playerwin = validatePath(boardinfo);
+			playerwin = checkWin(boardinfo);
 			if (playerwin != 0)
 				return playerwin;
 			playCounter += 2;

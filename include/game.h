@@ -26,8 +26,9 @@ struct scoreboard
 	int computerdraws;
 };
 
-
+/* Included later since structs above are needed */
 #include "./io.h"
+#include "./win.h"
 
 /* Updates the current boardsize */
 struct gameinfo changeBoardSize(struct gameinfo *);
@@ -39,16 +40,8 @@ int addPiece(struct gameinfo *, int, int);
 /* sees if avaible spot to play is good */
 int checkAvailable(struct gameinfo *, int);
 
-int checkHorizontalWin(struct gameinfo *, int);
-int checkVerticalWin(struct gameinfo *, int);
-int checkLeftDiagonalWin(struct gameinfo *, int);
-int checkRightDiagonalWin(struct gameinfo *, int);
-int validatePath(struct gameinfo *);
-
 /* checks to see if their a path between two indexs */
 int bfs(struct gameinfo *boardinfo, int, int, int);
-/* checks to see if their a win in the game*/
-int checkWin(struct gameinfo *);
 
 /* Is the player state*/
 int player(struct gameinfo *);
