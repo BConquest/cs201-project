@@ -96,22 +96,25 @@ int settings(struct gameinfo *boardinfo)
 	if (strncmp(setting, "width", 25) == 0)
 	{
 		do
-		{
+		{ 
 			newsetting = boardinfo->ncols;
 			printf("Current Width: %d\nNew Width: ", boardinfo->ncols);
 			int test = scanf("%d", &newsetting);
 			while (test != 1)
 			{
-				printf("That is not a valid number, please input a non-zero positive integer: ");
+				printf("\nThat is not a valid number, please input a non-zero positive integer: ");
+				getchar();
 				test = scanf("%d", &newsetting);
 			}
 			while (newsetting < boardinfo->winamount)
 			{
 				printf("That number is to small, please input a nuber larger than the winamount %d\nnew width: ", boardinfo->winamount);
+				getchar();
 				test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
-					printf("That is not a valid number, please input a non-zero positive integer: ");
+					printf("\nThat is not a valid number, please input a non-zero positive integer: ");
+					getchar();
 					test = scanf("%d", &newsetting);
 				}
 			}
@@ -126,19 +129,23 @@ int settings(struct gameinfo *boardinfo)
 		{
 			newsetting = boardinfo->nrows;
 			printf("Current height: %d\nNew height: ", boardinfo->nrows);
+			getchar();
 			int test = scanf("%d", &newsetting);
 			while (test != 1)
 			{
 				printf(ANSI_COLOR_RED "That is not a valid number, please input a non-zero positive integer: "ANSI_COLOR_RESET);
+				getchar();
 				test = scanf("%d", &newsetting);
 			}
 			while (newsetting < boardinfo->winamount)
 			{
 				printf(ANSI_COLOR_RED "That number is to small, please input a nuber larger than the winamount %d\nnew height: " ANSI_COLOR_RESET, boardinfo->winamount);
+				getchar();
 				test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
 					printf(ANSI_COLOR_RED "That is not a valid number, please input a non-zero positive integer: " ANSI_COLOR_RESET);
+					getchar();
 					test = scanf("%d", &newsetting);
 				}
 			}
@@ -152,19 +159,23 @@ int settings(struct gameinfo *boardinfo)
 		do
 		{
 			printf("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);
+			getchar();
 			int test = scanf("%d", &newsetting);
 			while (test != 1)
 			{
 				printf(ANSI_COLOR_RED "That is not a valid number, please input a non-zero positive integer: " ANSI_COLOR_RESET);
+				getchar();
 				test = scanf("%d", &newsetting);
 			}
 			while (newsetting > boardinfo->nrows || newsetting > boardinfo->ncols)
 			{
 				printf(ANSI_COLOR_RED "That number is to small, please input a nuber smaller than boath board width and height of %d x %d\nnew amount: " ANSI_COLOR_RESET, boardinfo->ncols, boardinfo->nrows);
+				getchar();
 				test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
 					printf(ANSI_COLOR_RED "That is not a valid number, please input a non-zero positive integer: " ANSI_COLOR_RESET);
+					getchar();
 					test = scanf("%d", &newsetting);
 				}
 			}
@@ -194,6 +205,7 @@ int settings(struct gameinfo *boardinfo)
 	{
 		printf(ANSI_COLOR_MAGENTA "ERROR: '%s' is not a command try 'help'\n" ANSI_COLOR_RESET, setting);
 	}
+	return 0;
 }
 
 int game(struct gameinfo *boardinfo, struct scoreboard *scores)
@@ -201,6 +213,7 @@ int game(struct gameinfo *boardinfo, struct scoreboard *scores)
 	int winner;
 	char person[25];
 	printf("game: ");
+	getchar();
 	scanf("%25s", person);
 	if (strncmp(person, "player", 25) == 0)
 	{

@@ -155,20 +155,24 @@ int player(struct gameinfo *boardinfo)
 		clearScreen();
 		printBoard(boardinfo);
 		printf("Player %d move > ", firstplayer);
+		getchar();
 		int test = scanf("%d", &moveIndex);
 		while (test != 1)
 		{
 			printf("Not a Number\nPlease enter a number >");
+			getchar();
 			test = scanf("%d", &moveIndex);
 		}
 		while (checkAvailable(boardinfo, moveIndex - 1) == 0)
 		{
 			printf("That Place is not available to playing");
 			printf("\nPlayer %d move >", firstplayer);
+			getchar();
 			test = scanf("%d", &moveIndex);
 			while (test != 1)
 			{
 				printf("Not a Number\nPlease enter a number >");
+				getchar();
 				test = scanf("%d", &moveIndex);
 			}
 		}
@@ -184,20 +188,24 @@ int player(struct gameinfo *boardinfo)
 		clearScreen();
 		printBoard(boardinfo);
 		printf("Player %d move > ", secondplayer);
+		getchar();
 		test = scanf("%d", &moveIndex);
 		while (test != 1)
 		{
 			printf("Not a number\nEnter a number >");
+			getchar();
 			test = scanf("%d", &moveIndex);
 		}
 		while (checkAvailable(boardinfo, moveIndex - 1) == 0)
 		{
 			printf("That place is not available try somewhere else >");
 			printf("\nPlayer %d move > ", secondplayer);
+			getchar();
 			test = scanf("%d", &moveIndex);
 			while (test != 1)
 			{
 				printf("Not a number\nPlease eneter a number > ");
+				getchar();
 				test = scanf("%d", &moveIndex);
 			}
 		}
@@ -222,7 +230,7 @@ int easyMode(struct gameinfo *boardinfo)
 int hardMode(struct gameinfo *boardinfo)
 {
 	int positions[boardinfo->ncols];
-
+	int cols[boardinfo->ncols];
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		int index = (boardinfo->nrows - 1) * boardinfo->ncols + i;
@@ -275,8 +283,7 @@ int hardMode(struct gameinfo *boardinfo)
 				positions[i] = temp;
 		}
 	}
-	int cols[boardinfo->ncols];
-	/*
+	
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		printf("%d -> ", i);
@@ -298,7 +305,7 @@ int hardMode(struct gameinfo *boardinfo)
 	{
 		printf("%d -> ", cols[i]);
 	}
-	printf("\n");*/
+	printf("\n");
 	
 	for(int i = boardinfo->ncols-1; i > -1; i--)
 	{
@@ -317,7 +324,7 @@ int computer(struct gameinfo *boardinfo)
 	int imode = 0;
 	int playCounter = 0, playerwin = 0, add = 0;
 	printf("Hardness (easy, hard, impossible): ");
-
+	getchar();
 	scanf("%s", mode);
 
 	while (strncmp(mode, "easy", 25) != 0 &&
@@ -325,6 +332,7 @@ int computer(struct gameinfo *boardinfo)
 		   strncmp(mode, "impossible", 25) != 0)
 	{
 		printf("Not an option\n");
+		getchar();
 		scanf("%s", mode);
 	}
 	if (strncmp(mode, "easy", 25) == 0)
@@ -341,11 +349,12 @@ int computer(struct gameinfo *boardinfo)
 		do
 		{
 			printf("Column to place peice in: ");
-
+			getchar();
 			int test = scanf("%d", &add);
 			while (test != 1)
 			{
 				printf("Error not a number, please input a number: ");
+				getchar();
 				test = scanf("%d", &add);
 			}
 		} while (addPiece(boardinfo, add - 1, 1) == 0);
