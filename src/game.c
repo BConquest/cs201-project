@@ -705,7 +705,7 @@ void settings(struct gameinfo *boardinfo)
 			wprintw(win, "width -> sets the new width of the game board\n\thas to be above 0\n");
 			wprintw(win, "height -> sets the new height of the game board\n\thas to be above 0\n");
 			wprintw(win, "amount -> changes the amount you need to win\n\thas to be above 0\n");
-			wprintw(win, "clear -> clears the screen");
+			wprintw(win, "clear -> clears the screen\n");
 			wprintw(win, "print -> prints current board size\n");
 			wprintw(win, "done -> saves settings and returns to main menu\n");
 			wprintw(win, "help -> prints the message\n");
