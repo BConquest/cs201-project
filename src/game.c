@@ -53,6 +53,7 @@ int bfs(struct gameinfo *boardinfo, int index, int solution, int color)
 
 	int* visited;
 	visited = malloc((boardinfo->nrows *boardinfo->ncols) * sizeof(int));
+	printf("%d\n", (int)((boardinfo->nrows*boardinfo->ncols) * sizeof(int)));
 
 	for (int i = 0; i < boardinfo->nrows * boardinfo->ncols; i++)
 		visited[i] = 0;
