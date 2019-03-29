@@ -1,7 +1,6 @@
 # Connect 4
 ## How to install
 - git pull https://github.com/BConquest/cs201-project.git 
-- have ncurses installed
 - cd cs201-project
 - make
 - ./cnct
