@@ -43,8 +43,8 @@ void printMenu()
 void printSettingsMenu()
 {
 	printf("Current commands are: \n");
-	printf("width -> sets the new width of the game board\n\thas to be above 0\n");
-	printf("height -> sets the new height of the game board\n\thas to be above 0\n");
+	printf("width -> sets the new width of the game board\n\thas to be above 0\n(values above 40 might make screen look bad)\n");
+	printf("height -> sets the new height of the game board\n\thas to be above 0\n (values above 40 might make the board not fully visible)\n");
 	printf("amount -> changes the amount you need to win\n\thas to be above 0 and smaller than both height and width\n");
 	printf("clear -> clears the screen\n");
 	printf("print -> prints current board size\n");
