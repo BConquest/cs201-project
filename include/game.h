@@ -7,6 +7,7 @@
 
 #include "./queue.h"
 #include "./stack.h"
+#include "./config.h"
 
 /* Holds info about the current board */
 struct gameinfo

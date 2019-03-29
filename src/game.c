@@ -95,31 +95,30 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 
 			/* Gets Neighbor to the right of the current cell*/
 			test = currSearch + 1;
-			if(test < boardarea && (currSearch % boardinfo->ncols != boardinfo->ncols -1))
+			if (test < boardarea && (currSearch % boardinfo->ncols != boardinfo->ncols - 1))
 			{
 				//printf("%d->%d\n", currSearch, test);
-				if(boardinfo->board[test] == color)
+				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
 					push(&directionStack, 1);
-					if(dir == 1)
-						push(&depthStack, depth+1);
+					if (dir == 1)
+						push(&depthStack, depth + 1);
 					else
 						push(&depthStack, 1);
-					
 				}
 			}
 			/* Gets Neighbor to the left of the current cell*/
 			test = currSearch - 1;
-			if(test > -1 && (currSearch % boardinfo->ncols != 0))
+			if (test > -1 && (currSearch % boardinfo->ncols != 0))
 			{
 				//printf("%d->%d\n", currSearch, test);
-				if(boardinfo->board[test] == color)
+				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
 					push(&directionStack, 2);
-					if(dir == 2)
-						push(&depthStack, depth+1);
+					if (dir == 2)
+						push(&depthStack, depth + 1);
 					else
 						push(&depthStack, 1);
 				}
@@ -127,60 +126,60 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 
 			/* Gets neighbor  on the bottom of the current cell */
 			test = currSearch + (boardinfo->nrows + 1);
-			if(test < boardarea)
+			if (test < boardarea)
 			{
 				//printf("%d->%d\n", currSearch, test);
-				if(boardinfo->board[test] == color)
+				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
 					push(&directionStack, 3);
-					if(dir == 3)
-						push(&depthStack, depth+1);
+					if (dir == 3)
+						push(&depthStack, depth + 1);
 					else
 						push(&depthStack, 1);
 				}
 			}
 			/* Gets the neighbor to the bottom right of the currect cell */
 			test = currSearch + boardinfo->nrows + 2;
-			if(test < boardarea && (currSearch % boardinfo->ncols) != boardinfo->ncols - 1)
+			if (test < boardarea && (currSearch % boardinfo->ncols) != boardinfo->ncols - 1)
 			{
 				//printf("%d->%d\n", currSearch, test);
-				if(boardinfo->board[test] == color)
+				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
 					push(&directionStack, 4);
-					if(dir == 4)
-						push(&depthStack, depth+1);
+					if (dir == 4)
+						push(&depthStack, depth + 1);
 					else
 						push(&depthStack, 1);
 				}
 			}
 			/* Gets neighbor to the bottom left of the current cell */
 			test = currSearch + boardinfo->ncols - 1;
-			if(test < boardarea && (currSearch % boardinfo->ncols != 0))
+			if (test < boardarea && (currSearch % boardinfo->ncols != 0))
 			{
 				//printf("%d->%d\n", currSearch, test);
-				if(boardinfo->board[test] == color)
+				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
 					push(&directionStack, 5);
-					if(dir == 5)
-						push(&depthStack, depth+1);
+					if (dir == 5)
+						push(&depthStack, depth + 1);
 					else
 						push(&depthStack, 1);
 				}
 			}
 			/* Gets neighbor to the top left of the current cell */
 			test = currSearch - boardinfo->ncols - 1;
-			if(test > -1 && (currSearch % boardinfo->ncols != 0))
+			if (test > -1 && (currSearch % boardinfo->ncols != 0))
 			{
 				//printf("%d->%d\n", currSearch, test);
-				if(boardinfo->board[test] == color)
+				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
 					push(&directionStack, 6);
-					if(dir == 6)
-						push(&depthStack, depth+1);
+					if (dir == 6)
+						push(&depthStack, depth + 1);
 					else
 						push(&depthStack, 1);
 				}
@@ -313,7 +312,8 @@ int hardMode(struct gameinfo *boardinfo)
 
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
-		printf("finding available space in column %d\n", i);
+		if (computer_stats = 1)
+			printf("finding available space in column %d\n", i);
 		int index = (boardinfo->nrows - 1) * boardinfo->ncols + i;
 		int temp = 0;
 		for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
@@ -321,11 +321,13 @@ int hardMode(struct gameinfo *boardinfo)
 			if (boardinfo->board[index] == 0)
 				break;
 		}
-		printf("Finding best move for computer\n");
+		if (computer_stats = 1)
+			printf("Finding best move for computer\n");
 		temp = dfs(boardinfo, index, 2);
 		if (temp > positions[i])
 			positions[i] = temp;
-		printf("Seeing if player can do better\n");
+		if (computer_stats = 1)
+			printf("Seeing if player can do better\n");
 		temp = dfs(boardinfo, index, 1);
 		if (temp > positions[i])
 			positions[i] = temp;
@@ -335,10 +337,16 @@ int hardMode(struct gameinfo *boardinfo)
 	{
 		cols[i] = i;
 	}
-	printf("Sorting the moves\n");
+	if (computer_stats = 1)
+		printf("Sorting the moves\n");
 	quickSort(positions, cols, 0, boardinfo->ncols - 1);
 	/*Quick sort the array so that finding the b est summed move is easist. */
-	printf("Finding best Move\n");
+	for (int i = boardinfo->ncols - 1; i > -1; i--)
+	{
+	}
+
+	if (computer_stats = 1)
+		printf("Finding best Move\n");
 	for (int i = boardinfo->ncols - 1; i > -1; i--)
 	{
 		if (checkAvailable(boardinfo, cols[i]) == 1)
@@ -377,7 +385,7 @@ int computer(struct gameinfo *boardinfo)
 	while (playCounter < (boardinfo->nrows * boardinfo->ncols))
 	{
 		clearScreen();
-		//printBoard(boardinfo);
+		printBoard(boardinfo);
 		do
 		{
 			printf("Column to place piece in: ");

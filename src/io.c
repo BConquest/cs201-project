@@ -1,5 +1,5 @@
 #include "../include/io.h"
-#include "../include/config.h"
+//#include "../include/config.h"
 
 void printBoard(struct gameinfo *boardinfo)
 {
@@ -78,7 +78,7 @@ void clearBoard(struct gameinfo *boardinfo)
 
 void clearScreen()
 {
-	if (DEBUG == 0)
+	if (screen_clear == 0)
 		printf("\n");
 	else
 		system("clear");

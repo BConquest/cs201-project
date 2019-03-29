@@ -3,9 +3,11 @@
 #include <string.h>
 #include "./include/io.h"
 #include "./include/game.h"
+#include "./include/config.h"
 
 int main(void)
 {
+	setConfig();
 	clearScreen();
 
 	struct gameinfo boardinfo;

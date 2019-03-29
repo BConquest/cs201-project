@@ -1,3 +1,6 @@
+#ifndef __config_h__
+#define __config_h__
+
 /* defines colors */
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -8,8 +11,13 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 /* must be alpha-numeric 1 leter no escape sequences*/
-const char player1 = 'O';
-const char player2 = 'X';
+char player1;
+char player2;
 
 /* Set if screen should be cleared(1) or not (0) values other than this will break stuff*/
-const int DEBUG = 0;
+int computer_stats;
+int screen_clear;
+
+/* stets all the variables */
+void setConfig();
+#endif
