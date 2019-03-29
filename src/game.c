@@ -68,7 +68,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 		int dir = pop(&directionStack);
 		if(visited[currSearch] == 0)
 		{
-			printf("\n");
 			if (depth > maxdepth)
 				maxdepth = depth;
 			if(depth == 4)
@@ -89,8 +88,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 				return boardinfo->winamount;
 			}
 
-			printf("%d -> ", currSearch);
-			printf("\t%d", depth);
 			visited[currSearch] = 1;
 			int test = 0;
 
@@ -165,7 +162,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			}
 		}
 	}
-	printf("\n");
 	return maxdepth;
 }
 
@@ -279,7 +275,7 @@ int hardMode(struct gameinfo *boardinfo)
 		if(temp > positions[i])
 			positions[i] = temp;
 	}
-		
+	/*
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		printf("%d -> ", i);
@@ -301,7 +297,7 @@ int hardMode(struct gameinfo *boardinfo)
 	{
 		printf("%d -> ", cols[i]);
 	}
-	printf("\n");
+	printf("\n");*/
 	
 	for(int i = boardinfo->ncols-1; i > -1; i--)
 	{
