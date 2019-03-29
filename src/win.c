@@ -22,7 +22,7 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 int checkVerticalWin(struct gameinfo *boardinfo, int index)
 {
 	/* Checks Vertical winning */
-	int i = 1, count = 0, newIndex = index;
+	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
 		printf("Checking %d<%d> - %d<%d> == %d\n", index, boardinfo->board[index], newIndex, boardinfo->board[index], count);
@@ -107,7 +107,7 @@ int checkWin(struct gameinfo *boardinfo)
 			return boardinfo->board[index];
 		}
 
-		if (checkVerticalWin(boardinfo, index) >= (winamount -1))
+		if (checkVerticalWin(boardinfo, index) >= (winamount + 1))
 		{
 			printf("NV: %d - %d\n", index, checkVerticalWin(boardinfo, index));
 			return boardinfo->board[index];
