@@ -4,8 +4,7 @@
 #include "./game.h"
 /* These functions take 2 inputs
  * 1) The board
- * 2) The index it starts at (this needs to be checked that
- *    it can have a valid win before being checked) 
+ * 2) The index it starts at 
  */
 int checkHorizontalWin(struct gameinfo *, int); /* Checks to the right */
 int checkVerticalWin(struct gameinfo *, int); /* Checks upwards */

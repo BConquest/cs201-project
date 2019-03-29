@@ -23,8 +23,7 @@ void push(struct stackNode** root, int data)
 
 int pop(struct stackNode** root)
 {
-    if (isEmpty(*root))
-        return -1;
+    if (isEmpty(*root)) return -1;
     struct stackNode* temp = *root;
     *root = (*root)->next;
     int popped = temp->data;

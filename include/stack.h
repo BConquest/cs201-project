@@ -3,7 +3,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+/*
+https://www.geeksforgeeks.org/stack-data-structure-introduction-program/
+*/
 struct stackNode
 {
     int data;

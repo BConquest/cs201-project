@@ -2,7 +2,7 @@
 
 int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 {
-	/* Checks the horizontal winning */
+	/* Checks the horizontal winning and make sure that it doesnt wrap around*/
 	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
@@ -21,7 +21,7 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 
 int checkVerticalWin(struct gameinfo *boardinfo, int index)
 {
-	/* Checks Vertical winning */
+	/* Checks Vertical winning and make sure that it doesnt wrap around*/
 	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
@@ -39,7 +39,7 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
 
 int checkLeftDiagonalWin(struct gameinfo *boardinfo, int index)
 {
-	/* Checks Up diagonal winning */
+	/* Checks Left diagonal winning and make sure that it doesnt wrap around*/
 	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
@@ -58,7 +58,7 @@ int checkLeftDiagonalWin(struct gameinfo *boardinfo, int index)
 
 int checkRightDiagonalWin(struct gameinfo *boardinfo, int index)
 {
-	/* Checks Up diagonal winning */
+	/* Checks Right diagonal winning and make sure that it doesnt wrap around*/
 	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
