@@ -1,4 +1,6 @@
 # Connect 4
+https://youtu.be/csQXEDwoQP8
+
 ## How to play
 	- enter 'game' when at main menu
 	- chose either 'player' or 'computer'
