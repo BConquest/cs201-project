@@ -97,7 +97,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + 1;
 			if(test < boardarea && (currSearch % boardinfo->ncols != boardinfo->ncols -1))
 			{
-				printf("%d->%d\n", currSearch, test);
+				//printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -113,7 +113,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch - 1;
 			if(test > -1 && (currSearch % boardinfo->ncols != 0))
 			{
-				printf("%d->%d\n", currSearch, test);
+				//printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -129,7 +129,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + (boardinfo->nrows + 1);
 			if(test < boardarea)
 			{
-				printf("%d->%d\n", currSearch, test);
+				//printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -144,7 +144,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + boardinfo->nrows + 2;
 			if(test < boardarea && (currSearch % boardinfo->ncols) != boardinfo->ncols - 1)
 			{
-				printf("%d->%d\n", currSearch, test);
+				//printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -159,7 +159,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + boardinfo->ncols - 1;
 			if(test < boardarea && (currSearch % boardinfo->ncols != 0))
 			{
-				printf("%d->%d\n", currSearch, test);
+				//printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -313,6 +313,7 @@ int hardMode(struct gameinfo *boardinfo)
 
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
+		printf("finding available space in column %d\n", i);
 		int index = (boardinfo->nrows - 1) * boardinfo->ncols + i;
 		int temp = 0;
 		for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
@@ -320,11 +321,11 @@ int hardMode(struct gameinfo *boardinfo)
 			if (boardinfo->board[index] == 0)
 				break;
 		}
-
+		printf("Finding best move for computer\n");
 		temp = dfs(boardinfo, index, 2);
 		if (temp > positions[i])
 			positions[i] = temp;
-
+		printf("Seeing if player can do better\n");
 		temp = dfs(boardinfo, index, 1);
 		if (temp > positions[i])
 			positions[i] = temp;
@@ -334,8 +335,10 @@ int hardMode(struct gameinfo *boardinfo)
 	{
 		cols[i] = i;
 	}
+	printf("Sorting the moves\n");
 	quickSort(positions, cols, 0, boardinfo->ncols - 1);
 	/*Quick sort the array so that finding the b est summed move is easist. */
+	printf("Finding best Move\n");
 	for (int i = boardinfo->ncols - 1; i > -1; i--)
 	{
 		if (checkAvailable(boardinfo, cols[i]) == 1)
@@ -374,7 +377,7 @@ int computer(struct gameinfo *boardinfo)
 	while (playCounter < (boardinfo->nrows * boardinfo->ncols))
 	{
 		clearScreen();
-		printBoard(boardinfo);
+		//printBoard(boardinfo);
 		do
 		{
 			printf("Column to place piece in: ");
