@@ -1,6 +1,7 @@
 #include "../include/io.h"
 //#include "../include/config.h"
 
+/* Prints the board */
 void printBoard(struct gameinfo *boardinfo)
 {
 	int index = 0;
@@ -23,7 +24,9 @@ void printBoard(struct gameinfo *boardinfo)
 			printf(ANSI_COLOR_BLUE "%c " ANSI_COLOR_RESET, player2);
 		}
 		else
+		{
 			printf("E ");
+		}
 	}
 	printf("\n");
 }
@@ -69,6 +72,7 @@ void printStats(struct scoreboard *scores)
 	printf("Number of Draws: %d\tAmount of Draws: %d\n", scores->playerdraws, scores->computerdraws);
 }
 
+/* Initilaizes board to 0 */
 void clearBoard(struct gameinfo *boardinfo)
 {
 	int index = 0;
@@ -95,6 +99,7 @@ int settings(struct gameinfo *boardinfo)
 	scanf("%s", setting);
 	if (strncmp(setting, "width", 25) == 0)
 	{
+		/* All this is mkaing sure that the player enters in a correct input */
 		do
 		{ 
 			newsetting = boardinfo->ncols;
@@ -125,6 +130,7 @@ int settings(struct gameinfo *boardinfo)
 	}
 	else if (strncmp(setting, "height", 25) == 0)
 	{
+		/* All this is mkaing sure that the player enters in a correct input */
 		do
 		{
 			newsetting = boardinfo->nrows;
@@ -156,6 +162,7 @@ int settings(struct gameinfo *boardinfo)
 	}
 	else if (strncmp(setting, "amount", 25) == 0)
 	{
+		/* All this is mkaing sure that the player enters in a correct input */
 		do
 		{
 			printf("Current Amount to win: %d\nNew Amount to win: ", boardinfo->winamount);

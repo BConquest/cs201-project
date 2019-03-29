@@ -6,7 +6,7 @@ void swap(int *i, int *j)
     *i = *j;
     *j = t;
 }
-
+/* Has 2 arrays based on the column number and actual values so that we can place in the column */
 int partition(int *array,int *positions, int low, int high)
 {
     int pivot = array[high];

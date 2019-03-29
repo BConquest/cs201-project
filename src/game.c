@@ -50,6 +50,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 	push(&searchStack, index);
 	struct stackNode *depthStack = NULL;
 	push(&depthStack, 0);
+	// Stores the direction so that the depth doesnt just get insaenly high
 	struct stackNode *directionStack = NULL;
 	push(&directionStack, 0);
 
@@ -74,6 +75,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 				maxdepth = depth;
 			if (depth == 4)
 			{
+				/* Make sure that there are no memory leaks */
 				while (!isEmpty(searchStack))
 				{
 					pop(&searchStack);
@@ -202,6 +204,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			}
 		}
 	}
+	/* Make sure that there are no memory leaks */
 	while (!isEmpty(searchStack))
 	{
 		pop(&searchStack);
