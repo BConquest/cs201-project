@@ -7,15 +7,12 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 	for (; i <= boardinfo->winamount; i++)
 	{
 		int col = newIndex % boardinfo->ncols;
-		printf("Comparting %d<%d> - %d<%d>(%d)\n", newIndex,boardinfo->board[newIndex], index,boardinfo->board[index], i);
 		if(boardinfo->board[newIndex] == boardinfo->board[index]) 
 			count += 1;
 		else
 			return 0;
 		
-		if(col == 0) {
-			return count;
-		}
+		if(col == 0) return count;
 		newIndex = index - i;
 	}
 	printf("\t\t\t\t%d\n", count);
@@ -26,25 +23,16 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
 {
 	/* Checks Vertical winning */
 	int i = 1, count = 0, newIndex = index;
-	if (boardinfo->board[newIndex] == boardinfo->board[index]) count += 1;
 	for (; i <= boardinfo->winamount; i++)
 	{
-		if (index - (i * boardinfo->ncols) < (-1 - boardinfo->ncols))
-		{
-			return 0;
-		}
-		else
-		{
-			newIndex = index - (i * boardinfo->ncols);
-		}
-		if (boardinfo->board[newIndex] == boardinfo->board[index])
-		{
+		printf("Checking %d<%d> - %d<%d> == %d\n", index, boardinfo->board[index], newIndex, boardinfo->board[index], count);
+		if(boardinfo->board[newIndex] == boardinfo->board[index])
 			count += 1;
-		}
 		else
-		{
 			return 0;
-		}
+		
+		if(newIndex < boardinfo->ncols) return count;
+		newIndex = index - (i * boardinfo->ncols);
 	}
 	return count;
 }
@@ -119,15 +107,10 @@ int checkWin(struct gameinfo *boardinfo)
 			return boardinfo->board[index];
 		}
 
-
-		/* Checking vertical win 
-		if ((index - ((boardinfo->winamount-1) * boardinfo->ncols)) >= 0 - boardinfo->ncols)
+		if (checkVerticalWin(boardinfo, index) >= (winamount -1))
 		{
-			if (checkVerticalWin(boardinfo, index) >= (winamount-2))
-			{
-				printf("NV: %d", index);
-				return boardinfo->board[index];
-			}
+			printf("NV: %d - %d\n", index, checkVerticalWin(boardinfo, index));
+			return boardinfo->board[index];
 		}
 
 		/* Checkiung to make sure that it wont go out of bounds or wrap around the board
