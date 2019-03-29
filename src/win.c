@@ -6,6 +6,7 @@ int checkHorizontalWin(struct gameinfo *boardinfo, int index)
 	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
+		//printf("\t%d<%d>-%d<%d> == %d\n", index, boardinfo->board[index], newIndex, boardinfo->board[newIndex], count);
 		int col = newIndex % boardinfo->ncols;
 		if(boardinfo->board[newIndex] == boardinfo->board[index]) 
 			count += 1;
@@ -24,6 +25,7 @@ int checkVerticalWin(struct gameinfo *boardinfo, int index)
 	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
+		//printf("\t%d<%d>-%d<%d> == %d\n", index, boardinfo->board[index], newIndex, boardinfo->board[newIndex], count);
 		if(boardinfo->board[newIndex] == boardinfo->board[index])
 			count += 1;
 		else
@@ -41,6 +43,7 @@ int checkLeftDiagonalWin(struct gameinfo *boardinfo, int index)
 	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
+		//printf("\t%d<%d>-%d<%d> == %d\n", index, boardinfo->board[index], newIndex, boardinfo->board[newIndex], count);
 		if(boardinfo->board[newIndex] == boardinfo->board[index])
 			count += 1;
 		else
@@ -59,13 +62,14 @@ int checkRightDiagonalWin(struct gameinfo *boardinfo, int index)
 	int i = 0, count = 0, newIndex = index;
 	for (; i <= boardinfo->winamount; i++)
 	{
+		//printf("\t%d<%d>-%d<%d> == %d\n", index, boardinfo->board[index], newIndex, boardinfo->board[newIndex], count);
 		if(boardinfo->board[newIndex] == boardinfo->board[index])
 			count += 1;
 		else
 			return 0;
 
 		int col = newIndex % boardinfo->ncols;
-		if(col == 7 || newIndex < boardinfo->ncols) return count;
+		if(col == boardinfo->ncols-1 || newIndex < boardinfo->ncols) return count;
 		newIndex = index - ((i * boardinfo->ncols) - i);
 	}
 	return count;
@@ -82,17 +86,30 @@ int checkWin(struct gameinfo *boardinfo)
 		 * it would be checking the same spots but in different directions going forward and backwards
 		 * if it wasnt a win */
 
+		//printf("Horizontal:\n");
 		if (checkHorizontalWin(boardinfo, index) >= (winamount + 1))
+		{
+			//printf("%d\n", index);
 			return boardinfo->board[index];
-
+		}
+		//printf("\nVertical:\n");
 		if (checkVerticalWin(boardinfo, index) >= (winamount + 1))
+		{
+			//printf("%d\n", index);
 			return boardinfo->board[index];
-
+		}
+		//printf("\nLeft:\n");
 		if (checkLeftDiagonalWin(boardinfo, index) >= (winamount + 1))
+		{
+			printf("%d\n", index);
 			return boardinfo->board[index];
-
+		}
+		//printf("\nRight:\n");
 		if (checkRightDiagonalWin(boardinfo, index) >= (winamount + 1))
+		{
+			//printf("%d\n", index);
 			return boardinfo->board[index];
+		}
 	}
 	return 0;
 }
