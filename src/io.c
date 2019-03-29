@@ -102,7 +102,7 @@ int settings(struct gameinfo *boardinfo)
 			int test = scanf("%d", &newsetting);
 			while (test != 1)
 			{
-				printf("\nThat is not a valid number, please input a non-zero positive integer: ");
+				printf("That is not a valid number, please input a non-zero positive integer: ");
 				getchar();
 				test = scanf("%d", &newsetting);
 			}
@@ -113,7 +113,7 @@ int settings(struct gameinfo *boardinfo)
 				test = scanf("%d", &newsetting);
 				while (test != 1)
 				{
-					printf("\nThat is not a valid number, please input a non-zero positive integer: ");
+					printf("That is not a valid number, please input a non-zero positive integer: ");
 					getchar();
 					test = scanf("%d", &newsetting);
 				}
@@ -236,6 +236,7 @@ int game(struct gameinfo *boardinfo, struct scoreboard *scores)
 	else if (strncmp(person, "computer", 25) == 0)
 	{
 		winner = computer(boardinfo);
+		clearScreen();
 		printBoard(boardinfo);
 		clearBoard(boardinfo);
 		scores->playervcomputer = scores->playervcomputer + 1;

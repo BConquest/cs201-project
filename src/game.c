@@ -45,6 +45,7 @@ int checkAvailable(struct gameinfo *boardinfo, int col)
 
 int dfs(struct gameinfo *boardinfo, int index, int color)
 {
+	//All the Stacks that are used for Depth first search
 	struct stackNode *searchStack = NULL;
 	push(&searchStack, index);
 	struct stackNode *depthStack = NULL;
@@ -56,31 +57,32 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 
 	int maxdepth = 0;
 
+	//Array to hold if cell has been visited or not
 	int *visited;
 	visited = malloc(boardarea * sizeof(int));
 	for (int i = 0; i < boardarea; i++)
 		visited[i] = 0;
-	
-	while(!isEmpty(searchStack))
+
+	while (!isEmpty(searchStack))
 	{
 		int currSearch = pop(&searchStack);
 		int depth = pop(&depthStack);
 		int dir = pop(&directionStack);
-		if(visited[currSearch] == 0)
+		if (visited[currSearch] == 0)
 		{
 			if (depth > maxdepth)
 				maxdepth = depth;
-			if(depth == 4)
+			if (depth == 4)
 			{
-				while(!isEmpty(searchStack))
+				while (!isEmpty(searchStack))
 				{
 					pop(&searchStack);
 				}
-				while(!isEmpty(depthStack))
+				while (!isEmpty(depthStack))
 				{
 					pop(&depthStack);
 				}
-				while(!isEmpty(directionStack))
+				while (!isEmpty(directionStack))
 				{
 					pop(&directionStack);
 				}
@@ -91,9 +93,11 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			visited[currSearch] = 1;
 			int test = 0;
 
+			/* Gets Neighbor to the right of the current cell*/
 			test = currSearch + 1;
 			if(test < boardarea && (currSearch % boardinfo->ncols != boardinfo->ncols -1))
 			{
+				printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -105,9 +109,11 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 					
 				}
 			}
+			/* Gets Neighbor to the left of the current cell*/
 			test = currSearch - 1;
 			if(test > -1 && (currSearch % boardinfo->ncols != 0))
 			{
+				printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -119,9 +125,11 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 				}
 			}
 
+			/* Gets neighbor  on the bottom of the current cell */
 			test = currSearch + (boardinfo->nrows + 1);
 			if(test < boardarea)
 			{
+				printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -132,10 +140,11 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 						push(&depthStack, 1);
 				}
 			}
-
+			/* Gets the neighbor to the bottom right of the currect cell */
 			test = currSearch + boardinfo->nrows + 2;
 			if(test < boardarea && (currSearch % boardinfo->ncols) != boardinfo->ncols - 1)
 			{
+				printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -146,10 +155,11 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 						push(&depthStack, 1);
 				}
 			}
-
-			test = currSearch + boardinfo->ncols;
+			/* Gets neighbor to the bottom left of the current cell */
+			test = currSearch + boardinfo->ncols - 1;
 			if(test < boardarea && (currSearch % boardinfo->ncols != 0))
 			{
+				printf("%d->%d\n", currSearch, test);
 				if(boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -160,17 +170,47 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 						push(&depthStack, 1);
 				}
 			}
+			/* Gets neighbor to the top left of the current cell */
+			test = currSearch - boardinfo->ncols - 1;
+			if(test > -1 && (currSearch % boardinfo->ncols != 0))
+			{
+				//printf("%d->%d\n", currSearch, test);
+				if(boardinfo->board[test] == color)
+				{
+					push(&searchStack, test);
+					push(&directionStack, 6);
+					if(dir == 6)
+						push(&depthStack, depth+1);
+					else
+						push(&depthStack, 1);
+				}
+			}
+			/* Gets neighbor to the top right of the current cell */
+			test = currSearch - (boardinfo->ncols - 1);
+			if (test > -1 && (currSearch % boardinfo->ncols != 0))
+			{
+				//printf("%d->%d\n", currSearch, test);
+				if (boardinfo->board[test] == color)
+				{
+					push(&searchStack, test);
+					push(&directionStack, 7);
+					if (dir == 7)
+						push(&depthStack, depth + 1);
+					else
+						push(&depthStack, 1);
+				}
+			}
 		}
 	}
-	while(!isEmpty(searchStack))
+	while (!isEmpty(searchStack))
 	{
 		pop(&searchStack);
 	}
-	while(!isEmpty(depthStack))
+	while (!isEmpty(depthStack))
 	{
 		pop(&depthStack);
 	}
-	while(!isEmpty(directionStack))
+	while (!isEmpty(directionStack))
 	{
 		pop(&directionStack);
 	}
@@ -268,7 +308,7 @@ int hardMode(struct gameinfo *boardinfo)
 	int positions[boardinfo->ncols];
 	int cols[boardinfo->ncols];
 
-	for(int i = 0; i < boardinfo->ncols; i++)
+	for (int i = 0; i < boardinfo->ncols; i++)
 		positions[i] = 0;
 
 	for (int i = 0; i < boardinfo->ncols; i++)
@@ -277,44 +317,28 @@ int hardMode(struct gameinfo *boardinfo)
 		int temp = 0;
 		for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
 		{
-			if (boardinfo->board[index] == 0) break;
+			if (boardinfo->board[index] == 0)
+				break;
 		}
 
 		temp = dfs(boardinfo, index, 2);
-		if(temp > positions[i])
+		if (temp > positions[i])
 			positions[i] = temp;
 
 		temp = dfs(boardinfo, index, 1);
-		if(temp > positions[i])
+		if (temp > positions[i])
 			positions[i] = temp;
 	}
 
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
-		printf("%d -> ", i);
 		cols[i] = i;
 	}
-	printf("\n");
-	for (int i = 0; i < boardinfo->ncols; i++)
+	quickSort(positions, cols, 0, boardinfo->ncols - 1);
+	/*Quick sort the array so that finding the b est summed move is easist. */
+	for (int i = boardinfo->ncols - 1; i > -1; i--)
 	{
-		printf("%d -> ", positions[i]);
-	}
-	printf("\n");
-	quickSort(positions, cols, 0, boardinfo->ncols-1);
-	for (int i = boardinfo->ncols-1;i > -1; i--)
-	{
-		printf("%d -> ", positions[i]);
-	}
-	printf("\n");
-	for (int i = boardinfo->ncols-1;i > -1; i--)
-	{
-		printf("%d -> ", cols[i]);
-	}
-	printf("\n");
-	
-	for(int i = boardinfo->ncols-1; i > -1; i--)
-	{
-		if(checkAvailable(boardinfo, cols[i]) == 1)
+		if (checkAvailable(boardinfo, cols[i]) == 1)
 		{
 			return cols[i];
 		}
