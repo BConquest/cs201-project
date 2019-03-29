@@ -347,7 +347,7 @@ int player(struct gameinfo *boardinfo)
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, firstplayer);
-		int winner = checkNewWin(boardinfo);
+		int winner = checkWin(boardinfo);
 		if (winner != 0)
 			return winner;
 
@@ -380,7 +380,7 @@ int player(struct gameinfo *boardinfo)
 			}
 		}
 		addPiece(boardinfo, moveIndex - 1, secondplayer);
-		winner = checkNewWin(boardinfo);
+		winner = checkWin(boardinfo);
 		if (winner != 0)
 			return winner;
 		playCount += 1;
