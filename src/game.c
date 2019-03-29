@@ -73,7 +73,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 		{
 			if (depth > maxdepth)
 				maxdepth = depth;
-			if (depth == 4)
+			if (depth == boardinfo->winamount)
 			{
 				/* Make sure that there are no memory leaks */
 				while (!isEmpty(searchStack))
