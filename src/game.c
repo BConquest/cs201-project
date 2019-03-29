@@ -361,7 +361,7 @@ int hardMode(struct gameinfo *boardinfo)
 			return cols[i];
 		}
 	}
-
+	printf("ERROR: HARDMODE -> failed\n");
 	return easyMode(boardinfo);
 }
 

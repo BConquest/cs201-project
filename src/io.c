@@ -56,7 +56,7 @@ void printGameMenu()
 {
 	printf("player -> will enter into a game versues a player\n");
 	printf("computer -> will enter into a game versues a computer\n");
-	printf("\t-> 'easy' -> the computer will play randomly and plays second\n\t-> 'hard' -> the computer uses bfs to find the best move and plays first\n\t>'impossible' -> plays randomly and uses bfs while letting the player go first\n");
+	printf("\t-> 'easy' -> the computer will play randomly and plays second\n\t-> 'hard' -> the computer uses dfs to find the best move and plays first\n\t->'impossible' -> plays randomly and uses bfs while letting the player go first\n");
 	printf("stats -> prints the stats for the current game session\n");
 	printf("clear -> clears the screen\n");
 	printf("done -> takes you back to the main menu\n");
@@ -69,7 +69,7 @@ void printStats(struct scoreboard *scores)
 	printf("Player Vs. Player: %d\tPlayer Vs. Computer: %d\n", scores->playervplayer, scores->playervcomputer);
 	printf("Player-1 wins: %d\tPlayer wins: %d\n", scores->player1wins, scores->playervcomputer - scores->computerwins - scores->computerdraws);
 	printf("Player-2 wins: %d\tComputer wins: %d\n", scores->playervplayer - scores->player1wins - scores->playerdraws, scores->computerwins);
-	printf("Number of Draws: %d\tAmount of Draws: %d\n", scores->playerdraws, scores->computerdraws);
+	printf("Number of Draws: %d\tNumber of Draws: %d\n", scores->playerdraws, scores->computerdraws);
 }
 
 /* Initilaizes board to 0 */
