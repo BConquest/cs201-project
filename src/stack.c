@@ -29,6 +29,5 @@ int pop(struct stackNode** root)
     *root = (*root)->next;
     int popped = temp->data;
     free(temp);
-
     return popped;
 }

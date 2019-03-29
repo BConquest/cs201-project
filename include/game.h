@@ -43,7 +43,6 @@ int addPiece(struct gameinfo *, int, int);
 int checkAvailable(struct gameinfo *, int);
 
 /* checks to see if their a path between two indexs */
-int bfs(struct gameinfo *boardinfo, int, int, int);
 int dfs(struct gameinfo *boardinfo, int, int);
 
 /* Is the player state*/

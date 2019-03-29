@@ -43,154 +43,6 @@ int checkAvailable(struct gameinfo *boardinfo, int col)
 	return 1;
 }
 
-int bfs(struct gameinfo *boardinfo, int index, int solution, int color)
-{
-	struct queue *searchQueue = malloc(sizeof(struct queue));
-	struct queue *depthQueue = malloc(sizeof(struct queue));
-	struct queue *directionQueue = malloc(sizeof(struct queue));
-	int depth = 0;
-	int temp = 0;
-	int direction = 0;
-	int max = -1;
-
-	int* visited;
-	visited = malloc((boardinfo->nrows *boardinfo->ncols) * sizeof(int));
-
-	for (int i = 0; i < boardinfo->nrows * boardinfo->ncols; i++)
-		visited[i] = 0;
-
-	searchQueue->stack1 = NULL;
-	searchQueue->stack2 = NULL;
-	depthQueue->stack1 = NULL;
-	depthQueue->stack2 = NULL;
-	directionQueue->stack1 = NULL;
-	directionQueue->stack2 = NULL;
-
-	enqueue(searchQueue, index);
-	enqueue(depthQueue, depth);
-	enqueue(directionQueue, 0);
-
-	while ((searchQueue->stack1 != NULL || searchQueue->stack2 != NULL) /*&& depth < boardinfo->winamount + 1*/)
-	{
-		printf("\t%d-%d-%d-%d\n", index, solution, depth, direction);
-		temp = dequeue(searchQueue);
-		depth = dequeue(depthQueue);
-		direction = dequeue(directionQueue);
-		visited[temp] = 1;
-		if (depth > max)
-			max = depth;
-		int test;
-
-		/* Searches to the right */
-		test = temp + 1;
-		if (test < boardinfo->ncols * boardinfo->nrows && (temp % boardinfo->ncols != boardinfo->ncols-1))
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
-			{
-				enqueue(searchQueue, test);
-				enqueue(directionQueue, 1);
-				if(direction == 1)
-				{
-					enqueue(depthQueue, depth + 1);
-				}
-				else
-				{
-					enqueue(depthQueue, 0);
-				}
-			}
-		}
-
-		/* Searches to the Left */
-		test = temp - 1;
-		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
-			{
-				enqueue(searchQueue, test);
-				enqueue(directionQueue, 2);
-				if(direction == 2)
-				{
-					enqueue(depthQueue, depth + 1);
-				}
-				else
-				{
-					enqueue(depthQueue, 0);
-				}
-			}
-		}
-
-		/* Searches bottom wards */
-		test = temp - boardinfo->ncols;
-		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
-			{
-				enqueue(searchQueue, test);
-				enqueue(directionQueue, 3);
-				if(direction == 3)
-				{
-					enqueue(depthQueue, depth + 1);
-				}
-				else
-				{
-					enqueue(depthQueue, 0);
-				}
-			}
-		}
-
-		test = temp - boardinfo->ncols + 1;
-		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
-			{
-				enqueue(searchQueue, test);
-				enqueue(directionQueue, 4);
-				if(direction == 4)
-				{
-					enqueue(depthQueue, depth + 1);
-				}
-				else
-				{
-					enqueue(depthQueue, 0);
-				}
-			}
-		}
-
-		test = temp - boardinfo->ncols - 1;
-		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
-			{
-				enqueue(searchQueue, test);
-				enqueue(directionQueue, 5);
-				if(direction == 5)
-				{
-					enqueue(depthQueue, depth + 1);
-				}
-				else
-				{
-					enqueue(depthQueue, 0);
-				}
-			}
-		}
-
-		if (temp == solution)
-		{
-			free(depthQueue);
-			free(searchQueue);
-			free(directionQueue);
-			free(visited);
-			return (boardinfo->winamount);
-		}
-	}
-	free(depthQueue);
-	free(searchQueue);
-	free(directionQueue);
-	free(visited);
-	//printf("%d -> bfs -> %d\n", index, solution);
-	return 0;
-}
-
 int dfs(struct gameinfo *boardinfo, int index, int color)
 {
 	struct stackNode *searchStack = NULL;
@@ -239,7 +91,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			int test = 0;
 
 			test = currSearch + 1;
-			if(test < boardarea && (currSearch % boardinfo->ncols != boardinfo->nrows))
+			if(test < boardarea && (currSearch % boardinfo->ncols != boardinfo->ncols -1))
 			{
 				if(boardinfo->board[test] == color)
 				{
@@ -281,7 +133,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			}
 
 			test = currSearch + boardinfo->nrows + 2;
-			if(test < boardarea && (currSearch % boardinfo->nrows) != boardinfo->nrows)
+			if(test < boardarea && (currSearch % boardinfo->ncols) != boardinfo->ncols - 1)
 			{
 				if(boardinfo->board[test] == color)
 				{
@@ -308,6 +160,18 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 				}
 			}
 		}
+	}
+	while(!isEmpty(searchStack))
+	{
+		pop(&searchStack);
+	}
+	while(!isEmpty(depthStack))
+	{
+		pop(&depthStack);
+	}
+	while(!isEmpty(directionStack))
+	{
+		pop(&directionStack);
 	}
 	return maxdepth;
 }
