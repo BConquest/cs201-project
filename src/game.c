@@ -128,7 +128,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + (boardinfo->nrows + 1);
 			if (test < boardarea)
 			{
-				//printf("%d->%d\n", currSearch, test);
+				printf("%d->%d\n", currSearch, test);
 				if (boardinfo->board[test] == color)
 				{
 					//printf("\t%d\n", boardinfo->board[test]);

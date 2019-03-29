@@ -228,7 +228,7 @@ int game(struct gameinfo *boardinfo, struct scoreboard *scores)
 		}
 		else
 		{
-			printf("Player %d WON!!\n", winner);
+			printf("Player %d has won\n", winner);
 			if (winner == 1)
 				scores->player1wins = scores->player1wins + 1;
 		}

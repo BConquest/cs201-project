@@ -41,19 +41,23 @@ int main(void)
 			printGameMenu();
 			while(game(&boardinfo, &scores) != 1);
 		}
-		else if (strcmp(mode, "settings") == 0 && tested == 1)
+		else if (strncmp(mode, "settings", 25) == 0 && tested == 1)
 		{
 			clearScreen();
 			printSettingsMenu();
 			while (settings(&boardinfo) != 1);
 		}
-		else if (strcmp(mode, "clear") == 0 && tested == 1)
+		else if (strncmp(mode, "clear", 25) == 0 && tested == 1)
 		{
 			clearScreen();
 		}
-		else if (strcmp(mode, "help") == 0 && tested == 1)
+		else if (strncmp(mode, "help", 25) == 0 && tested == 1)
 		{
 			printMenu();
+		}
+		else if (strncmp(mode, "quit", 25) == 0 && tested == 1)
+		{
+			return 1;
 		}
 		else
 		{
