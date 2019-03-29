@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "./queue.h"
 #include "./stack.h"
 #include "./config.h"
 
