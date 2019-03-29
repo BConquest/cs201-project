@@ -4,8 +4,6 @@
 #include "./include/io.h"
 #include "./include/game.h"
 
-#include "./include/stack.h"
-
 int main(void)
 {
 	clearScreen();

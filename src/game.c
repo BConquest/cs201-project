@@ -14,7 +14,7 @@ int addPiece(struct gameinfo *boardinfo, int col, int colour)
 		if (boardinfo->board[index] == 0)
 			break;
 
-	/* if last space is filled returns error else places peice */
+	/* if last space is filled returns error else places piece */
 	if (index < boardinfo->ncols && boardinfo->board[index] != 0)
 		return 0;
 	else
@@ -43,104 +43,130 @@ int checkAvailable(struct gameinfo *boardinfo, int col)
 	return 1;
 }
 
-int bfs(struct gameinfo *boardinfo, int index, int solution, int color)
+int dfs(struct gameinfo *boardinfo, int index, int color)
 {
-	struct queue *searchQueue = malloc(sizeof(struct queue));
-	struct queue *depthQueue = malloc(sizeof(struct queue));
-	int depth = 0;
-	int temp = 0;
-	int max = -1;
+	struct stackNode *searchStack = NULL;
+	push(&searchStack, index);
+	struct stackNode *depthStack = NULL;
+	push(&depthStack, 0);
+	struct stackNode *directionStack = NULL;
+	push(&directionStack, 0);
 
-	int* visited;
-	visited = malloc((boardinfo->nrows *boardinfo->ncols) * sizeof(int));
-	printf("%d\n", (int)((boardinfo->nrows*boardinfo->ncols) * sizeof(int)));
+	int boardarea = boardinfo->nrows * boardinfo->ncols;
 
-	for (int i = 0; i < boardinfo->nrows * boardinfo->ncols; i++)
+	int maxdepth = 0;
+
+	int *visited;
+	visited = malloc(boardarea * sizeof(int));
+	for (int i = 0; i < boardarea; i++)
 		visited[i] = 0;
-
-	searchQueue->stack1 = NULL;
-	searchQueue->stack2 = NULL;
-	depthQueue->stack1 = NULL;
-	depthQueue->stack2 = NULL;
-
-	enqueue(searchQueue, index);
-	enqueue(depthQueue, depth);
-
-	while ((searchQueue->stack1 != NULL || searchQueue->stack2 != NULL) /*&& depth < boardinfo->winamount + 1*/)
+	
+	while(!isEmpty(searchStack))
 	{
-		temp = dequeue(searchQueue);
-		depth = dequeue(depthQueue);
-		visited[temp] = 1;
-		if (depth > max)
-			max = depth;
-		int test;
-
-		/* Searches to the right */
-		test = temp + 1;
-		if (test < boardinfo->ncols * boardinfo->nrows)
+		int currSearch = pop(&searchStack);
+		int depth = pop(&depthStack);
+		int dir = pop(&directionStack);
+		if(visited[currSearch] == 0)
 		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
+			printf("\n");
+			if (depth > maxdepth)
+				maxdepth = depth;
+			if(depth == 4)
 			{
-				enqueue(depthQueue, depth + 1);
-				enqueue(searchQueue, test);
+				printf("DONE\n");
+				while(!isEmpty(searchStack))
+				{
+					pop(&searchStack);
+				}
+				while(!isEmpty(depthStack))
+				{
+					pop(&depthStack);
+				}
+				while(!isEmpty(directionStack))
+				{
+					pop(&directionStack);
+				}
+				return boardinfo->winamount;
 			}
-		}
 
-		/* Searches to the right */
-		test = temp - 1;
-		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
+			printf("%d -> ", currSearch);
+			printf("\t%d", depth);
+			visited[currSearch] = 1;
+			int test = 0;
+
+			test = currSearch + 1;
+			if(test < boardarea && (currSearch % boardinfo->ncols != boardinfo->nrows))
 			{
-				enqueue(depthQueue, depth + 1);
-				enqueue(searchQueue, test);
+				if(boardinfo->board[test] == color)
+				{
+					push(&searchStack, test);
+					push(&directionStack, 1);
+					if(dir == 1)
+						push(&depthStack, depth+1);
+					else
+						push(&depthStack, 1);
+					
+				}
 			}
-		}
-
-		/* Searches top wards */
-		test = temp - boardinfo->ncols;
-		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
+			test = currSearch - 1;
+			if(test > -1 && (currSearch % boardinfo->ncols != 0))
 			{
-				enqueue(depthQueue, depth + 1);
-				enqueue(searchQueue, test);
+				if(boardinfo->board[test] == color)
+				{
+					push(&searchStack, test);
+					push(&directionStack, 2);
+					if(dir == 2)
+						push(&depthStack, depth+1);
+					else
+						push(&depthStack, 1);
+				}
 			}
-		}
 
-		test = temp - boardinfo->ncols + 1;
-		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
+			test = currSearch + (boardinfo->nrows + 1);
+			if(test < boardarea)
 			{
-				enqueue(depthQueue, depth + 1);
-				enqueue(searchQueue, test);
+				if(boardinfo->board[test] == color)
+				{
+					push(&searchStack, test);
+					push(&directionStack, 3);
+					if(dir == 3)
+						push(&depthStack, depth+1);
+					else
+						push(&depthStack, 1);
+				}
 			}
-		}
 
-		test = temp - boardinfo->ncols - 1;
-		if (test > -1)
-		{
-			if (boardinfo->board[test] == color && (visited[test] != 1))
+			test = currSearch + boardinfo->nrows + 2;
+			if(test < boardarea && (currSearch % boardinfo->nrows) != boardinfo->nrows)
 			{
-				enqueue(depthQueue, depth + 1);
-				enqueue(searchQueue, test);
+				if(boardinfo->board[test] == color)
+				{
+					push(&searchStack, test);
+					push(&directionStack, 4);
+					if(dir == 4)
+						push(&depthStack, depth+1);
+					else
+						push(&depthStack, 1);
+				}
 			}
-		}
 
-		if (temp == solution)
-		{
-			free(depthQueue);
-			free(searchQueue);
-			free(visited);
-			return (boardinfo->winamount);
+			test = currSearch + boardinfo->ncols;
+			if(test < boardarea && (currSearch % boardinfo->ncols != 0))
+			{
+				if(boardinfo->board[test] == color)
+				{
+					push(&searchStack, test);
+					push(&directionStack, 5);
+					if(dir == 5)
+						push(&depthStack, depth+1);
+					else
+						push(&depthStack, 1);
+				}
+			}
 		}
 	}
-	free(depthQueue);
-	free(searchQueue);
-	free(visited);
-	//printf("%d -> bfs -> %d\n", index, solution);
-	return max;
+	printf("\n");
+	return maxdepth;
 }
 
 int player(struct gameinfo *boardinfo)
@@ -232,59 +258,28 @@ int hardMode(struct gameinfo *boardinfo)
 {
 	int positions[boardinfo->ncols];
 	int cols[boardinfo->ncols];
+
+	for(int i = 0; i < boardinfo->ncols; i++)
+		positions[i] = 0;
+
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		int index = (boardinfo->nrows - 1) * boardinfo->ncols + i;
-
+		int temp = 0;
 		for (; index > (boardinfo->ncols - 1); index -= boardinfo->ncols)
-			if (boardinfo->board[index] == 0)
-				break;
-		//printf("column %d: %d\n", i, index);
-
-		/*initilize array index to 0 before compating it*/
-		int temp;
-		positions[i] = 0;
-		/*Horizontal Checking if computer can win and then if the person has a higher chance*/
-		if ((((index + boardinfo->winamount) % boardinfo->ncols >= boardinfo->winamount || (index + boardinfo->winamount) % boardinfo->ncols == 0)))
 		{
-			temp = bfs(boardinfo, index, index + boardinfo->winamount - 1, 2);
-			if (temp > positions[i])
-				positions[i] = temp;
-		}
-		if ((((index + boardinfo->winamount) % boardinfo->ncols >= boardinfo->winamount || (index + boardinfo->winamount) % boardinfo->ncols == 0)))
-		{
-			temp = bfs(boardinfo, index, index + boardinfo->winamount - 1, 1);
-			if (temp > positions[i])
-				positions[i] = temp;
-		}
-		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount || (index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
-		{
-			temp = bfs(boardinfo, (index - boardinfo->winamount) - 1, index, 2);
-			if (temp > positions[i])
-				positions[i] = temp;
-		}
-		if (((index - boardinfo->winamount) % boardinfo->ncols) < boardinfo->winamount || (index - boardinfo->winamount) % boardinfo->ncols == (boardinfo->ncols - 1))
-		{
-			temp = bfs(boardinfo, (index - boardinfo->winamount) - 1, index, 1);
-			if (temp > positions[i])
-				positions[i] = temp;
+			if (boardinfo->board[index] == 0) break;
 		}
 
-		/*Vertical Checking if computer can win and then checks to see if player has a chance */
-		if ((index - ((boardinfo->winamount - 1) * boardinfo->ncols)) > -1)
-		{
-			temp = bfs(boardinfo, index, (index - ((boardinfo->winamount - 1) * boardinfo->ncols)), 2);
-			if (temp > positions[i])
-				positions[i] = temp;
-		}
-		if ((index - ((boardinfo->winamount - 1) * boardinfo->ncols)) > -1)
-		{
-			temp = bfs(boardinfo, index, (index - ((boardinfo->winamount - 1) * boardinfo->ncols)), 1);
-			if (temp > positions[i])
-				positions[i] = temp;
-		}
+		temp = dfs(boardinfo, index, 2);
+		if(temp > positions[i])
+			positions[i] = temp;
+
+		temp = dfs(boardinfo, index, 1);
+		if(temp > positions[i])
+			positions[i] = temp;
 	}
-	
+		
 	for (int i = 0; i < boardinfo->ncols; i++)
 	{
 		printf("%d -> ", i);
@@ -349,7 +344,7 @@ int computer(struct gameinfo *boardinfo)
 		printBoard(boardinfo);
 		do
 		{
-			printf("Column to place peice in: ");
+			printf("Column to place piece in: ");
 			getchar();
 			int test = scanf("%d", &add);
 			while (test != 1)

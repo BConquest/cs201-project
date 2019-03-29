@@ -84,10 +84,13 @@ int checkWin(struct gameinfo *boardinfo)
 			}
 		}
 
-		/* Dont wrap around because it will be out of bounds instead of wrapping to bottom */
-		if (checkVerticalWin(boardinfo, index) >= (winamount))
+		/* Checking vertical win */
+		if ((index - ((boardinfo->winamount-1) * boardinfo->ncols)) >= 0 - boardinfo->ncols)
 		{
-			return boardinfo->board[index];
+			if (checkVerticalWin(boardinfo, index) >= (winamount))
+			{
+				return boardinfo->board[index];
+			}
 		}
 
 		/* Checkiung to make sure that it wont go out of bounds or wrap around the board*/
