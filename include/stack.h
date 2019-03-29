@@ -1,17 +1,19 @@
 #ifndef __stack_h__
 #define __stack_h__
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 struct stackNode
 {
-	int data;
-	struct stackNode *next;
+    int data;
+    struct stackNode* next;
 };
 
-int pop(struct stackNode **);
+struct stackNode* newNode(int);
+int isEmpty(struct stackNode *);
 
 void push(struct stackNode **, int);
+int pop(struct stackNode **);
 
 #endif

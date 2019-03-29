@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#include "./queue.h"
-#include "./stack2.h"
+#include "./queue.h"
+#include "./stack.h"
 
 /* Holds info about the current board */
 struct gameinfo
@@ -44,6 +44,7 @@ int checkAvailable(struct gameinfo *, int);
 
 /* checks to see if their a path between two indexs */
 int bfs(struct gameinfo *boardinfo, int, int, int);
+int dfs(struct gameinfo *boardinfo, int, int);
 
 /* Is the player state*/
 int player(struct gameinfo *);
