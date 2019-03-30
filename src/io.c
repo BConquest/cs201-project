@@ -1,7 +1,5 @@
 #include "../include/io.h"
-//#include "../include/config.h"
 
-/* Prints the board */
 void printBoard(struct gameinfo *boardinfo)
 {
 	int index = 0;
@@ -99,7 +97,7 @@ int settings(struct gameinfo *boardinfo)
 	scanf("%s", setting);
 	if (strncmp(setting, "width", 25) == 0)
 	{
-		/* All this is mkaing sure that the player enters in a correct input */
+		/* All this is making sure that the player enters in a correct input */
 		do
 		{ 
 			newsetting = boardinfo->ncols;
@@ -221,7 +219,7 @@ int game(struct gameinfo *boardinfo, struct scoreboard *scores)
 	char person[25];
 	printf("game: ");
 	getchar();
-	scanf("%25s", person);
+	scanf("%26s", person);
 	if (strncmp(person, "player", 25) == 0)
 	{
 		winner = player(boardinfo);

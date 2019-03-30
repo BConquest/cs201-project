@@ -1,5 +1,21 @@
 #include "../include/game.h"
 
+void initGameInfo(struct gameinfo *boardinfo, struct scoreboard *scores)
+{
+	boardinfo->ncols = 7;
+	boardinfo->nrows = 6;
+
+	boardinfo->board = malloc((boardinfo->ncols * boardinfo->nrows) * sizeof(int));
+	boardinfo->winamount = 4;
+
+	scores->playervplayer = 0;
+	scores->player1wins = 0;
+	scores->playerdraws = 0;
+	scores->playervcomputer = 0;
+	scores->computerwins = 0;
+	scores->computerdraws = 0;
+}
+
 int addPiece(struct gameinfo *boardinfo, int col, int colour)
 {
 	/* Checks to see if that is a valid place to place */
@@ -50,7 +66,7 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 	push(&searchStack, index);
 	struct stackNode *depthStack = NULL;
 	push(&depthStack, 0);
-	// Stores the direction so that the depth doesnt just get insaenly high
+	// Stores the direction so that the depth doesnt just get insanely high
 	struct stackNode *directionStack = NULL;
 	push(&directionStack, 0);
 
@@ -99,7 +115,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + 1;
 			if (test < boardarea && (currSearch % boardinfo->ncols != boardinfo->ncols - 1))
 			{
-				//printf("%d->%d\n", currSearch, test);
 				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -114,7 +129,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch - 1;
 			if (test > -1 && (currSearch % boardinfo->ncols != 0))
 			{
-				//printf("%d->%d\n", currSearch, test);
 				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -130,10 +144,8 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + (boardinfo->nrows + 1);
 			if (test < boardarea)
 			{
-				printf("%d->%d\n", currSearch, test);
 				if (boardinfo->board[test] == color)
 				{
-					//printf("\t%d\n", boardinfo->board[test]);
 					push(&searchStack, test);
 					push(&directionStack, 3);
 					if (dir == 3)
@@ -146,7 +158,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + boardinfo->nrows + 2;
 			if (test < boardarea && (currSearch % boardinfo->ncols) != boardinfo->ncols - 1)
 			{
-				//printf("%d->%d\n", currSearch, test);
 				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -161,7 +172,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch + boardinfo->ncols - 1;
 			if (test < boardarea && (currSearch % boardinfo->ncols != 0))
 			{
-				//printf("%d->%d\n", currSearch, test);
 				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -176,7 +186,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch - boardinfo->ncols - 1;
 			if (test > -1 && (currSearch % boardinfo->ncols != 0))
 			{
-				//printf("%d->%d\n", currSearch, test);
 				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);
@@ -191,7 +200,6 @@ int dfs(struct gameinfo *boardinfo, int index, int color)
 			test = currSearch - (boardinfo->ncols - 1);
 			if (test > -1 && (currSearch % boardinfo->ncols != 0))
 			{
-				//printf("%d->%d\n", currSearch, test);
 				if (boardinfo->board[test] == color)
 				{
 					push(&searchStack, test);

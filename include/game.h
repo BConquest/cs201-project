@@ -35,6 +35,8 @@ struct scoreboard
 /* Updates the current boardsize */
 struct gameinfo changeBoardSize(struct gameinfo *);
 
+void initGameInfo(struct gameinfo *, struct scoreboard *);
+
 /* adds a peice at the bottom of the column*/
 /* index, color */
 int addPiece(struct gameinfo *, int, int);

@@ -13,18 +13,7 @@ int main(void)
 	struct gameinfo boardinfo;
 	struct scoreboard scores;
 
-	boardinfo.ncols = 7;
-	boardinfo.nrows = 6;
-
-	boardinfo.board = malloc((boardinfo.ncols * boardinfo.nrows) * sizeof(int));
-	boardinfo.winamount = 4;
-
-	scores.playervplayer = 0;
-	scores.player1wins = 0;
-	scores.playerdraws = 0;
-	scores.playervcomputer = 0;
-	scores.computerwins = 0;
-	scores.computerdraws = 0;
+	initGameInfo(&boardinfo, &scores);
 
 	char mode[25] = {'\0'};
 
