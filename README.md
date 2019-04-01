@@ -1,5 +1,5 @@
 # Connect 4
-https://youtu.be/csQXEDwoQP8
+https://youtu.be/mMnXj1U3V2U
 
 ## How to play
 	- enter 'game' when at main menu
